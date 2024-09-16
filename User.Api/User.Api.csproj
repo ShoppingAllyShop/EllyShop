@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Comman.Domain\Comman.Domain.csproj" />
+    <ProjectReference Include="..\Common.Infrastructure\Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\CommonLib.Configurations\CommonLib.Configurations.csproj" />
+    <ProjectReference Include="..\CommonLib.Constants\CommonLib.Constants.csproj" />
+    <ProjectReference Include="..\CommonLib.Enum\CommonLib.Enums.csproj" />
+    <ProjectReference Include="..\CommonLib.Helpers\CommonLib.Helpers.csproj" />
+    <ProjectReference Include="..\CommonLib.Models\CommonLib.Models.csproj" />
+  </ItemGroup>
+
+</Project>

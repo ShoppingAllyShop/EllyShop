@@ -1,0 +1,13 @@
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, and Opera */
+  }
+
+ 
+  #admin-page{
+    background-color: rgb(241 245 249)
+  }

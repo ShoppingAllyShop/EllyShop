@@ -1,5 +1,6 @@
 ﻿using Common.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,16 @@ namespace Common.Infrastructure
         private readonly DbContext _dbContext;
         private bool _disaposed = false;
         private Dictionary<Type, object> _repositories;
+        private DatabaseFacade _databaseFacadeTransaction;
 
         public UnitOfWork(TContext context)
         {
             _dbContext = context;
+        }      
+
+        public DbSet<T> Repository<T>() where T : class
+        {
+            return _dbContext.Set<T>();
         }
 
         public void beginTransaction()
@@ -27,6 +34,12 @@ namespace Common.Infrastructure
         public void CommitTransaction()
         {
             _dbContext.Database.CommitTransaction();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public void Dispose(bool disposing)
@@ -40,11 +53,6 @@ namespace Common.Infrastructure
                 }
             }
             _disaposed = true;
-        }
-
-        public DbSet<T> Repository<T>() where T : class
-        {
-            return _dbContext.Set<T>();
         }
 
         public void RollBackTransaction()
