@@ -59,7 +59,7 @@ const CategoryFormModal = ({ level, categoryData, modalType }) => {
     console.log('newCate',newCate)
 
     //Call login api
-    const endpoint = "category/add";
+    const endpoint = "/admin/category/add";
     const [addResponse] = await Promise.all([
       auth.post(endpoint, newCate),
     ]);

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ADMIN } from "../constants/endpoint";
+import { RESPONSE_API_STATUS } from "../constants/common";
 
 const useAxiosBase = () => {
   const BASE_URL = process.env.REACT_APP_BASE_API_URL;
@@ -14,27 +15,29 @@ const useAxiosBase = () => {
   });
 
    //Thiết lập interceptor cho request
-  axiosBase.interceptors.request.use(    
-    (error) => {
-      nagative(ADMIN.ERROR, {state: {errorHeader:'Server đang gặp trục trặc kỹ thuật'}})
-      Promise.reject(error)
-    } 
-  );
+  // axiosBase.interceptors.request.use(    
+  //   (error) => {
+  //     nagative(ADMIN.ERROR, {state: {errorHeader:'Server đang gặp trục trặc kỹ thuật'}})
+  //     Promise.reject(error)
+  //   } 
+  // );
 
   //Thiết lập interceptor cho response
-  // axiosBase.interceptors.response.use(
-  //   (response) => {
-  //     // Xử lý dữ liệu response nếu cần trước khi trả về
-  //     console.log('aaaaaaaa',response)
-  //     return response;
-  //   },
-  //   (error) => {      
-  //     // Xử lý lỗi trong quá trình nhận response
-  //     console.log('hohoho', error)
-  //     handleError(error);
-  //     return Promise.reject(error); // Reject để tiếp tục xử lý lỗi trong các Promise chain
-  //   }
-  // );
+  axiosBase.interceptors.response.use(
+    (response) => {
+      // Xử lý dữ liệu response nếu cần trước khi trả về
+      console.log('aaaaaaaa',response)
+      return response;
+    },
+    (error) => {      
+      // Xử lý lỗi trong quá trình nhận response
+      if(error.code === RESPONSE_API_STATUS.ERROR_NETWORK){
+        nagative(ADMIN.ERROR, {state: {errorHeader:'Server đang gặp trục trặc kỹ thuật'}})
+      }
+      //handleError(error);
+      return Promise.reject(error); // Reject để tiếp tục xử lý lỗi trong các Promise chain
+    }
+  );
 
   // // Hàm xử lý lỗi
   // const handleError = (error) => {

@@ -23,6 +23,7 @@ import { REGEX_PATTERN } from "../../../constants/regex";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import InputField from "../../../components/Form/InputField";
+import { ROLE_ENUM } from "../../../constants/enum";
 
 const LoginPage = ({ handleTest }) => {
   const navigate = useNavigate();
@@ -93,7 +94,8 @@ const LoginPage = ({ handleTest }) => {
     const params = {
       email: data.email,
       password: data.password,
-      isCustomer: false
+      isCustomer: false,
+      role: ROLE_ENUM.ADMIN
     }
 
     //Call login api

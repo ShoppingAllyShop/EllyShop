@@ -38,5 +38,6 @@ export const STORAGE_TYPE = {
 
 export const RESPONSE_API_STATUS = {
   SUCCESS:'Success',
-  ERROR: 'Error'
+  ERROR: 'Error',
+  ERROR_NETWORK: 'ERR_NETWORK'
 }

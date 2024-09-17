@@ -60,23 +60,21 @@ namespace User.Api.Implements
 
             var secretKeyBytes = Encoding.UTF8.GetBytes(_authenticationSettings.Value.SecretKey);
             var secretKey = new SymmetricSecurityKey(secretKeyBytes);
-            var tokenDescription = new SecurityTokenDescriptor
+            var claims = new List<Claim>()
             {
-                Subject = new ClaimsIdentity(new[] {
-                    new Claim(JwtRegisteredClaimNames.Email, email ?? string.Empty),
-                    //roles
-                    new Claim(ClaimTypes.Role, role.GetEnumDescription())
-                }),
-                //Expires = pageType == ConmonConstants.AdminPage ? DateTime.UtcNow.AddDays(1) : DateTime.UtcNow.AddDays(10),
-                //Expires = role != Roles.Customer ? DateTime.UtcNow.AddDays(1) : DateTime.UtcNow.AddDays(10),
-                Expires = role != UserRoleEnum.Customer ? DateTime.UtcNow.AddMinutes(1) : DateTime.UtcNow.AddMinutes(1),
-                Issuer = _authenticationSettings.Value.Issuer,
-                Audience = _authenticationSettings.Value.Audience,
-                SigningCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature)
+                new Claim(JwtRegisteredClaimNames.Email, email ?? string.Empty),
+                new Claim("Role", role.GetEnumDescription())
             };
 
-            var token = jwtTokenHandler.CreateToken(tokenDescription);
-            var accessToken = jwtTokenHandler.WriteToken(token);
+            var tokenOptions = new JwtSecurityToken(
+                issuer: _authenticationSettings.Value.Issuer,
+                claims: claims,
+                audience: _authenticationSettings.Value.Audience,
+                expires: role != UserRoleEnum.Customer ? DateTime.UtcNow.AddMinutes(1) : DateTime.UtcNow.AddMinutes(1),
+                signingCredentials: new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature)
+                );
+
+            var accessToken = jwtTokenHandler.WriteToken(tokenOptions);
             return accessToken;
         }
 
@@ -147,7 +145,7 @@ namespace User.Api.Implements
             //Validate access token of Google, Facebook....
             //var validateToken = await ValidateTokenOAuth(request.Credential, request.Provider);
             //if (validateToken == null) throw new Exception("validate token of social login failed. Return null result");
-            
+
             var validator = _validatorFactory.CreateValidator(request.Provider);
             var resultValidateToken = await validator.ValidateToken(request.Token);
             if (resultValidateToken == null) throw new Exception("validate token of social login failed. Return null result");
@@ -196,7 +194,7 @@ namespace User.Api.Implements
             {
                 newRefreshToken = await RenewRefreshToken(resultValidateToken.Email, true);
                 _logger.LogInformation("Renew refresh token successfully");
-            }   
+            }
 
             //Tạo access token và result
             var accessToken = GenerateAccessToken(resultValidateToken.Email, request.Role);
@@ -218,7 +216,7 @@ namespace User.Api.Implements
                 Email = resultValidateToken.Email
             };
             return result;
-        }       
+        }
 
         private Guid GetRoleId(UserRoleEnum roleEnum)
         {
@@ -281,7 +279,7 @@ namespace User.Api.Implements
             {
                 throw new ValidationException("Email hoặc mật khẩu không đúng");
             }
-            
+
             var renewRefreshToken = await RenewRefreshToken(model.Email, model.isCustomer);
             _logger.LogInformation("Renew refresh token successfully");
 
@@ -306,13 +304,13 @@ namespace User.Api.Implements
         }
 
         public async Task<UserResponse?> CreateAccount(UserAuthRequest model)
-        {   
+        {
             var isHasAccount = await _unitOfWork.Repository<AppUser>().AsNoTracking().AnyAsync(x => x.Email == model.Email);
             if (isHasAccount) throw new ValidationException("Email này đã tồn tại");
 
             //storing database
             string hashedPassword = HashPasswordWithSalt(model.Password);
-            var refreshToken = GenerateRefreshToken();            
+            var refreshToken = GenerateRefreshToken();
             var createdTime = DateTime.UtcNow;
 
             //create user
@@ -347,7 +345,7 @@ namespace User.Api.Implements
 
             await _unitOfWork.Repository<RefreshToken>().AddAsync(newRefreshTokenObj);
             await _unitOfWork.Repository<UserRole>().AddAsync(newUserRole);
-            var result = await _unitOfWork.SaveChangesAsync();           
+            var result = await _unitOfWork.SaveChangesAsync();
 
             if (result > 0)
             {

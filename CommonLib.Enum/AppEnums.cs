@@ -19,7 +19,6 @@ namespace CommonLib.Constants
 
         public enum UserRoleEnum
         {
-
             [Description("Customer")]
             Customer = 0,
             [Description("Admin")]

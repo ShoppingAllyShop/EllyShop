@@ -49,8 +49,8 @@ namespace Category.Api.Controllers
         }
 
         // POST api/<CategoryController>
-        [Authorize(Roles = "Admin")]
-        [HttpPost(" ")]
+        [Route("api/admin/[controller]")]
+        [HttpPost("add")]
         public async Task<IActionResult> AddCategory([FromBody] AddCategoryRequest requestModel)
         {
             var stopwatch = Stopwatch.StartNew();
