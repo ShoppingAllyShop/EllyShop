@@ -26,16 +26,20 @@ namespace Comman.Domain.Models
         public virtual DbSet<News> News { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductDetail> ProductDetails { get; set; } = null!;
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+        public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Silde> Sildes { get; set; } = null!;
         public virtual DbSet<Size> Sizes { get; set; } = null!;
         public virtual DbSet<SoccialMedium> SoccialMedia { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
+        public virtual DbSet<UserRole> UserRoles { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=LAPTOP-M6K1TNV0;Initial Catalog=EllyShop;User ID=sa; Password=1; Trust Server Certificate=True");
+                optionsBuilder.UseSqlServer("Data Source=DESKTOP-TIJR1EN;Initial Catalog=EllyShop;Integrated Security=True;Trust Server Certificate=True");
             }
         }
 
@@ -189,6 +193,37 @@ namespace Comman.Domain.Models
                     .HasConstraintName("FK_ProductDetail_Size");
             });
 
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasIndex(e => e.Token, "UQ__RefreshT__1EB4F817866784F0")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Expiry).HasColumnType("datetime");
+
+                entity.Property(e => e.Token).HasMaxLength(255);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.RefreshTokens)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_RefreshTokens_Users");
+            });
+
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.HasIndex(e => e.RoleName, "UQ__Roles__8A2B6160EEA28F38")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.RoleName).HasMaxLength(50);
+            });
+
             modelBuilder.Entity<Silde>(entity =>
             {
                 entity.HasNoKey();
@@ -216,6 +251,44 @@ namespace Comman.Domain.Models
                 entity.HasNoKey();
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasIndex(e => e.Username, "UQ__Users__536C85E47BE809FD")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Email, "UQ__Users__A9D10534586A949F")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
+
+                entity.Property(e => e.Email).HasMaxLength(255);
+
+                entity.Property(e => e.PasswordHash).HasMaxLength(255);
+
+                entity.Property(e => e.Username).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.PageType).HasMaxLength(50);
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.UserRoles)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserRoles_Roles");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserRoles)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserRoles_Users");
             });
 
             OnModelCreatingPartial(modelBuilder);
