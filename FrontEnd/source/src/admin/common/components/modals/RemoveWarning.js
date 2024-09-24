@@ -1,12 +1,23 @@
 import React from "react";
 import DangerAlert from "../alerts/DangerAlert";
+import {BUTTON_NAME} from '../../../../constants/common'
 
 const RemoveWarning = ({
+  agreeDelete,
   clickCancel,
   selectedCate,
   isHaveChildren,
   level,
 }) => {
+
+  const decideButton = isHaveChildren ? BUTTON_NAME.CLOSE : BUTTON_NAME.AGREE
+  const hanldeClickDecideButton = decideButton => {
+    if (decideButton === BUTTON_NAME.CLOSE) 
+      {clickCancel()}
+    else {
+      agreeDelete(selectedCate)
+    }
+  };
   return (
     <div
       tabIndex={-1}
@@ -50,12 +61,12 @@ const RemoveWarning = ({
             </h3>
             <button
               type="button"
-              onClick={clickCancel}
+              onClick={() => hanldeClickDecideButton(decideButton)}
               className="text-white bg-gray-600 hover:bg-gray-800 focus:ring-4 
               focus:outline-none focus:ring-red-300 dark:focus:ring-gray-800 
               font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
             >
-              {isHaveChildren ? "Đóng" : "Đồng ý"}
+              {decideButton}
             </button>
             {!isHaveChildren && (
               <button

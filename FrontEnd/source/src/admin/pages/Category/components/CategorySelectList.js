@@ -15,7 +15,7 @@ const CategorySelectList = () => {
   );
 
   const getCateDataByLevel = (level, parentId) => {
-    if (level === 1) return data.filter((cate) => cate.categoryLevel === level);
+    if (level === 1) return data?.filter((cate) => cate.categoryLevel === level);
 
     return data.filter(
       (cate) =>
@@ -99,7 +99,7 @@ const CategorySelectList = () => {
   };
 
   return (
-    <div className="category-selection grid grid-cols-3">
+    <div className="category-selection grid lg:grid-cols-3 ">
       {renderCategorySelection()}
     </div>
   );

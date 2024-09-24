@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { ADMIN } from "../constants/endpoint";
+import { ADMIN_ENDPOINT } from "../constants/endpoint";
 import { RESPONSE_API_STATUS } from "../constants/common";
 
 const useAxiosBase = () => {
@@ -32,7 +32,7 @@ const useAxiosBase = () => {
     (error) => {      
       // Xử lý lỗi trong quá trình nhận response
       if(error.code === RESPONSE_API_STATUS.ERROR_NETWORK){
-        nagative(ADMIN.ERROR, {state: {errorHeader:'Server đang gặp trục trặc kỹ thuật'}})
+        nagative(ADMIN_ENDPOINT.ERROR, {state: {errorHeader:'Server đang gặp trục trặc kỹ thuật'}})
       }
       //handleError(error);
       return Promise.reject(error); // Reject để tiếp tục xử lý lỗi trong các Promise chain

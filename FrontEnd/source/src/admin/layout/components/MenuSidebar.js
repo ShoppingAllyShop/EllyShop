@@ -13,7 +13,7 @@ const MenuSidebar = ({data}) => {
       <>
         <svg
           data-accordion-icon=""
-          className="w-3 h-3 rotate-180 shrink-0 ml-10"
+          className="w-3 h-3 rotate-180 shrink-0 ml-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -76,7 +76,7 @@ const MenuSidebar = ({data}) => {
           onMouseOut={handleMouseOutMenuItem}
           onClick={hanldeClickMenu}
         >
-          <span className="flex items-center">
+          <span className="flex items-center w-full place-content-between">
             <i className={`fa fa-${data.icon} mr-2`} />
             {data.name}
             {data.children && renderDropdownIcon()}

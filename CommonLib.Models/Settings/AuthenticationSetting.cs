@@ -11,6 +11,18 @@ namespace CommonLib.Models.Settings
         public string SecretKey { get; set; }
         public string Issuer { get; set; }
         public string Audience { get; set; }
-        public int ExperiedTime { get; set; }
+        public AccessTokenExperiedTime AccessTokenExperiedTime { get; set; }
+        public RefreshTokenExperiedTime RefreshTokenExperiedTime { get; set; }
+    }
+    public class AccessTokenExperiedTime
+    {
+        public int ClientPage { get; set; }
+        public int AdminPage { get; set; }
+
+    }
+    public class RefreshTokenExperiedTime
+    {
+        public int ClientPage { get; set; }
+        public int AdminPage { get; set; }
     }
 }

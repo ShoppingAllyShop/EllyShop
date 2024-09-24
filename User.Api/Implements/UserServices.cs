@@ -29,6 +29,8 @@ using Google.Apis.Auth.OAuth2.Requests;
 using Microsoft.AspNetCore.Identity;
 using System.Data;
 using System.Xml.Linq;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace User.Api.Implements
 {
@@ -54,27 +56,30 @@ namespace User.Api.Implements
             _validatorFactory = validatorFactory;
         }
 
-        public string GenerateAccessToken(string email, UserRoleEnum role)
+        public string GenerateAccessToken(string email, string roleName)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
-
             var secretKeyBytes = Encoding.UTF8.GetBytes(_authenticationSettings.Value.SecretKey);
             var secretKey = new SymmetricSecurityKey(secretKeyBytes);
+
             var claims = new List<Claim>()
             {
                 new Claim(JwtRegisteredClaimNames.Email, email ?? string.Empty),
-                new Claim("Role", role.GetEnumDescription())
+                new Claim("Role", roleName)
             };
-
+            var experiedTime = roleName != UserRoleEnum.Customer.ToString() ?
+                                DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.AccessTokenExperiedTime.ClientPage) :
+                                DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.AccessTokenExperiedTime.AdminPage);
             var tokenOptions = new JwtSecurityToken(
                 issuer: _authenticationSettings.Value.Issuer,
                 claims: claims,
                 audience: _authenticationSettings.Value.Audience,
-                expires: role != UserRoleEnum.Customer ? DateTime.UtcNow.AddMinutes(1) : DateTime.UtcNow.AddMinutes(1),
+                expires: experiedTime,
                 signingCredentials: new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature)
                 );
 
             var accessToken = jwtTokenHandler.WriteToken(tokenOptions);
+            _logger.LogInformation($"Function {nameof(GenerateAccessToken)} was done.");
             return accessToken;
         }
 
@@ -102,50 +107,10 @@ namespace User.Api.Implements
                 return false;
             }
             return true;
-        }
-
-        //private async Task<ValidateTokenOAuthResponse?> validateFacebookToken(string token)
-        //{
-        //    var appToken = $"{_facebookSettings.Value.AppId}|{_facebookSettings.Value.AppSecret}";
-        //    var validateTokenFacebookUrl = string.Format(UserConstant.ValidateTokenFacebookUrl, token, appToken);
-        //    var validateTokenResult = await _apiServices.GetAsync<ValidateTokenOAuthResponse>(validateTokenFacebookUrl);
-        //    return validateTokenResult;
-        //}
-
-        //private async Task<ValidateTokenOAuthResponse?> validateGoogleToken(string token)
-        //{
-        //    var googleRes = await GoogleJsonWebSignature.ValidateAsync(token);
-        //    return new ValidateTokenOAuthResponse()
-        //    {
-        //        Email = googleRes.Email,
-        //        Name = googleRes.Name
-        //    };
-
-        //}
-
-        //private async Task<ValidateTokenOAuthResponse?> ValidateTokenOAuth(string token, AuthProvider provider)
-        //{
-        //    var result = new ValidateTokenOAuthResponse();
-        //    switch (provider)
-        //    {
-        //        case AuthProvider.Facebook:
-        //            result = await validateFacebookToken(token);
-        //            break;
-        //        case AuthProvider.Google:
-        //            result = await validateGoogleToken(token);
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //    return result;
-        //}
+        }        
 
         public async Task<UserResponse> HandleSocialLogin(SocialLoginRequest request)
         {
-            //Validate access token of Google, Facebook....
-            //var validateToken = await ValidateTokenOAuth(request.Credential, request.Provider);
-            //if (validateToken == null) throw new Exception("validate token of social login failed. Return null result");
-
             var validator = _validatorFactory.CreateValidator(request.Provider);
             var resultValidateToken = await validator.ValidateToken(request.Token);
             if (resultValidateToken == null) throw new Exception("validate token of social login failed. Return null result");
@@ -188,48 +153,43 @@ namespace User.Api.Implements
                 await _unitOfWork.Repository<RefreshToken>().AddAsync(newRefreshTokenObj);
                 await _unitOfWork.Repository<UserRole>().AddAsync(newUserRole);
                 await _unitOfWork.SaveChangesAsync();
-                _logger.LogInformation("Create new user successfully");
+                _logger.LogInformation("Create new user and stored database successfully");
             }
             else
             {
                 newRefreshToken = await RenewRefreshToken(resultValidateToken.Email, true);
-                _logger.LogInformation("Renew refresh token successfully");
             }
 
             //Tạo access token và result
-            var accessToken = GenerateAccessToken(resultValidateToken.Email, request.Role);
-
-            //Tạo response            
-            //var role = await (from u in _unitOfWork.Repository<AppUser>().AsNoTracking()
-            //                  join ur in _unitOfWork.Repository<UserRole>().AsNoTracking()
-            //                  on u.Id equals ur.UserId
-            //                  join r in _unitOfWork.Repository<Role>().AsNoTracking()
-            //                  on ur.RoleId equals r.Id
-            //                  where u.Email == resultValidateToken.Email
-            //                  select r).ToListAsync();
-
+            var isCustomer = true; //Chỉ client page mới xài social login
+            var role = await GetRole(resultValidateToken.Email, isCustomer);
+            var accessToken = GenerateAccessToken(resultValidateToken.Email, role.RoleName);
+            var user = await _unitOfWork.Repository<AppUser>().AsNoTracking().FirstOrDefaultAsync(x => x.Email == resultValidateToken.Email);
             var result = new UserResponse()
             {
                 AccessToken = accessToken,
                 RefreshToken = newRefreshToken,
-                UserName = resultValidateToken.Name,
-                Email = resultValidateToken.Email
+                UserName = user?.Username,
+                Email = user?.Username,
+                Role = role
             };
+
+            _logger.LogInformation($"Function {nameof(HandleSocialLogin)} was done.");
             return result;
         }
 
-        private Guid GetRoleId(UserRoleEnum roleEnum)
-        {
-            switch (roleEnum)
-            {
-                case UserRoleEnum.Customer:
-                    return new Guid(GuidContstants.CustomerRole);
-                case UserRoleEnum.Admin:
-                    return new Guid(GuidContstants.AdminRole);
-                default:
-                    return Guid.Empty;
-            }
-        }
+        //private Guid GetRoleId(UserRoleEnum roleEnum)
+        //{
+        //    switch (roleEnum)
+        //    {
+        //        case UserRoleEnum.Customer:
+        //            return new Guid(GuidContstants.CustomerRole);
+        //        case UserRoleEnum.Admin:
+        //            return new Guid(GuidContstants.AdminRole);
+        //        default:
+        //            return Guid.Empty;
+        //    }
+        //}
 
         private async Task<RefreshToken?> GetRefreshToken(string refreshToken)
         {
@@ -246,7 +206,10 @@ namespace User.Api.Implements
             var currentRefreshToken = await _unitOfWork.Repository<RefreshToken>().Where(x => x.UserId == user.Id).SingleOrDefaultAsync();
             if (currentRefreshToken == null) throw new Exception("Refresh token not found");
 
-            currentRefreshToken.Expiry = isCustomer ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddDays(1);
+            var experiedTime = isCustomer ?
+                                DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.RefreshTokenExperiedTime.ClientPage) :
+                                DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.RefreshTokenExperiedTime.AdminPage);
+            currentRefreshToken.Expiry = experiedTime;
             currentRefreshToken.Token = newRefreshToken;
             currentRefreshToken.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.Repository<RefreshToken>().Update(currentRefreshToken);
@@ -254,9 +217,11 @@ namespace User.Api.Implements
 
             if (saveDataResult > 0)
             {
+                _logger.LogInformation($"Function {nameof(RenewRefreshToken)} was successfully");
                 return newRefreshToken;
-            }
 
+            }
+            _logger.LogInformation($"Function {nameof(RenewRefreshToken)} was unsuccessfully.It returned empty string.");
             return string.Empty;
         }
 
@@ -268,7 +233,7 @@ namespace User.Api.Implements
             if (storedToken == null || !isValidRefreshToken) return string.Empty;
 
             //create new access token
-            var newAccessToken = GenerateAccessToken(requestModel.Email, requestModel.Role);
+            var newAccessToken = GenerateAccessToken(requestModel.Email, requestModel.Role.RoleName);
             return newAccessToken;
         }
 
@@ -281,15 +246,44 @@ namespace User.Api.Implements
             }
 
             var renewRefreshToken = await RenewRefreshToken(model.Email, model.isCustomer);
-            _logger.LogInformation("Renew refresh token successfully");
 
+            var user = await _unitOfWork.Repository<AppUser>().AsNoTracking().FirstOrDefaultAsync(x => x.Email == model.Email);
+            var role = await GetRole(model.Email, model.isCustomer);
+
+            if (role == null) throw new NullReferenceException("HandleLoginAsync procession was stopped. Role was null");
             return new UserResponse()
             {
-                AccessToken = GenerateAccessToken(model.Email, model.Role),
+                AccessToken = GenerateAccessToken(model.Email, role.RoleName),
                 Email = model.Email,
                 RefreshToken = renewRefreshToken,
-                UserName = model.UserName
+                UserName = user?.Username,
+                Role = role
             };
+        }
+
+        private async Task<RoleModel> GetRole(string email, bool isCustomer)
+        {
+            //IEnumerable<Role> roles = from u in _unitOfWork.Repository<AppUser>().AsNoTracking()
+            //                          join ur in _unitOfWork.Repository<UserRole>().AsNoTracking()
+            //                          on u.Id equals ur.UserId
+            //                          join r in _unitOfWork.Repository<Role>().AsNoTracking()
+            //                          on ur.RoleId equals r.Id
+            //                          where u.Email == email
+            //                          select r;
+
+            var roles = await _unitOfWork.Repository<UserRole>().AsNoTracking()
+                .Include(x => x.Role).Where(x => x.User.Email == email).Select(x => new RoleModel { RoleId = x.Role.Id, RoleName = x.Role.RoleName }).ToListAsync();
+
+            if (isCustomer)
+            {
+                var customerRole = roles.SingleOrDefault(x => x.RoleName == UserRoleEnum.Customer.ToString());
+                if (customerRole == null) throw new NullReferenceException($"{nameof(GetRole)} function was failed.");
+                return customerRole;
+            }
+
+            var role = roles.SingleOrDefault(x => x.RoleName != UserRoleEnum.Customer.GetEnumDescription());
+            if (role == null) throw new NullReferenceException($"{nameof(GetRole)} function was failed.");
+            return role;
         }
 
         private async Task<bool> ValidateUserAsync(string mail, string passwordInput)
@@ -329,7 +323,7 @@ namespace User.Api.Implements
                 Id = Guid.NewGuid(),
                 UserId = userId,
                 Token = refreshToken,
-                Expiry = model.Role != UserRoleEnum.Customer ? DateTime.UtcNow.AddDays(1) : DateTime.UtcNow.AddDays(30),
+                Expiry = !model.isCustomer ? DateTime.UtcNow.AddDays(1) : DateTime.UtcNow.AddDays(30),
                 CreatedAt = createdTime,
                 UpdatedAt = createdTime
             };
@@ -339,7 +333,7 @@ namespace User.Api.Implements
             var newUserRole = new UserRole()
             {
                 Id = Guid.NewGuid(),
-                RoleId = GetRoleId(model.Role),
+                RoleId = model.Role.RoleId,
                 UserId = userId
             };
 
@@ -349,12 +343,11 @@ namespace User.Api.Implements
 
             if (result > 0)
             {
-                var accessToken = GenerateAccessToken(model.Email, model.Role);
+                var accessToken = GenerateAccessToken(model.Email, model.Role.RoleName);
                 var useResponse = new UserResponse()
                 {
                     AccessToken = accessToken,
                     RefreshToken = refreshToken,
-                    RoleName = model.Role.GetEnumDescription(),
                     UserName = model.UserName,
                     Email = model.Email
                 };

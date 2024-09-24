@@ -40,7 +40,9 @@ const useAxiosAuth = () => {
           const requestRefreshTokenData = {
             RefreshToken: refreshToken,
             Email: userInfo.email,
-            RoleId: userInfo.roleId
+            Role: {
+              RoleName: userInfo.RoleName
+            }            
           }
           const response = await axiosBase.post("user/refresh-token", requestRefreshTokenData );
           let newAccessToken = response.data.result.accessToken;
@@ -53,6 +55,10 @@ const useAxiosAuth = () => {
           // Renew access token failed do invalid refresh token -> chuyển hướng đăng nhập lại
           navigation("/admin/login");
         }
+      }
+
+      if (error.response.status === 403) {
+        navigation("/admin/error", {state:{errorHeader:"Bạn không có quyền truy cập chức năng này"}})
       }
       //return Promise.reject(error);
     }

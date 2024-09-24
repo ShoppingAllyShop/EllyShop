@@ -7,6 +7,8 @@ namespace Category.Api.Interfaces
     public interface ICategory
     {
         Task<IEnumerable<CategoryEntity>> GetAll();
-        Task<string> AddCategoryAsync (AddCategoryRequest request);
+        Task<string> AddCategoryAsync (CategoryRequest request);
+        Task<string> DeleteCategoryAsync(Guid id, string name);
+        Task<CategoryEntity> EditCategoryAsync(CategoryRequest request);
     }
 }

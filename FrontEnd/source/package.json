@@ -27,7 +27,7 @@
     "yup": "^1.4.0"
   },
   "scripts": {
-    "start": "set HTTPS=true&&set SSL_CRT_FILE=D:\\Lap Trinh\\local-certs\\localhost.crt&&set SSL_KEY_FILE=D:\\Lap Trinh\\local-certs\\localhost.key&&react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

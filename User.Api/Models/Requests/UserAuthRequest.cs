@@ -7,5 +7,6 @@ namespace User.Api.Models.Requests
     {
         public string Password { get; set; } = string.Empty;
         public bool isCustomer { get; set; }
+        
     }
 }

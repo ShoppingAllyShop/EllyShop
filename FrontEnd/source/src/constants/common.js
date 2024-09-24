@@ -6,6 +6,21 @@ export const BUTTON_NAME = {
   INFO: "Thông tin",
   SETTING: "Cài đặt",
   LOGOUT: "Đăng xuất",
+  AGREE: "Đồng ý",
+  CLOSE: "Đóng",
+  EDIT: "Chỉnh sửa",
+  ADD: "Thêm"
+};
+
+//Button type
+export const BUTTON_TYPE = {
+  INFO: "Infomation",
+  SETTING: "Setting",
+  LOGOUT: "Logout",
+  AGREE: "Agree",
+  CLOSE: "Close",
+  EDIT: "Edit",
+  ADD: "Add"
 };
 
 //Guid Id
@@ -41,3 +56,8 @@ export const RESPONSE_API_STATUS = {
   ERROR: 'Error',
   ERROR_NETWORK: 'ERR_NETWORK'
 }
+
+//internal role in company except customer
+export const INTERNAL_ROLES_ARRAY = [
+  'Admin', 'Store Manager'
+]

@@ -1,4 +1,5 @@
-﻿using Category.Api.Interfaces;
+﻿using AutoMapper;
+using Category.Api.Interfaces;
 using Category.Api.Models.Request;
 using Comman.Domain.Models;
 using Common.Infrastructure;
@@ -12,22 +13,31 @@ namespace Category.Api.Implements
     {
         private readonly IUnitOfWork<EllyShopContext> _unitOfWork;
         private readonly ILogger<CategoryServices> _logger;
-        public CategoryServices(IUnitOfWork<EllyShopContext> unitOfWork, ILogger<CategoryServices> logger)
+        private readonly IMapper _mapper;
+        public CategoryServices(IUnitOfWork<EllyShopContext> unitOfWork, ILogger<CategoryServices> logger,
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _mapper = mapper;
         }
 
-        public async Task<string> AddCategoryAsync(AddCategoryRequest request)
+        public async Task<IEnumerable<CategoryEntity>> GetAll()
+        {
+            var result = await _unitOfWork.Repository<CategoryEntity>().AsNoTracking().ToListAsync();
+            return result;
+        }
+
+        public async Task<string> AddCategoryAsync(CategoryRequest request)
         {
             var isExistCate = await _unitOfWork.Repository<CategoryEntity>()
                 .AsNoTracking()
-                .AnyAsync(x => x.Name == request.Name && x.CategoryLevel == request.Level);
+                .AnyAsync(x => x.Name == request.Name && x.CategoryLevel == request.CategoryLevel);
             if (isExistCate) throw new BusinessException("Danh mục đã tồn tại");
 
             var newCategory = new CategoryEntity()
             {
-                Id = Guid.NewGuid(),
+                Id = request.Id,
                 CategoryLevel = request.CategoryLevel,
                 Name = request.Name,
                 Gender = request.Gender,
@@ -43,11 +53,36 @@ namespace Category.Api.Implements
             }
             return string.Empty;
         }
-
-        public async Task<IEnumerable<CategoryEntity>> GetAll()
+        public async Task<string> DeleteCategoryAsync(Guid id, string name)
         {
-           var result = await _unitOfWork.Repository<CategoryEntity>().AsNoTracking().ToListAsync();
-            return result;
+            var category = await _unitOfWork.Repository<CategoryEntity>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (category == null) throw new BusinessException("Danh mục này không tồn tại");
+            
+            _unitOfWork.Repository<CategoryEntity>().Remove(category);
+            var saveResult = await _unitOfWork.SaveChangesAsync();
+
+            if (saveResult > 0)
+            {
+                _logger.LogInformation($"Remove category successfully.Id: {id}, Name: {name}");
+                return name;
+            }
+            _logger.LogWarning($"Do not have category was removed");
+            return string.Empty;
+        }
+
+        public async Task<CategoryEntity> EditCategoryAsync(CategoryRequest request)
+        {
+            var category = await _unitOfWork.Repository<CategoryEntity>()
+               .AsNoTracking()
+               .FirstOrDefaultAsync(x => x.Id == request.Id);
+            if (category == null) throw new BusinessException("Danh mục này không tồn tại");
+
+            var updatedCategory = _mapper.Map<CategoryEntity>(request);
+            _unitOfWork.UpdateEntity(updatedCategory);
+            await _unitOfWork.SaveChangesAsync();
+            return updatedCategory;
         }
     }
 }

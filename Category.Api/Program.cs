@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using CommonLib.Configurations;
 using CommonLib.Constants;
+using AutoMapper;
+using Category.Api.Mapper;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<EllyShopContext>(option => {
     option.UseSqlServer(builder.Configuration.GetConnectionString("EllyShopDB"));
 });
@@ -35,14 +38,18 @@ var audience = builder.Configuration["Authentication:Audience"];
 var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
 builder.Services.AddJwtAuthentication(secretKeyBytes, issuer, audience);
 
+//Add automapper
+builder.Services.AddAutoMapper(typeof(Program));
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
 
 app.UseCors(ApiGatewayConstants.CorsPolicyName);
 app.UseAuthentication();
