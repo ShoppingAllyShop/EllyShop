@@ -107,6 +107,20 @@
           "Port": 7021
         }
       ]
+    },
+
+    //Content Management
+    {
+      "UpstreamPathTemplate": "/api/contentmanagement/{everything}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/api/contentmanagement/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7086
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {

@@ -8,6 +8,12 @@ using CommonLib.Exceptions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using CommonLib.Helpers;
 using System.Diagnostics;
+//using System.Text.Json;
+//using System.Text.Json.Serialization;
+using System.Net.Http.Json;
+using System.Xml;
+using Newtonsoft.Json;
+using Comman.Domain.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,6 +38,43 @@ namespace Category.Api.Controllers
             var categoryList = await _categoryServices.GetAll();
             return Ok(ApiResponseHelper.FormatSuccess(categoryList));
         }
+
+
+  //      // GET: api/<ProductCont>
+  //      [HttpGet("get-product")]
+  //      public async Task<IActionResult> GetProduct(string id)
+  //      {
+  //          var stopwatch = Stopwatch.StartNew();
+  //          try
+  //          {
+  //              var product = await _categoryServices.GetProductAsync(id);
+
+  //              var productSerialize = JsonConvert.SerializeObject(product,
+  //     Newtonsoft.Json.Formatting.Indented,
+  //     new JsonSerializerSettings()
+  //     {
+  //         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+  //     }
+  //);
+  //              Product ClientDeserialize = JsonConvert.DeserializeObject<Product>(productSerialize);
+                
+  //              return Ok(ApiResponseHelper.FormatSuccess(ClientDeserialize));
+  //          }
+  //          catch (BusinessException ex)
+  //          {
+  //              _logger.LogError(ex.Message);
+  //              return BadRequest(ex.Message);
+  //          }
+  //          catch (Exception e)
+  //          {
+  //              _logger.LogError(e.Message);
+  //              return BadRequest($"Quá trình thêm danh mục xảy ra lỗi");
+  //          }
+  //          finally
+  //          {
+  //              _logger.LogInformation($"Get product by {id} operation took {stopwatch.ElapsedMilliseconds} ms.");
+  //          }
+  //      }
 
         //GET api/<CategoryController>/5
         [HttpGet("GetById")]

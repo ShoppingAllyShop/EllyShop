@@ -1,0 +1,44 @@
+// .main-slider {
+//     .slider-container{
+//         .slick-dots {
+//             bottom: 27px;
+//             li button {
+//                 border: 3px solid #111;
+//                 border-radius: 50%;
+//                 cursor: pointer;
+//                 display: inline-block;
+//                 height: 12px;
+//                 margin: 0 5px;
+//                 opacity: .4;
+//                 transition: opacity .3s;
+//                 width: 12px;
+//             }
+            
+//         }
+//     }
+// }
+/* styles.css or global.css */
+.scrollbar-custom::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Track background color */
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: #888; /* Scrollbar color */
+    border-radius: 100px; /* Rounded corners for the scrollbar */
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Scrollbar color on hover */
+  }
+  
+  .scrollbar-custom {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #888 #f1f1f1; /* Firefox */
+    
+  }
+  
+  

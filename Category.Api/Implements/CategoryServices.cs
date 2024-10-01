@@ -59,7 +59,7 @@ namespace Category.Api.Implements
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (category == null) throw new BusinessException("Danh mục này không tồn tại");
-            
+
             _unitOfWork.Repository<CategoryEntity>().Remove(category);
             var saveResult = await _unitOfWork.SaveChangesAsync();
 
@@ -84,6 +84,14 @@ namespace Category.Api.Implements
             await _unitOfWork.SaveChangesAsync();
             return updatedCategory;
         }
+
+        //public async Task<Product> GetProductAsync(string id)
+        //{
+        //    var result = await _unitOfWork.Repository<Product>().AsNoTracking().Where(x => x.Id == id).FirstOrDefaultAsync();
+        //    if (result == null) throw new BusinessException("Sản phẩm không tìm thấy");
+
+        //    return result;
+        //}
     }
 }
 
