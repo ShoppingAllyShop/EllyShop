@@ -31,6 +31,7 @@ using System.Data;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using System.Text.Json;
+using Moq;
 
 namespace User.Api.Implements
 {
@@ -58,67 +59,46 @@ namespace User.Api.Implements
 
         public string GenerateAccessToken(string email, string roleName)
         {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(roleName))
+            {
+                throw new ArgumentException($"Generate access token failed. Parameters can be not empty");
+            }
+
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var secretKeyBytes = Encoding.UTF8.GetBytes(_authenticationSettings.Value.SecretKey);
             var secretKey = new SymmetricSecurityKey(secretKeyBytes);
 
             var claims = new List<Claim>()
             {
-                new Claim(JwtRegisteredClaimNames.Email, email ?? string.Empty),
+                new Claim(JwtRegisteredClaimNames.Email, email),
                 new Claim("Role", roleName)
             };
-            var experiedTime = roleName != UserRoleEnum.Customer.ToString() ?
+            var expiredTime = roleName != UserRoleEnum.Customer.ToString() ?
                                 DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.AccessTokenExperiedTime.ClientPage) :
                                 DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.AccessTokenExperiedTime.AdminPage);
-            var tokenOptions = new JwtSecurityToken(
+            JwtSecurityToken tokenOptions = new JwtSecurityToken(
                 issuer: _authenticationSettings.Value.Issuer,
                 claims: claims,
                 audience: _authenticationSettings.Value.Audience,
-                expires: experiedTime,
+                expires: expiredTime,
                 signingCredentials: new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature)
                 );
 
-            var accessToken = jwtTokenHandler.WriteToken(tokenOptions);
+            string accessToken = jwtTokenHandler.WriteToken(tokenOptions);
             _logger.LogInformation($"Function {nameof(GenerateAccessToken)} was done.");
             return accessToken;
         }
-
-        private string GenerateRefreshToken(int size = 32)
-        {
-            var randomNumber = new byte[size];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
-        }
-
-        private bool ValidateRefreshToken(RefreshToken? storedToken, string refreshToken)
-        {
-            // Kiểm tra token tồn tại và khớp
-            if (storedToken == null || storedToken.Token != refreshToken)
-            {
-                return false;
-            }
-
-            // Kiểm tra token có còn hạn không
-            if (storedToken.Expiry < DateTime.UtcNow)
-            {
-                return false;
-            }
-            return true;
-        }        
 
         public async Task<UserResponse> HandleSocialLogin(SocialLoginRequest request)
         {
             var validator = _validatorFactory.CreateValidator(request.Provider);
             var resultValidateToken = await validator.ValidateToken(request.Token);
-            if (resultValidateToken == null) throw new Exception("validate token of social login failed. Return null result");
+            if (resultValidateToken == null) throw new Exception("validating the token of social login failed. Return null result");
 
             // Kiểm tra người dùng trong DB hoặc tạo mới nếu cần
             var newRefreshToken = string.Empty;
-            var isHasAccount = await _unitOfWork.Repository<AppUser>().AnyAsync(x => x.Email == resultValidateToken.Email);
-            if (!isHasAccount)
+            var user = await _unitOfWork.Repository<AppUser>().FirstOrDefaultAsync(x => x.Email == resultValidateToken.Email);
+            if (user == null)
             {
                 var createdTime = DateTime.UtcNow;
                 newRefreshToken = GenerateRefreshToken();
@@ -164,7 +144,7 @@ namespace User.Api.Implements
             var isCustomer = true; //Chỉ client page mới xài social login
             var role = await GetRole(resultValidateToken.Email, isCustomer);
             var accessToken = GenerateAccessToken(resultValidateToken.Email, role.RoleName);
-            var user = await _unitOfWork.Repository<AppUser>().AsNoTracking().FirstOrDefaultAsync(x => x.Email == resultValidateToken.Email);
+           
             var result = new UserResponse()
             {
                 AccessToken = accessToken,
@@ -176,61 +156,16 @@ namespace User.Api.Implements
 
             _logger.LogInformation($"Function {nameof(HandleSocialLogin)} was done.");
             return result;
-        }
-
-        //private Guid GetRoleId(UserRoleEnum roleEnum)
-        //{
-        //    switch (roleEnum)
-        //    {
-        //        case UserRoleEnum.Customer:
-        //            return new Guid(GuidContstants.CustomerRole);
-        //        case UserRoleEnum.Admin:
-        //            return new Guid(GuidContstants.AdminRole);
-        //        default:
-        //            return Guid.Empty;
-        //    }
-        //}
-
-        private async Task<RefreshToken?> GetRefreshToken(string refreshToken)
-        {
-            return await _unitOfWork.Repository<RefreshToken>().Where(x => x.Token == refreshToken).SingleOrDefaultAsync();
-        }
-
-        private async Task<string> RenewRefreshToken(string email, bool isCustomer)
-        {
-            //update refresh Token
-            var newRefreshToken = GenerateRefreshToken();
-            var user = await _unitOfWork.Repository<AppUser>().Where(x => x.Email == email).SingleOrDefaultAsync();
-            if (user == null) throw new Exception("User not found");
-
-            var currentRefreshToken = await _unitOfWork.Repository<RefreshToken>().Where(x => x.UserId == user.Id).SingleOrDefaultAsync();
-            if (currentRefreshToken == null) throw new Exception("Refresh token not found");
-
-            var experiedTime = isCustomer ?
-                                DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.RefreshTokenExperiedTime.ClientPage) :
-                                DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.RefreshTokenExperiedTime.AdminPage);
-            currentRefreshToken.Expiry = experiedTime;
-            currentRefreshToken.Token = newRefreshToken;
-            currentRefreshToken.UpdatedAt = DateTime.UtcNow;
-            _unitOfWork.Repository<RefreshToken>().Update(currentRefreshToken);
-            var saveDataResult = await _unitOfWork.SaveChangesAsync();
-
-            if (saveDataResult > 0)
-            {
-                _logger.LogInformation($"Function {nameof(RenewRefreshToken)} was successfully");
-                return newRefreshToken;
-
-            }
-            _logger.LogInformation($"Function {nameof(RenewRefreshToken)} was unsuccessfully.It returned empty string.");
-            return string.Empty;
-        }
+        }      
 
         public async Task<string> RefreshToken(RefreshTokenRequestModel requestModel)
         {
             //validate refresh token
             var storedToken = await GetRefreshToken(requestModel.RefreshToken);
+            if (storedToken == null) return string.Empty;
+
             var isValidRefreshToken = ValidateRefreshToken(storedToken, requestModel.RefreshToken);
-            if (storedToken == null || !isValidRefreshToken) return string.Empty;
+            if (!isValidRefreshToken) return string.Empty;
 
             //create new access token
             var newAccessToken = GenerateAccessToken(requestModel.Email, requestModel.Role.RoleName);
@@ -239,15 +174,15 @@ namespace User.Api.Implements
 
         public async Task<UserResponse> HandleLoginAsync(UserAuthRequest model)
         {
-            var isValidUser = await ValidateUserAsync(model.Email, model.Password);
-            if (!isValidUser)
+            var validatedResult = await ValidateUserAsync(model.Email, model.Password);
+            if (validatedResult == null)
             {
                 throw new ValidationException("Email hoặc mật khẩu không đúng");
             }
 
             var renewRefreshToken = await RenewRefreshToken(model.Email, model.isCustomer);
 
-            var user = await _unitOfWork.Repository<AppUser>().AsNoTracking().FirstOrDefaultAsync(x => x.Email == model.Email);
+            //var user = await _unitOfWork.Repository<AppUser>().AsNoTracking().FirstOrDefaultAsync(x => x.Email == model.Email);
             var role = await GetRole(model.Email, model.isCustomer);
 
             if (role == null) throw new NullReferenceException("HandleLoginAsync procession was stopped. Role was null");
@@ -256,47 +191,10 @@ namespace User.Api.Implements
                 AccessToken = GenerateAccessToken(model.Email, role.RoleName),
                 Email = model.Email,
                 RefreshToken = renewRefreshToken,
-                UserName = user?.Username,
+                UserName = validatedResult.Username,
                 Role = role
             };
         }
-
-        private async Task<RoleModel> GetRole(string email, bool isCustomer)
-        {
-            //IEnumerable<Role> roles = from u in _unitOfWork.Repository<AppUser>().AsNoTracking()
-            //                          join ur in _unitOfWork.Repository<UserRole>().AsNoTracking()
-            //                          on u.Id equals ur.UserId
-            //                          join r in _unitOfWork.Repository<Role>().AsNoTracking()
-            //                          on ur.RoleId equals r.Id
-            //                          where u.Email == email
-            //                          select r;
-
-            var roles = await _unitOfWork.Repository<UserRole>().AsNoTracking()
-                .Include(x => x.Role).Where(x => x.User.Email == email).Select(x => new RoleModel { RoleId = x.Role.Id, RoleName = x.Role.RoleName }).ToListAsync();
-
-            if (isCustomer)
-            {
-                var customerRole = roles.SingleOrDefault(x => x.RoleName == UserRoleEnum.Customer.ToString());
-                if (customerRole == null) throw new NullReferenceException($"{nameof(GetRole)} function was failed.");
-                return customerRole;
-            }
-
-            var role = roles.SingleOrDefault(x => x.RoleName != UserRoleEnum.Customer.GetEnumDescription());
-            if (role == null) throw new NullReferenceException($"{nameof(GetRole)} function was failed.");
-            return role;
-        }
-
-        private async Task<bool> ValidateUserAsync(string mail, string passwordInput)
-        {
-            var user = await _unitOfWork.Repository<AppUser>().AsNoTracking().FirstOrDefaultAsync(x => x.Email == mail);
-            if (user == null) return false;
-
-            var isValidPassword = VerifyPassword(passwordInput, user.PasswordHash);
-            if (!isValidPassword) return false;
-
-            return true;
-        }
-
         public async Task<UserResponse?> CreateAccount(UserAuthRequest model)
         {
             var isHasAccount = await _unitOfWork.Repository<AppUser>().AsNoTracking().AnyAsync(x => x.Email == model.Email);
@@ -359,6 +257,61 @@ namespace User.Api.Implements
             return null;
         }
 
+        #region Private
+        private string GenerateRefreshToken(int size = 32)
+        {
+            var randomNumber = new byte[size];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
+        private bool ValidateRefreshToken(RefreshToken storedToken, string refreshToken)
+        {
+            // Kiểm tra token có còn hạn không
+            if (storedToken.Expiry < DateTime.UtcNow)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private async Task<RefreshToken?> GetRefreshToken(string refreshToken)
+        {
+            return await _unitOfWork.Repository<RefreshToken>().Where(x => x.Token == refreshToken).SingleOrDefaultAsync();
+        }
+
+        private async Task<string> RenewRefreshToken(string email, bool isCustomer)
+        {
+            //update refresh Token
+            var newRefreshToken = GenerateRefreshToken();
+            var user = await _unitOfWork.Repository<AppUser>().Where(x => x.Email == email).SingleOrDefaultAsync();
+            if (user == null) throw new Exception("User not found");
+
+            var currentRefreshToken = await _unitOfWork.Repository<RefreshToken>().Where(x => x.UserId == user.Id).SingleOrDefaultAsync();
+            if (currentRefreshToken == null) throw new Exception("Refresh token not found");
+
+            var experiedTime = isCustomer ?
+                                DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.RefreshTokenExperiedTime.ClientPage) :
+                                DateTime.UtcNow.AddMinutes(_authenticationSettings.Value.RefreshTokenExperiedTime.AdminPage);
+            currentRefreshToken.Expiry = experiedTime;
+            currentRefreshToken.Token = newRefreshToken;
+            currentRefreshToken.UpdatedAt = DateTime.UtcNow;
+            _unitOfWork.Repository<RefreshToken>().Update(currentRefreshToken);
+            var saveDataResult = await _unitOfWork.SaveChangesAsync();
+
+            if (saveDataResult > 0)
+            {
+                _logger.LogInformation($"Function {nameof(RenewRefreshToken)} was successfully");
+                return newRefreshToken;
+
+            }
+                _logger.LogInformation($"Function {nameof(RenewRefreshToken)} was unsuccessfully.It returned empty string.");
+            return string.Empty;
+        }
+
         private byte[] GenerateSalt(int size = 16)
         {
             using (var rng = RandomNumberGenerator.Create())
@@ -409,5 +362,46 @@ namespace User.Api.Implements
             // Compare the entered password's hash to the stored password hash
             return hash.SequenceEqual(storedPasswordHash);
         }
+
+        private async Task<RoleModel> GetRole(string email, bool isCustomer)
+        {
+            //IEnumerable<Role> roles = from u in _unitOfWork.Repository<AppUser>().AsNoTracking()
+            //                          join ur in _unitOfWork.Repository<UserRole>().AsNoTracking()
+            //                          on u.Id equals ur.UserId
+            //                          join r in _unitOfWork.Repository<Role>().AsNoTracking()
+            //                          on ur.RoleId equals r.Id
+            //                          where u.Email == email
+            //                          select r;
+
+            var roles = await _unitOfWork.Repository<UserRole>().AsNoTracking()
+                .Include(x => x.Role).Where(x => x.User.Email == email).Select(x => new RoleModel { RoleId = x.Role.Id, RoleName = x.Role.RoleName }).ToListAsync();
+
+            if (isCustomer)
+            {
+                var customerRole = roles.SingleOrDefault(x => x.RoleName == UserRoleEnum.Customer.ToString());
+                if (customerRole == null) throw new NullReferenceException($"{nameof(GetRole)} function was failed.");
+                return customerRole;
+            }
+
+            var role = roles.SingleOrDefault(x => x.RoleName != UserRoleEnum.Customer.GetEnumDescription());
+            if (role == null) throw new NullReferenceException($"{nameof(GetRole)} function was failed.");
+            return role;
+        }
+
+        private async Task<AppUser?> ValidateUserAsync(string mail, string passwordInput)
+        {
+            var user = await _unitOfWork.Repository<AppUser>().AsNoTracking().FirstOrDefaultAsync(x => x.Email == mail);
+            if (user == null) return null;
+
+            var isValidPassword = VerifyPassword(passwordInput, user.PasswordHash);
+            if (!isValidPassword) return null;
+
+            return user;
+        }
+
+        #endregion
+
+
+
     }
 }

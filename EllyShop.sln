@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonLib.Enums", "CommonLi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonLib.Exceptions", "CommonLib.Exceptions\CommonLib.Exceptions.csproj", "{99903977-3852-4A2C-91D2-5E536992AC95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonLib.TestHelpers", "CommonLib.TestHelpers\CommonLib.TestHelpers.csproj", "{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,10 @@ Global
 		{99903977-3852-4A2C-91D2-5E536992AC95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99903977-3852-4A2C-91D2-5E536992AC95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99903977-3852-4A2C-91D2-5E536992AC95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{D56C7340-052A-4A95-A7E1-738B00166468} = {BCB5F134-0CC7-4652-9A84-9A47CA593D62}
 		{BB1A6CD7-3254-4BE5-87A0-B00BDA91CF3A} = {BCB5F134-0CC7-4652-9A84-9A47CA593D62}
 		{99903977-3852-4A2C-91D2-5E536992AC95} = {BCB5F134-0CC7-4652-9A84-9A47CA593D62}
+		{51DAE2F0-7185-48BF-B1D0-913485BCD7D6} = {BCB5F134-0CC7-4652-9A84-9A47CA593D62}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {08C40A17-1B97-4EBD-A684-F7CA83D3CEE1}

@@ -18,8 +18,7 @@ namespace User.Api.Implements.TokenValidator
             _facebookSettings = facebookSettings;
         }
         public async Task<ValidateTokenOAuthResponse?> ValidateToken(string token)
-        {
-            //var appToken = $"{_facebookSettings.Value.AppId}|{_facebookSettings.Value.AppSecret}";
+        {            
             var validateTokenFacebookUrl = string.Format(UserConstant.ValidateTokenFacebookUrl, token);
             var validateTokenResult = await _apiServices.GetAsync<ValidateTokenOAuthResponse>(validateTokenFacebookUrl);
             return validateTokenResult;
