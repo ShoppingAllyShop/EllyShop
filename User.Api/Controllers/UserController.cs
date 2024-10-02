@@ -25,38 +25,7 @@ namespace User.Api.Controllers
         {
             _userServices = userService;
             _logger = logger;
-        }
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<UserController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        }        
 
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserAuthRequest request)
@@ -79,11 +48,10 @@ namespace User.Api.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Create account failed.There is a exception !");
-                return BadRequest(ApiResponseHelper.FormatError($"Quá trình tạo tài khoản thất bại"));
+                _logger.LogError(e, "Create account failed.There is a exception!");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Quá trình tạo tài khoản thất bại"));
             }
         }
-
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserAuthRequest request)
@@ -100,12 +68,12 @@ namespace User.Api.Controllers
             catch (ValidationException e)
             {
                 _logger.LogError(e, "Login failed");
-                return Ok(ApiResponseHelper.FormatError(e.Message));               
+                return Unauthorized(ApiResponseHelper.FormatError(e.Message));               
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Login failed");
-                return BadRequest(ApiResponseHelper.FormatError($"Quá trình đăng nhập thất bại. {e.Message}"));
+                return StatusCode(500, ApiResponseHelper.FormatError($"Quá trình đăng nhập thất bại."));
             }
         }
 
@@ -124,7 +92,7 @@ namespace User.Api.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e,"Social login failed.There is a exception !");
-                return BadRequest(ApiResponseHelper.FormatError($"Quá trình đăng nhập bằng tài khoản {request.Provider} thất bại"));
+                return StatusCode(500, ApiResponseHelper.FormatError($"Quá trình đăng nhập bằng tài khoản {request.Provider} thất bại"));
             }
         }
 
@@ -143,7 +111,8 @@ namespace User.Api.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(ApiResponseHelper.FormatError($"Renew refresh token failed. {e.Message}"));
+                _logger.LogError(e, "Refresh token failed.There is a exception !");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Renew refresh token failed."));
             }
         }
     }

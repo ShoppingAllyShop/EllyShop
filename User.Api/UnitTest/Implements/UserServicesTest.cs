@@ -336,17 +336,83 @@ namespace User.Api.UnitTest.Implements
             //Arrange
             var service = CreateService();
             var userData = CreateUserData();
+            
+
+            _mockUnitOfWork.Setup(x => x.Repository<AppUser>()).Returns(userData.MockDbSet().Object);
+
+            // Act & Assert
             var requestModel = new UserAuthRequest
             {
                 Email = Mail2,
                 Password = "123456"
             };
+            //await Assert.ThrowsAsync<ValidationException>(() => service.HandleLoginAsync(requestModel));
+            await Assert.ThrowsAsync<ValidationException>(() => service.HandleLoginAsync(requestModel));
+            //Assert.IsType<ValidationException>(exception);
+        }
+        #endregion
+
+        #region CreateAccount
+        [Fact]
+        public async Task CreateAccount_Success()
+        {
+            //Arrange
+            var service = CreateService();
+            var userData = CreateUserData();
+            var authenAppSetttings = CreateAuthenAppSettingData();
+            var refreshTokenData = CreateRefreshTokenData();
+            var userRoleData = CreateUserRoleData();
+
+            _mockAuthenticationSettings.Setup(x => x.Value).Returns(authenAppSetttings);
+            _mockUnitOfWork.Setup(x => x.Repository<AppUser>()).Returns(userData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<RefreshToken>()).Returns(refreshTokenData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<UserRole>()).Returns(userRoleData.MockDbSet().Object);
+
+            _mockUnitOfWork.Setup(x => x.SaveChangesAsync()).ReturnsAsync(1).Verifiable();
+
+            //Set param
+            var requestModel = new UserAuthRequest
+            {
+                Email = "new@mail.com",
+                Password = "123456",
+                isCustomer = true,
+                Role = new RoleModel
+                {
+                    RoleId = CustomerRoleId,
+                    RoleName = UserRoleEnum.Customer.ToString()
+                }
+            };
+
+            //Act
+            var result = await service.CreateAccount(requestModel);
+
+            //Assert
+            _mockUnitOfWork.Verify(x => x.SaveChangesAsync(), Times.Once);
+            Assert.NotNull(result);
+            Assert.IsType<UserResponse>(result);
+        }
+
+        [Fact]
+        public async Task CreateAccount_Failed_ExistAccount_ThrowValidationException()
+        {
+            //Arrange
+            var service = CreateService();
+            var userData = CreateUserData();
 
             _mockUnitOfWork.Setup(x => x.Repository<AppUser>()).Returns(userData.MockDbSet().Object);
-         
+
+            //Set param
+            var requestModel = new UserAuthRequest
+            {
+                Email = Mail1,
+                Password = PassInput1,
+                isCustomer = true
+            };
+
             // Act & Assert
-            await Assert.ThrowsAsync<ValidationException>(() => service.HandleLoginAsync(requestModel));
+            await Assert.ThrowsAsync<ValidationException>(() => service.CreateAccount(requestModel));
         }
+
         #endregion
 
         #region PrivateFunctions
