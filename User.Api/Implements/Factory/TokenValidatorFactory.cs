@@ -21,8 +21,8 @@ namespace User.Api.Implements.Factory
             {
                 AuthProvider.Google => _serviceProvider.GetRequiredService<GoogleTokenValidator>(),
                 AuthProvider.Facebook => _serviceProvider.GetRequiredService<FacebookTokenValidator>(),
-                _ => throw new ArgumentException("Unknown provider", nameof(provider)),
+                _ => throw new ArgumentOutOfRangeException("Unknown provider", nameof(provider)),
             };
-        }
+        }   
     }
 }

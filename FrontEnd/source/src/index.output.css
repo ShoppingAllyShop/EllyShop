@@ -1235,6 +1235,10 @@ input:checked + .toggle-bg {
   margin-right: 0.5rem;
 }
 
+.mr-5 {
+  margin-right: 1.25rem;
+}
+
 .ms-3 {
   margin-inline-start: 0.75rem;
 }
@@ -1261,10 +1265,6 @@ input:checked + .toggle-bg {
 
 .mt-8 {
   margin-top: 2rem;
-}
-
-.mr-5 {
-  margin-right: 1.25rem;
 }
 
 .block {
@@ -1299,23 +1299,9 @@ input:checked + .toggle-bg {
   display: none;
 }
 
-.size-5 {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
 .size-7 {
   width: 1.75rem;
   height: 1.75rem;
-}
-
-.size-8 {
-  width: 2rem;
-  height: 2rem;
-}
-
-.h-0\.5 {
-  height: 0.125rem;
 }
 
 .h-10 {
@@ -1350,8 +1336,12 @@ input:checked + .toggle-bg {
   height: 2.25rem;
 }
 
-.h-\[3px\] {
-  height: 3px;
+.h-\[0\.35rem\] {
+  height: 0.35rem;
+}
+
+.h-\[2px\] {
+  height: 2px;
 }
 
 .h-\[44px\] {
@@ -1372,34 +1362,6 @@ input:checked + .toggle-bg {
 
 .h-screen {
   height: 100vh;
-}
-
-.h-\[0\.35rem\] {
-  height: 0.35rem;
-}
-
-.h-\[2rem\] {
-  height: 2rem;
-}
-
-.h-\[2\] {
-  height: 2;
-}
-
-.h-\[2px\] {
-  height: 2px;
-}
-
-.h-\[1px\] {
-  height: 1px;
-}
-
-.h-\[100px\] {
-  height: 100px;
-}
-
-.h-5 {
-  height: 1.25rem;
 }
 
 .max-h-full {
@@ -1452,10 +1414,6 @@ input:checked + .toggle-bg {
 
 .w-full {
   width: 100%;
-}
-
-.w-5 {
-  width: 1.25rem;
 }
 
 .max-w-\[410px\] {
@@ -1567,18 +1525,8 @@ input:checked + .toggle-bg {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.rotate-45 {
-  --tw-rotate: 45deg;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
 .rotate-90 {
   --tw-rotate: 90deg;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.rotate-\[-45deg\] {
-  --tw-rotate: -45deg;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -1588,16 +1536,6 @@ input:checked + .toggle-bg {
 
 .transform-none {
   transform: none;
-}
-
-@keyframes pulse {
-  50% {
-    opacity: .5;
-  }
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes spin {
@@ -1956,10 +1894,6 @@ input:checked + .toggle-bg {
   padding: 2rem;
 }
 
-.p-2 {
-  padding: 0.5rem;
-}
-
 .px-0 {
   padding-left: 0px;
   padding-right: 0px;
@@ -2026,6 +1960,10 @@ input:checked + .toggle-bg {
 
 .pl-1 {
   padding-left: 0.25rem;
+}
+
+.pl-4 {
+  padding-left: 1rem;
 }
 
 .pl-6 {
@@ -2238,6 +2176,12 @@ input:checked + .toggle-bg {
   transition-duration: 150ms;
 }
 
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .transition-opacity {
   transition-property: opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -2246,12 +2190,6 @@ input:checked + .toggle-bg {
 
 .transition-transform {
   transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.transition-all {
-  transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -2335,11 +2273,6 @@ body {
 .hover\:bg-white:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-gray-600:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(75 85 99 / var(--tw-bg-opacity));
 }
 
 .hover\:text-blue-500:hover {
@@ -2645,10 +2578,6 @@ body {
 }
 
 @media (min-width: 640px) {
-  .sm\:block {
-    display: block;
-  }
-
   .sm\:w-4\/5 {
     width: 80%;
   }
@@ -2709,6 +2638,11 @@ body {
     grid-column: span 2 / span 2;
   }
 
+  .lg\:mx-0 {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+
   .lg\:mb-0 {
     margin-bottom: 0px;
   }
@@ -2723,6 +2657,10 @@ body {
 
   .lg\:grid {
     display: grid;
+  }
+
+  .lg\:hidden {
+    display: none;
   }
 
   .lg\:w-1\/2 {

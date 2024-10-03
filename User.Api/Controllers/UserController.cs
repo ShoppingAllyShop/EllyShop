@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using User.Api.Implements;
 using User.Api.Interfaces;
 using User.Api.Models.Requests;
-
+using Newtonsoft.Json;
+using System;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace User.Api.Controllers
@@ -21,41 +23,10 @@ namespace User.Api.Controllers
     {
         private readonly IUser _userServices;
         private readonly ILogger<UserController> _logger;
-        public UserController(IUser userService, ILogger<UserController> logger) 
+        public UserController(IUser userService, ILogger<UserController> logger)
         {
             _userServices = userService;
             _logger = logger;
-        }
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<UserController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
 
         [HttpPost("register")]
@@ -65,11 +36,11 @@ namespace User.Api.Controllers
             {
                 var stopwatch = Stopwatch.StartNew();
                 var result = await _userServices.CreateAccount(request);
-                if (result == null) 
+                if (result == null)
                 {
                     return BadRequest(ApiResponseHelper.FormatError($"Quá trình tạo tài khoản thất bại"));
                 }
-                
+
                 _logger.LogInformation($"Create account successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
                 return Ok(ApiResponseHelper.FormatSuccess(result));
             }
@@ -79,11 +50,10 @@ namespace User.Api.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Create account failed.There is a exception !");
-                return BadRequest(ApiResponseHelper.FormatError($"Quá trình tạo tài khoản thất bại"));
+                _logger.LogError(e, "Create account failed.There is a exception!");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Quá trình tạo tài khoản thất bại"));
             }
         }
-
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserAuthRequest request)
@@ -91,27 +61,27 @@ namespace User.Api.Controllers
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-                var result = await _userServices.HandleLoginAsync(request);                
+                var result = await _userServices.HandleLoginAsync(request);
 
                 _logger.LogInformation("Login successfully !");
-                _logger.LogInformation($"Login operation took {stopwatch.ElapsedMilliseconds} ms to complete.");
+                _logger.LogInformation($"Login operation took {stopwatch.ElapsedMilliseconds} ms to complete.");             
                 return Ok(ApiResponseHelper.FormatSuccess(result));
             }
             catch (ValidationException e)
             {
                 _logger.LogError(e, "Login failed");
-                return Ok(ApiResponseHelper.FormatError(e.Message));               
+                return Unauthorized(ApiResponseHelper.FormatError(e.Message));
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Login failed");
-                return BadRequest(ApiResponseHelper.FormatError($"Quá trình đăng nhập thất bại. {e.Message}"));
+                return StatusCode(500, ApiResponseHelper.FormatError($"Quá trình đăng nhập thất bại."));
             }
         }
 
         [HttpPost("social-login")]
         public async Task<IActionResult> SocialLogin([FromBody] SocialLoginRequest request)
-        {            
+        {
             try
             {
                 var stopwatch = Stopwatch.StartNew();
@@ -123,8 +93,8 @@ namespace User.Api.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e,"Social login failed.There is a exception !");
-                return BadRequest(ApiResponseHelper.FormatError($"Quá trình đăng nhập bằng tài khoản {request.Provider} thất bại"));
+                _logger.LogError(e, "Social login failed.There is a exception !");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Quá trình đăng nhập bằng tài khoản {request.Provider} thất bại"));
             }
         }
 
@@ -139,11 +109,12 @@ namespace User.Api.Controllers
                     return Unauthorized("Invalid or expired refresh token");
                 }
                 _logger.LogInformation("Refresh token successfully !");
-                return Ok(ApiResponseHelper.FormatSuccess(new {accessToken= result}));
+                return Ok(ApiResponseHelper.FormatSuccess(new { accessToken = result }));
             }
             catch (Exception e)
             {
-                return BadRequest(ApiResponseHelper.FormatError($"Renew refresh token failed. {e.Message}"));
+                _logger.LogError(e, "Refresh token failed.There is a exception !");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Renew refresh token failed."));
             }
         }
     }

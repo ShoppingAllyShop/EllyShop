@@ -38,6 +38,18 @@
       "UpstreamHttpMethod": [ "POST" ]
     },
     {
+      "DownstreamPathTemplate": "/api/user/register",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7135
+        }
+      ],
+      "UpstreamPathTemplate": "/api/user/register",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/user/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [

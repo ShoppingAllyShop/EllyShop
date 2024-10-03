@@ -26,16 +26,15 @@ const useAxiosBase = () => {
   axiosBase.interceptors.response.use(
     (response) => {
       // Xử lý dữ liệu response nếu cần trước khi trả về
-      console.log('aaaaaaaa',response)
       return response;
     },
     (error) => {      
       // Xử lý lỗi trong quá trình nhận response
-      if(error.code === RESPONSE_API_STATUS.ERROR_NETWORK){
+      if(error.code === RESPONSE_API_STATUS.ERROR_NETWORK || error.response.status === 500){
         nagative(ADMIN_ENDPOINT.ERROR, {state: {errorHeader:'Server đang gặp trục trặc kỹ thuật'}})
       }
       //handleError(error);
-      return Promise.reject(error); // Reject để tiếp tục xử lý lỗi trong các Promise chain
+      return Promise.reject(error); // truyền error lại component
     }
   );
 
@@ -71,7 +70,7 @@ const useAxiosBase = () => {
   //   } else {
   //     // Có lỗi xảy ra trong quá trình thiết lập request
   //     console.error("Error in setting up the request:", error.message);
-  //      nagative(ADMIN.ERROR)
+  //      nagative(ADMIN_ENDPOINT.ERROR)
   //     //alert("An error occurred while setting up the request.");
   //   }
   // };

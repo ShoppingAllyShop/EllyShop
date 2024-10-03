@@ -112,20 +112,24 @@ const LoginPage = ({ handleTest }) => {
     };
 
     //Call login api
-    const endpoint = PUPLIC_ENDPOINT.LOGIN;
-    const [loginResponse] = await Promise.all([
-      axiosBase.post(endpoint, params),
-      setIsLoading(true)
-    ]);
-    hanldeLoginResponse(loginResponse);
-    setIsLoading(false)
+    try {
+      const endpoint = PUPLIC_ENDPOINT.LOGIN;
+      const [loginResponse] = await Promise.all([
+        axiosBase.post(endpoint, params),
+        setIsLoading(true)
+      ]);
+      hanldeLoginResponse(loginResponse);
+    } catch (error) {
+       hanldeLoginResponse(error);  
+    }
+    setIsLoading(false)   
   };
 
   const hanldeLoginResponse = (loginResponse) => {
-    console.log("loginResponse", loginResponse);
     //Display error if login failed
-    if (loginResponse.data.status === RESPONSE_API_STATUS.ERROR) {
-      setLoginError(loginResponse.data.message);
+    const {status, message} = loginResponse.data
+    if (status === RESPONSE_API_STATUS.ERROR) {
+      setLoginError(message);
       return;
     }
     const { email, role, userName, accessToken, refreshToken } =
