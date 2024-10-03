@@ -13,7 +13,6 @@ using Comman.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Common.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using AppUser = Comman.Domain.Models.User;
 using CommonLib.Constants;
 using Microsoft.VisualBasic;
 using static CommonLib.Constants.AppEnums;
@@ -97,41 +96,33 @@ namespace User.Api.Implements
 
             // Kiểm tra người dùng trong DB hoặc tạo mới nếu cần
             var newRefreshToken = string.Empty;
-            var user = await _unitOfWork.Repository<AppUser>().FirstOrDefaultAsync(x => x.Email == resultValidateToken.Email);
-            if (user == null)
+            var isExistUser = await _unitOfWork.Repository<Users>().AnyAsync(x => x.Email == resultValidateToken.Email);            
+            if (!isExistUser)
             {
                 var createdTime = DateTime.UtcNow;
                 newRefreshToken = GenerateRefreshToken();
                 //create user
-                var userId = Guid.NewGuid();
-                var newUser = new AppUser()
+                var newUserId = Guid.NewGuid();
+                var newUser = new Users()
                 {
-                    Id = userId,
+                    Id = newUserId,
                     Email = resultValidateToken.Email,
                     CreatedTime = createdTime,
-                    Username = resultValidateToken.Name
+                    UserName = resultValidateToken.Name,
+                    RoleId = new Guid(GuidContstants.CustomerRole) //Chỉ có Customer mới login bằng social
                 };
-                await _unitOfWork.Repository<AppUser>().AddAsync(newUser);
-                var newRefreshTokenObj = new RefreshToken()
+                await _unitOfWork.Repository<Users>().AddAsync(newUser);
+                var newRefreshTokenObj = new RefreshTokens()
                 {
                     Id = Guid.NewGuid(),
-                    UserId = userId,
+                    UserId = newUserId,
                     Token = newRefreshToken,
                     Expiry = DateTime.UtcNow.AddDays(3),
                     CreatedAt = createdTime,
                     UpdatedAt = createdTime
-                };
+                };              
 
-                // Set Role
-                var newUserRole = new UserRole()
-                {
-                    Id = Guid.NewGuid(),
-                    RoleId = new Guid(GuidContstants.AdminRole),
-                    UserId = userId
-                };
-
-                await _unitOfWork.Repository<RefreshToken>().AddAsync(newRefreshTokenObj);
-                await _unitOfWork.Repository<UserRole>().AddAsync(newUserRole);
+                await _unitOfWork.Repository<RefreshTokens>().AddAsync(newRefreshTokenObj);
                 await _unitOfWork.SaveChangesAsync();
                 _logger.LogInformation("Create new user and stored database successfully");
             }
@@ -141,17 +132,21 @@ namespace User.Api.Implements
             }
 
             //Tạo access token và result
-            var isCustomer = true; //Chỉ client page mới xài social login
-            var role = await GetRole(resultValidateToken.Email, isCustomer);
-            var accessToken = GenerateAccessToken(resultValidateToken.Email, role.RoleName);
+            //var isCustomer = true; //Chỉ client page mới xài social login
+            var user = await _unitOfWork.Repository<Users>().Include(x => x.Role).FirstOrDefaultAsync(x => x.Email == resultValidateToken.Email);
+            var accessToken = GenerateAccessToken(resultValidateToken.Email, user?.Role.RoleName ?? string.Empty);
            
             var result = new UserResponse()
             {
                 AccessToken = accessToken,
                 RefreshToken = newRefreshToken,
-                UserName = user?.Username,
-                Email = user?.Username,
-                Role = role
+                UserName = user?.UserName,
+                Email = user?.Email,
+                Role = new RoleModel
+                {
+                    RoleId = user.Role.Id,
+                    RoleName = user.Role.RoleName
+                }
             };
 
             _logger.LogInformation($"Function {nameof(HandleSocialLogin)} was done.");
@@ -174,30 +169,31 @@ namespace User.Api.Implements
 
         public async Task<UserResponse> HandleLoginAsync(UserAuthRequest model)
         {
-            var validatedResult = await ValidateUserAsync(model.Email, model.Password);
-            if (validatedResult == null)
+            var validatedUserResult = await ValidateUserAsync(model.Email, model.Password);
+            if (validatedUserResult == null)
             {
                 throw new ValidationException("Email hoặc mật khẩu không đúng");
             }
 
             var renewRefreshToken = await RenewRefreshToken(model.Email, model.isCustomer);
-
-            //var user = await _unitOfWork.Repository<AppUser>().AsNoTracking().FirstOrDefaultAsync(x => x.Email == model.Email);
-            var role = await GetRole(model.Email, model.isCustomer);
-
-            if (role == null) throw new NullReferenceException("HandleLoginAsync procession was stopped. Role was null");
+            var accessToken = GenerateAccessToken(model.Email, validatedUserResult.Role.RoleName);
+            
             return new UserResponse()
             {
-                AccessToken = GenerateAccessToken(model.Email, role.RoleName),
+                AccessToken = accessToken,
                 Email = model.Email,
                 RefreshToken = renewRefreshToken,
-                UserName = validatedResult.Username,
-                Role = role
+                UserName = validatedUserResult.UserName,
+                Role = new RoleModel
+                {
+                    RoleId = validatedUserResult.Role.Id,
+                    RoleName = validatedUserResult.Role.RoleName
+                }
             };
         }
         public async Task<UserResponse?> CreateAccount(UserAuthRequest model)
         {
-            var isHasAccount = await _unitOfWork.Repository<AppUser>().AsNoTracking().AnyAsync(x => x.Email == model.Email);
+            var isHasAccount = await _unitOfWork.Repository<Users>().AsNoTracking().AnyAsync(x => x.Email == model.Email);
             if (isHasAccount) throw new ValidationException("Email này đã tồn tại");
 
             //storing database
@@ -207,16 +203,18 @@ namespace User.Api.Implements
 
             //create user
             var userId = Guid.NewGuid();
-            var newUser = new AppUser()
+            var roleId = model.isCustomer ? new Guid (GuidContstants.CustomerRole) : model.Role.RoleId;
+            var newUser = new Users()
             {
                 Id = userId,
                 Email = model.Email,
                 CreatedTime = createdTime,
-                Username = model.UserName,
-                PasswordHash = hashedPassword
+                UserName = model.UserName,
+                PasswordHash = hashedPassword, 
+                RoleId = roleId
             };
-            await _unitOfWork.Repository<AppUser>().AddAsync(newUser);
-            var newRefreshTokenObj = new RefreshToken()
+            await _unitOfWork.Repository<Users>().AddAsync(newUser);
+            var newRefreshTokenObj = new RefreshTokens()
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
@@ -224,24 +222,14 @@ namespace User.Api.Implements
                 Expiry = !model.isCustomer ? DateTime.UtcNow.AddDays(1) : DateTime.UtcNow.AddDays(30),
                 CreatedAt = createdTime,
                 UpdatedAt = createdTime
-            };
+            };           
 
-            // Set Role
-
-            var newUserRole = new UserRole()
-            {
-                Id = Guid.NewGuid(),
-                RoleId = model.Role.RoleId,
-                UserId = userId
-            };
-
-            await _unitOfWork.Repository<RefreshToken>().AddAsync(newRefreshTokenObj);
-            await _unitOfWork.Repository<UserRole>().AddAsync(newUserRole);
+            await _unitOfWork.Repository<RefreshTokens>().AddAsync(newRefreshTokenObj);
+            var accessToken = GenerateAccessToken(model.Email, model.Role.RoleName);
             var result = await _unitOfWork.SaveChangesAsync();
 
             if (result > 0)
             {
-                var accessToken = GenerateAccessToken(model.Email, model.Role.RoleName);
                 var useResponse = new UserResponse()
                 {
                     AccessToken = accessToken,
@@ -268,7 +256,7 @@ namespace User.Api.Implements
             }
         }
 
-        private bool ValidateRefreshToken(RefreshToken storedToken, string refreshToken)
+        private bool ValidateRefreshToken(RefreshTokens storedToken, string refreshToken)
         {
             // Kiểm tra token có còn hạn không
             if (storedToken.Expiry < DateTime.UtcNow)
@@ -278,19 +266,19 @@ namespace User.Api.Implements
             return true;
         }
 
-        private async Task<RefreshToken?> GetRefreshToken(string refreshToken)
+        private async Task<RefreshTokens?> GetRefreshToken(string refreshToken)
         {
-            return await _unitOfWork.Repository<RefreshToken>().Where(x => x.Token == refreshToken).SingleOrDefaultAsync();
+            return await _unitOfWork.Repository<RefreshTokens>().Where(x => x.Token == refreshToken).SingleOrDefaultAsync();
         }
 
         private async Task<string> RenewRefreshToken(string email, bool isCustomer)
         {
             //update refresh Token
             var newRefreshToken = GenerateRefreshToken();
-            var user = await _unitOfWork.Repository<AppUser>().Where(x => x.Email == email).SingleOrDefaultAsync();
+            var user = await _unitOfWork.Repository<Users>().Where(x => x.Email == email).SingleOrDefaultAsync();
             if (user == null) throw new Exception("User not found");
 
-            var currentRefreshToken = await _unitOfWork.Repository<RefreshToken>().Where(x => x.UserId == user.Id).SingleOrDefaultAsync();
+            var currentRefreshToken = await _unitOfWork.Repository<RefreshTokens>().Where(x => x.UserId == user.Id).SingleOrDefaultAsync();
             if (currentRefreshToken == null) throw new Exception("Refresh token not found");
 
             var experiedTime = isCustomer ?
@@ -299,7 +287,7 @@ namespace User.Api.Implements
             currentRefreshToken.Expiry = experiedTime;
             currentRefreshToken.Token = newRefreshToken;
             currentRefreshToken.UpdatedAt = DateTime.UtcNow;
-            _unitOfWork.Repository<RefreshToken>().Update(currentRefreshToken);
+            _unitOfWork.Repository<RefreshTokens>().Update(currentRefreshToken);
             var saveDataResult = await _unitOfWork.SaveChangesAsync();
 
             if (saveDataResult > 0)
@@ -363,34 +351,17 @@ namespace User.Api.Implements
             return hash.SequenceEqual(storedPasswordHash);
         }
 
-        private async Task<RoleModel> GetRole(string email, bool isCustomer)
+        private async Task<Roles?> GetRole(Guid userId, bool isCustomer)
         {
-            //IEnumerable<Role> roles = from u in _unitOfWork.Repository<AppUser>().AsNoTracking()
-            //                          join ur in _unitOfWork.Repository<UserRole>().AsNoTracking()
-            //                          on u.Id equals ur.UserId
-            //                          join r in _unitOfWork.Repository<Role>().AsNoTracking()
-            //                          on ur.RoleId equals r.Id
-            //                          where u.Email == email
-            //                          select r;
+            var role = await _unitOfWork.Repository<Roles>().AsNoTracking()
+                .Where(x => x.Id == userId).FirstOrDefaultAsync();
 
-            var roles = await _unitOfWork.Repository<UserRole>().AsNoTracking()
-                .Include(x => x.Role).Where(x => x.User.Email == email).Select(x => new RoleModel { RoleId = x.Role.Id, RoleName = x.Role.RoleName }).ToListAsync();
-
-            if (isCustomer)
-            {
-                var customerRole = roles.SingleOrDefault(x => x.RoleName == UserRoleEnum.Customer.ToString());
-                if (customerRole == null) throw new NullReferenceException($"{nameof(GetRole)} function was failed.");
-                return customerRole;
-            }
-
-            var role = roles.SingleOrDefault(x => x.RoleName != UserRoleEnum.Customer.GetEnumDescription());
-            if (role == null) throw new NullReferenceException($"{nameof(GetRole)} function was failed.");
             return role;
         }
 
-        private async Task<AppUser?> ValidateUserAsync(string mail, string passwordInput)
+        private async Task<Users?> ValidateUserAsync(string mail, string passwordInput)
         {
-            var user = await _unitOfWork.Repository<AppUser>().AsNoTracking().FirstOrDefaultAsync(x => x.Email == mail);
+            var user = await _unitOfWork.Repository<Users>().AsNoTracking().Include(x => x.Role).FirstOrDefaultAsync(x => x.Email == mail);
             if (user == null) return null;
 
             var isValidPassword = VerifyPassword(passwordInput, user.PasswordHash);

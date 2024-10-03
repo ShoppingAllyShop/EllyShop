@@ -127,7 +127,7 @@ const LoginPage = ({ handleTest }) => {
 
   const hanldeLoginResponse = (loginResponse) => {
     //Display error if login failed
-    const {status, message} = loginResponse.response.data
+    const {status, message} = loginResponse.data
     if (status === RESPONSE_API_STATUS.ERROR) {
       setLoginError(message);
       return;

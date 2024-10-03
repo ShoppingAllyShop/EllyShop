@@ -26,13 +26,12 @@ namespace Comman.Domain.Models
         public virtual DbSet<News> News { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductDetail> ProductDetails { get; set; } = null!;
-        public virtual DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
-        public virtual DbSet<Role> Roles { get; set; } = null!;
+        public virtual DbSet<RefreshTokens> RefreshTokens { get; set; } = null!;
+        public virtual DbSet<Roles> Roles { get; set; } = null!;
         public virtual DbSet<Silde> Sildes { get; set; } = null!;
         public virtual DbSet<Size> Sizes { get; set; } = null!;
         public virtual DbSet<SoccialMedium> SoccialMedia { get; set; } = null!;
-        public virtual DbSet<User> Users { get; set; } = null!;
-        public virtual DbSet<UserRole> UserRoles { get; set; } = null!;
+        public virtual DbSet<Users> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -193,7 +192,7 @@ namespace Comman.Domain.Models
                     .HasConstraintName("FK_ProductDetail_Size");
             });
 
-            modelBuilder.Entity<RefreshToken>(entity =>
+            modelBuilder.Entity<RefreshTokens>(entity =>
             {
                 entity.HasIndex(e => e.Token, "UQ__RefreshT__1EB4F817866784F0")
                     .IsUnique();
@@ -214,7 +213,7 @@ namespace Comman.Domain.Models
                     .HasConstraintName("FK_RefreshTokens_Users");
             });
 
-            modelBuilder.Entity<Role>(entity =>
+            modelBuilder.Entity<Roles>(entity =>
             {
                 entity.HasIndex(e => e.RoleName, "UQ__Roles__8A2B6160EEA28F38")
                     .IsUnique();
@@ -253,12 +252,9 @@ namespace Comman.Domain.Models
                 entity.Property(e => e.Name).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<Users>(entity =>
             {
-                entity.HasIndex(e => e.Username, "UQ__Users__536C85E47BE809FD")
-                    .IsUnique();
-
-                entity.HasIndex(e => e.Email, "UQ__Users__A9D10534586A949F")
+                entity.HasIndex(e => e.Email, "IX_Users_Email")
                     .IsUnique();
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -269,26 +265,7 @@ namespace Comman.Domain.Models
 
                 entity.Property(e => e.PasswordHash).HasMaxLength(255);
 
-                entity.Property(e => e.Username).HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<UserRole>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.PageType).HasMaxLength(50);
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.UserRoles)
-                    .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserRoles_Roles");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserRoles)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserRoles_Users");
+                entity.Property(e => e.UserName).HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace Comman.Domain.Models
 {
-    public partial class Role
+    public partial class Roles
     {
-        public Role()
+        public Roles()
         {
-            UserRoles = new HashSet<UserRole>();
+            Users = new HashSet<Users>();
         }
 
         public Guid Id { get; set; }
         public string RoleName { get; set; } = null!;
 
-        public virtual ICollection<UserRole> UserRoles { get; set; }
+        public virtual ICollection<Users> Users { get; set; }
     }
 }
