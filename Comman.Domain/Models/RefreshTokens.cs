@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Comman.Domain.Models
 {
-    public partial class RefreshToken
+    public partial class RefreshTokens
     {
         public Guid Id { get; set; }
         public Guid? UserId { get; set; }
@@ -12,6 +12,6 @@ namespace Comman.Domain.Models
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual User? User { get; set; }
+        public virtual Users? User { get; set; }
     }
 }

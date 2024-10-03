@@ -17,7 +17,6 @@ using User.Api.Models.Responses;
 using Xunit;
 using Xunit.Sdk;
 using static CommonLib.Constants.AppEnums;
-using AppUser = Comman.Domain.Models.User;
 using CommonLib.TestHelpers;
 using System.Reflection.Metadata.Ecma335;
 using User.Api.Interfaces;
@@ -88,7 +87,7 @@ namespace User.Api.UnitTest.Implements
             };
 
             _mockAuthenticationSettings.Setup(x => x.Value).Returns(authenAppSetttings);
-            _mockUnitOfWork.Setup(x => x.Repository<RefreshToken>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
 
             //Act
             var result = await service.RefreshToken(requestModel);
@@ -109,7 +108,7 @@ namespace User.Api.UnitTest.Implements
                 RefreshToken = RefreshToken2,
             };
 
-            _mockUnitOfWork.Setup(x => x.Repository<RefreshToken>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
 
             //Act
             var result = await service.RefreshToken(requestModel);
@@ -130,7 +129,7 @@ namespace User.Api.UnitTest.Implements
                 RefreshToken = RefreshToken2,
             };
 
-            _mockUnitOfWork.Setup(x => x.Repository<RefreshToken>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
 
             //Act
             var result = await service.RefreshToken(requestModel);
@@ -214,7 +213,6 @@ namespace User.Api.UnitTest.Implements
             MockValidator(provider);
             var userDatas = CreateUserData();
             var authenAppSetttings = CreateAuthenAppSettingData();
-            var userRole = CreateUserRoleData();
             var userInfo = new ValidateTokenOAuthResponse()
             {
                 Email = Mail1,
@@ -223,9 +221,8 @@ namespace User.Api.UnitTest.Implements
 
             _mockAuthenticationSettings.Setup(x => x.Value).Returns(authenAppSetttings);
             _mockValidatorFactory.Setup(x => x.CreateValidator(provider).ValidateToken(It.IsAny<string>())).ReturnsAsync(userInfo);
-            _mockUnitOfWork.Setup(x => x.Repository<AppUser>()).Returns(userDatas.MockDbSet().Object);
-            _mockUnitOfWork.Setup(x => x.Repository<RefreshToken>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
-            _mockUnitOfWork.Setup(x => x.Repository<UserRole>()).Returns(userRole.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userDatas.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
             _mockUnitOfWork.Setup(x => x.SaveChangesAsync()).ReturnsAsync(1).Verifiable();
 
             var requestModel = new SocialLoginRequest
@@ -253,18 +250,16 @@ namespace User.Api.UnitTest.Implements
             MockValidator(provider);
             var userDatas = CreateUserData();
             var authenAppSetttings = CreateAuthenAppSettingData();
-            var userRole = CreateUserRoleData();
             var userInfo = new ValidateTokenOAuthResponse()
             {
-                Email = Mail2,
-                Name = "Test2"
+                Email = Mail1,
+                Name = "Test1"
             };
 
             _mockAuthenticationSettings.Setup(x => x.Value).Returns(authenAppSetttings);
             _mockValidatorFactory.Setup(x => x.CreateValidator(provider).ValidateToken(It.IsAny<string>())).ReturnsAsync(userInfo);
-            _mockUnitOfWork.Setup(x => x.Repository<AppUser>()).Returns(userDatas.MockDbSet().Object);
-            _mockUnitOfWork.Setup(x => x.Repository<RefreshToken>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
-            _mockUnitOfWork.Setup(x => x.Repository<UserRole>()).Returns(userRole.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userDatas.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
             _mockUnitOfWork.Setup(x => x.SaveChangesAsync()).ReturnsAsync(1).Verifiable(); // Moi lan chay ham saveChange thi se count +1
 
             var requestModel = new SocialLoginRequest
@@ -299,29 +294,9 @@ namespace User.Api.UnitTest.Implements
                 Email = Mail1,
                 Password = PassInput1
             };
-            var userRole = new List<UserRole>
-            {
-                new UserRole
-                {
-                    Id = Guid.NewGuid(),
-                    RoleId = CustomerRoleId,
-                    UserId = UserId1,
-                    Role = new Role
-                        {
-                            Id = CustomerRoleId,
-                            RoleName = "Admin"
-                        },
-                    User = new AppUser
-                    {
-                        Id = UserId1,
-                        Email = Mail1
-                    }
-                }
-            };
             _mockAuthenticationSettings.Setup(x => x.Value).Returns(authenAppSetttings);
-            _mockUnitOfWork.Setup(x => x.Repository<AppUser>()).Returns(userData.MockDbSet().Object);
-            _mockUnitOfWork.Setup(x => x.Repository<RefreshToken>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
-            _mockUnitOfWork.Setup(x => x.Repository<UserRole>()).Returns(userRole.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
             //Act
             var result = await service.HandleLoginAsync(requestModel);
 
@@ -338,7 +313,7 @@ namespace User.Api.UnitTest.Implements
             var userData = CreateUserData();
             
 
-            _mockUnitOfWork.Setup(x => x.Repository<AppUser>()).Returns(userData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userData.MockDbSet().Object);
 
             // Act & Assert
             var requestModel = new UserAuthRequest
@@ -361,12 +336,10 @@ namespace User.Api.UnitTest.Implements
             var userData = CreateUserData();
             var authenAppSetttings = CreateAuthenAppSettingData();
             var refreshTokenData = CreateRefreshTokenData();
-            var userRoleData = CreateUserRoleData();
 
             _mockAuthenticationSettings.Setup(x => x.Value).Returns(authenAppSetttings);
-            _mockUnitOfWork.Setup(x => x.Repository<AppUser>()).Returns(userData.MockDbSet().Object);
-            _mockUnitOfWork.Setup(x => x.Repository<RefreshToken>()).Returns(refreshTokenData.MockDbSet().Object);
-            _mockUnitOfWork.Setup(x => x.Repository<UserRole>()).Returns(userRoleData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(refreshTokenData.MockDbSet().Object);
 
             _mockUnitOfWork.Setup(x => x.SaveChangesAsync()).ReturnsAsync(1).Verifiable();
 
@@ -399,7 +372,7 @@ namespace User.Api.UnitTest.Implements
             var service = CreateService();
             var userData = CreateUserData();
 
-            _mockUnitOfWork.Setup(x => x.Repository<AppUser>()).Returns(userData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userData.MockDbSet().Object);
 
             //Set param
             var requestModel = new UserAuthRequest
@@ -435,32 +408,37 @@ namespace User.Api.UnitTest.Implements
             }
         }
 
-        private List<AppUser> CreateUserData()
+        private List<Users> CreateUserData()
         {
-            return new List<AppUser>
+            return new List<Users>
             {
-                new AppUser
+                new Users
                 {
                     Email = Mail1,
-                    Username = "Test",
+                    UserName = "Test",
                     Id = UserId1,
-                    PasswordHash = PassHash1
+                    PasswordHash = PassHash1,
+                    Role = new Roles
+                    {
+                        Id = Guid.NewGuid(),
+                        RoleName = "Customer"
+                    }
                 }
             };
         }
 
-        private List<RefreshToken> CreateRefreshTokenData()
+        private List<RefreshTokens> CreateRefreshTokenData()
         {
-            return new List<RefreshToken>
+            return new List<RefreshTokens>
             {
-                new RefreshToken
+                new RefreshTokens
                 {
                    Id = Guid.NewGuid(),
                    UserId = UserId1,
                    Token = RefreshToken1,
                    Expiry = DateTime.UtcNow.AddDays(3)
                 },
-                 new RefreshToken
+                 new RefreshTokens
                 {
                    Id = Guid.NewGuid(),
                    UserId = UserId2,
@@ -489,16 +467,16 @@ namespace User.Api.UnitTest.Implements
             };
         }    
 
-        private List<Role> CreateRoleData()
+        private List<Roles> CreateRoleData()
         {
-            return new List<Role>
+            return new List<Roles>
             {
-                new Role
+                new Roles
                 {
                     Id = AdminRoleId,
                     RoleName = "Admin"
                 },
-                new Role
+                new Roles
                 {
                     Id = CustomerRoleId,
                     RoleName = "Customer"
@@ -506,44 +484,6 @@ namespace User.Api.UnitTest.Implements
             };
         }
 
-        private List<UserRole> CreateUserRoleData()
-        {
-            return new List<UserRole>
-            {
-                new UserRole
-                {
-                    Id = Guid.NewGuid(),
-                    RoleId = CustomerRoleId,
-                    UserId = UserId1,
-                    Role = new Role
-                        {
-                            Id = CustomerRoleId,
-                            RoleName = "Customer"
-                        },
-                    User = new AppUser
-                    {
-                        Id = UserId1,
-                        Email = Mail1
-                    }
-                },
-                 new UserRole
-                {
-                    Id = Guid.NewGuid(),
-                    RoleId = CustomerRoleId,
-                    UserId = UserId2,
-                    Role = new Role
-                        {
-                            Id = CustomerRoleId,
-                            RoleName = "Customer"
-                        },
-                    User = new AppUser
-                    {
-                        Id = UserId2,
-                        Email = Mail2
-                    }
-                }
-            };
-        }
         #endregion
     }
 }

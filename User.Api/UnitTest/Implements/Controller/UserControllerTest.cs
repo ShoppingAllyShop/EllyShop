@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
+﻿using Comman.Domain.Models;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,6 @@ using User.Api.Models.Requests;
 using User.Api.Models.Responses;
 using Xunit;
 using static CommonLib.Constants.AppEnums;
-using AppUser = Comman.Domain.Models.User;
 
 namespace User.Api.UnitTest.Implements.Controller
 {
@@ -284,14 +284,14 @@ namespace User.Api.UnitTest.Implements.Controller
         #endregion
 
         #region Private
-        private List<AppUser> CreateUserData()
+        private List<Users> CreateUserData()
         {
-            return new List<AppUser>
+            return new List<Users>
             {
-                new AppUser
+                new Users
                 {
                     Email = Mail1,
-                    Username = "Test",
+                    UserName = "Test",
                     Id = UserId1,
                     PasswordHash = PassHash1
                 }
