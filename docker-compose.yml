@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+  api.gateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    ports: 
+        - 7000:80
+    build:
+      context: .
+      dockerfile: API.Gateway/Dockerfile
+    networks:
+        - gateway_network
+  # frontend:
+  #   environment:
+  #       REACT_APP_BASE_API_URL: ${REACT_APP_BASE_API_URL}
+  #   image: ${DOCKER_REGISTRY-}frontend
+  #   ports:
+  #       - 3000:80
+  #   volumes:
+  #       - /path/in/host/machine:/usr/src/app  
+  #   build:
+  #     context: .
+  #     dockerfile: FrontEnd/Dockerfile
+
+
+  # user.api:
+  #   image: ${DOCKER_REGISTRY-}userapi
+  #   ports:
+  #       - 7135:80
+  #   hostname: elly.user
+  #   build:
+  #     context: .
+  #     dockerfile: User.Api/Dockerfile
+
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}categorygapi
+    ports:
+        - 7021:80
+    hostname: elly.catalog
+    build:
+      context: .
+      dockerfile: catalog.Api/Dockerfile
+    networks:
+        - gateway_network
+
+networks:
+  gateway_network:
+    driver: bridge

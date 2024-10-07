@@ -12,7 +12,7 @@ using Category.Api.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
-
+Console.Title = "Catalog service";
 // Add services to the container.
 
 builder.Services.AddControllers();

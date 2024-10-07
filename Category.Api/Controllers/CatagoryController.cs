@@ -25,6 +25,16 @@ namespace Category.Api.Controllers
             _logger = logger;
         }
 
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            var categoryList = new List<string>
+            {
+                "asd", "asdd"
+            };
+            return Ok(ApiResponseHelper.FormatSuccess(categoryList));
+        }
+
         // GET: api/<CategoryController>
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()

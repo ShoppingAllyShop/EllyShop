@@ -6,8 +6,12 @@ using System.Text;
 using static CommonLib.Constants.AppEnums;
 
 var builder = WebApplication.CreateBuilder(args);
+Console.Title = "Api gateway";
+
+var env = builder.Environment;
 builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
         .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"ocelot.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
         .AddEnvironmentVariables();
 
 //Authen config

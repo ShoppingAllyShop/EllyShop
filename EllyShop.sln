@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontEnd", "FrontEnd\FrontEnd.csproj", "{0AC99701-CB7D-4EF8-85F2-EB93F3A6AC13}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrontEnd", "FrontEnd", "{68EF1EC2-2622-493D-8794-173DA69B9104}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonDomain", "CommonDomain", "{89A2B81E-A499-4602-A931-D97B30685B2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Comman.Domain", "Comman.Domain\Comman.Domain.csproj", "{0E9280C5-F2F4-4D45-AFF2-C8BC754A6238}"
@@ -41,7 +43,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonLib.Enums", "CommonLi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonLib.Exceptions", "CommonLib.Exceptions\CommonLib.Exceptions.csproj", "{99903977-3852-4A2C-91D2-5E536992AC95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonLib.TestHelpers", "CommonLib.TestHelpers\CommonLib.TestHelpers.csproj", "{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonLib.TestHelpers", "CommonLib.TestHelpers\CommonLib.TestHelpers.csproj", "{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{9D1C8981-69DC-42D3-88A0-9ACA673896FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,11 +105,16 @@ Global
 		{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51DAE2F0-7185-48BF-B1D0-913485BCD7D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D1C8981-69DC-42D3-88A0-9ACA673896FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1C8981-69DC-42D3-88A0-9ACA673896FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D1C8981-69DC-42D3-88A0-9ACA673896FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D1C8981-69DC-42D3-88A0-9ACA673896FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{0AC99701-CB7D-4EF8-85F2-EB93F3A6AC13} = {68EF1EC2-2622-493D-8794-173DA69B9104}
 		{0E9280C5-F2F4-4D45-AFF2-C8BC754A6238} = {89A2B81E-A499-4602-A931-D97B30685B2B}
 		{7E212604-F653-4DD0-AB75-B18B453C7456} = {E45CD615-80B9-4676-B67A-7FB895CC17D8}
 		{099EBB09-536E-429F-866D-2EBB6CC9BEA6} = {ADF62D12-351A-41EA-8B8D-A05ED8076F39}

@@ -1,8 +1,6 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axiosBase from "../../../api/axiosBase";
-import useAuthService from "../../../api/useAuthService";
 import { checkIsAdminPage } from "../../../utils/httpUtil";
 import googleIcon from "../../../images/icons/google.png";
 import facebookIcon from "../../../images/icons/facebook1.png";
@@ -18,12 +16,10 @@ import {
 import { AUTH_PROVIDERS } from "../../../constants/common";
 import useAxiosBase from "../../../api/useAxiosBase";
 import storageUtil from "../../../utils/storageUtil";
-import { set, useForm } from "react-hook-form";
-import { REGEX_PATTERN } from "../../../constants/regex";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import InputField from "../../../components/Form/InputField";
-import { ROLE_ENUM } from "../../../constants/enum";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../../redux/slices/admin/adminLayoutSlice";
 import { PUPLIC_ENDPOINT } from "../../../constants/endpoint";
