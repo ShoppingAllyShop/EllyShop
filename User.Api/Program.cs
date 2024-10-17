@@ -1,4 +1,4 @@
-﻿using Comman.Domain.Models;
+﻿using Comman.Domain.Elly_User;
 using Common.Infrastructure;
 using Common.Infrastructure.Interfaces;
 using CommonLib.Configurations;
@@ -25,9 +25,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
 //Add DB
-builder.Services.AddDbContext<EllyShopContext>(option =>
+builder.Services.AddDbContext<Elly_UserContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("EllyShopDB"));
+    option.UseSqlServer(builder.Configuration.GetConnectionString("EllyUser"));
 });
 
 //Add appsetting json
@@ -40,7 +40,7 @@ builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("Goo
 builder.Services.AddTransient<IUser, UserServices>();
 builder.Services.AddTransient<IApiServices, ApiServices>();
 builder.Services.AddTransient<ITokenValidatorFactory, TokenValidatorFactory>();
-builder.Services.AddScoped<IUnitOfWork<EllyShopContext>, UnitOfWork<EllyShopContext>>();
+builder.Services.AddScoped<IUnitOfWork<Elly_UserContext>, UnitOfWork<Elly_UserContext>>();
 builder.Services.AddTransient<GoogleTokenValidator>();
 builder.Services.AddTransient<FacebookTokenValidator>();
 
