@@ -1,4 +1,4 @@
-﻿using Comman.Domain.Models;
+﻿using Comman.Domain.Elly_User;
 using Common.Infrastructure.Interfaces;
 using CommonLib.Helpers.Implements;
 using CommonLib.Helpers.Interfaces;
@@ -32,7 +32,7 @@ namespace User.Api.UnitTest.Implements
         private Mock<IOptions<AuthenticationSetting>> _mockAuthenticationSettings = new Mock<IOptions<AuthenticationSetting>>();
         private Mock<IOptions<FacebookSetting>> _mockFacebookSettings = new Mock<IOptions<FacebookSetting>>();
         private Mock<ILogger<UserServices>> _mockLogger = new Mock<ILogger<UserServices>>();
-        private Mock<IUnitOfWork<EllyShopContext>> _mockUnitOfWork = new Mock<IUnitOfWork<EllyShopContext>>();
+        private Mock<IUnitOfWork<Elly_UserContext>> _mockUnitOfWork = new Mock<IUnitOfWork<Elly_UserContext>>();
         private Mock<IApiServices> _mockApiServices = new Mock<IApiServices>();
         private Mock<ITokenValidatorFactory> _mockValidatorFactory = new Mock<ITokenValidatorFactory>();
         private Mock<IConfiguration> _configuration = new Mock<IConfiguration>();

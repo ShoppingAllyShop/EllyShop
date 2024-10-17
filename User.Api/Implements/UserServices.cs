@@ -9,7 +9,7 @@ using Google.Apis.Auth;
 using Newtonsoft.Json.Linq;
 using User.Api.Models;
 using System.Security.Cryptography;
-using Comman.Domain.Models;
+using Comman.Domain.Elly_User;
 using Microsoft.AspNetCore.Mvc;
 using Common.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -39,14 +39,14 @@ namespace User.Api.Implements
         private readonly IOptions<AuthenticationSetting> _authenticationSettings;
         private readonly IOptions<FacebookSetting> _facebookSettings;
         private readonly ILogger<UserServices> _logger;
-        private readonly IUnitOfWork<EllyShopContext> _unitOfWork;
+        private readonly IUnitOfWork<Elly_UserContext> _unitOfWork;
         private readonly IApiServices _apiServices;
         private readonly ITokenValidatorFactory _validatorFactory;
 
         public UserServices(IOptions<AuthenticationSetting> authenticationSettings,
             IOptions<FacebookSetting> facebookSettings,
             ILogger<UserServices> logger,
-            IUnitOfWork<EllyShopContext> unitOfWork, IApiServices apiServices, ITokenValidatorFactory validatorFactory)
+            IUnitOfWork<Elly_UserContext> unitOfWork, IApiServices apiServices, ITokenValidatorFactory validatorFactory)
         {
             _authenticationSettings = authenticationSettings;
             _facebookSettings = facebookSettings;
