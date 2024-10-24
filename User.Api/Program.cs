@@ -27,7 +27,7 @@ builder.Services.AddHttpClient();
 //Add DB
 builder.Services.AddDbContext<Elly_UserContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("EllyUser"));
+    option.UseSqlServer(builder.Configuration.GetConnectionString("EllyShopDB"));
 });
 
 //Add appsetting json
@@ -63,5 +63,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.Run();

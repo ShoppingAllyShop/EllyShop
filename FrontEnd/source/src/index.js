@@ -9,10 +9,13 @@ import { Provider } from "react-redux";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const googleClientId = process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID;
+console.log('All Environment Variables:', process.env);
+console.log('aaaaaaaaaa:',process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID);
 root.render(
   <BrowserRouter>
     <Provider store={store}>
-      <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID}>
+      <GoogleOAuthProvider clientId={googleClientId}>
         <App />
       </GoogleOAuthProvider>
     </Provider>

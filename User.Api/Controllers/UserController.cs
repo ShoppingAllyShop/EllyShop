@@ -58,6 +58,7 @@ namespace User.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserAuthRequest request)
         {
+            _logger.LogInformation("Start Api Login");
             try
             {
                 var stopwatch = Stopwatch.StartNew();

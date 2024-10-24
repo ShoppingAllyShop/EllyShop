@@ -1,48 +1,65 @@
-version: '3.4'
+﻿version: '3.4'
 
 services:
   api.gateway:
     image: ${DOCKER_REGISTRY-}apigateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development      
     ports: 
         - 7000:80
     build:
       context: .
       dockerfile: API.Gateway/Dockerfile
     networks:
-        - gateway_network
-  # frontend:
-  #   environment:
-  #       REACT_APP_BASE_API_URL: ${REACT_APP_BASE_API_URL}
-  #   image: ${DOCKER_REGISTRY-}frontend
-  #   ports:
-  #       - 3000:80
-  #   volumes:
-  #       - /path/in/host/machine:/usr/src/app  
-  #   build:
-  #     context: .
-  #     dockerfile: FrontEnd/Dockerfile
-
-
-  # user.api:
-  #   image: ${DOCKER_REGISTRY-}userapi
-  #   ports:
-  #       - 7135:80
-  #   hostname: elly.user
-  #   build:
-  #     context: .
-  #     dockerfile: User.Api/Dockerfile
+        - ellyshop_gateway_network
+  
+  frontend:
+    image: ${DOCKER_REGISTRY-}frontend
+    ports:
+        - 3000:80
+    # volumes:
+    #     - /path/in/host/machine:/usr/src/app  
+    build:
+      context: .
+      dockerfile: FrontEnd/Dockerfile
+      args:
+        - REACT_APP_BASE_API_URL
+        - REACT_APP_GOOGLE_OAUTH_CLIENT_ID
+        - REACT_APP_FACEBOOK_OAUTH_APP_ID
+    environment:
+        REACT_APP_BASE_API_URL: "http://localhost:7000/api/"
+        REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${REACT_APP_GOOGLE_OAUTH_CLIENT_ID}
+        REACT_APP_FACEBOOK_OAUTH_APP_ID: ${REACT_APP_FACEBOOK_OAUTH_APP_ID}  
+    networks:
+        - ellyshop_gateway_network
+  
+  user.api:
+    image: ${DOCKER_REGISTRY-}userapi
+    ports:
+        - 7135:80
+    hostname: ellyuser
+    build:
+      context: .
+      dockerfile: User.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+        - ellyshop_gateway_network
+        - elly_db_network
 
   catalog.api:
     image: ${DOCKER_REGISTRY-}categorygapi
     ports:
         - 7021:80
-    hostname: elly.catalog
+    hostname: ellycatalog
     build:
       context: .
-      dockerfile: catalog.Api/Dockerfile
+      dockerfile: category.Api/Dockerfile
     networks:
-        - gateway_network
+        - ellyshop_gateway_network
+        - elly_db_network
 
 networks:
-  gateway_network:
-    driver: bridge
+  ellyshop_gateway_network:
+  elly_db_network:
+    external: true

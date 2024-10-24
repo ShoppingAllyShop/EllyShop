@@ -3,7 +3,7 @@
     //User routes
     {
       "DownstreamPathTemplate": "/api/user/login",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "elly.user",
@@ -15,7 +15,7 @@
     },
     {
       "DownstreamPathTemplate": "/api/user/social-login",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "elly.user",
@@ -27,7 +27,7 @@
     },
     {
       "DownstreamPathTemplate": "/api/user/refresh-token",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "elly.user",
@@ -39,7 +39,7 @@
     },
     {
       "DownstreamPathTemplate": "/api/user/register",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "elly.user",
@@ -51,7 +51,7 @@
     },
     {
       "DownstreamPathTemplate": "/api/user/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "elly.user",
@@ -93,10 +93,10 @@
       "UpstreamPathTemplate": "/api/admin/category/{everything}",
       "UpstreamHttpMethod": [ "POST", "PUT", "DELETE" ],
       "DownstreamPathTemplate": "/api/admin/category/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "elly.catalog",
+          "Host": "localhost",
           "Port": 7021
         }
       ],
@@ -112,16 +112,16 @@
       "UpstreamPathTemplate": "/api/category/{everything}",
       "UpstreamHttpMethod": [ "GET" ],
       "DownstreamPathTemplate": "/api/category/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "elly.catalog",
+          "Host": "localhost",
           "Port": 7021
         }
       ]
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:7000"
+    "BaseUrl": "http://localhost:7000"
   }
 }
