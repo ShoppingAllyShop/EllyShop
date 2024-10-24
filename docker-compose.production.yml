@@ -56,7 +56,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production      
     build:
       context: .
-      dockerfile: category.Api/Dockerfile
+      dockerfile: Category.Api/Dockerfile
     networks:
         - ellyshop_gateway_network
         - elly_db_network
