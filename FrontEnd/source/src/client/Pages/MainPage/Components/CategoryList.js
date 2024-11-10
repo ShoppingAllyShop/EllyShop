@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const ProductList = () => {
-  const data = [{id:1, name: "túi xách", url:"aaaaaaaaa"}, {id:2, name: "Balo"}, {id:3, name: "Clutch"}]
   return (
     <section className="cate-list ">
       <div className="first-line:font-bold first-line:uppercase text-center text-2xl">

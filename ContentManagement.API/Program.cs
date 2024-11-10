@@ -13,6 +13,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+Console.Title = "Content Management service";
 
 // ADd DB
 builder.Services.AddDbContext<EllyShopContext>(option => {

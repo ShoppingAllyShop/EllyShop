@@ -5,7 +5,6 @@ import HamburgerButton from "../../../components/HamburgerButton";
 
 const Header = ({ user }) => {
   const handleClickBurgerButton = () => {
-    console.log('burger')
   };
   return (
       <div className="sticky w-full flex-grow items-center justify-between shadow-sm md:px-6 2xl:px-11 grid grid-cols-2 h-[84px] bg-white">      

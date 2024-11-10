@@ -17,7 +17,6 @@ const categorySlice = createSlice({
       state.data = action.payload
     },
     setSelectedCategory: (state, action) => {
-      console.log('state', state)
       const index = state.selectedCategory.findIndex(
         (item) => item.categoryLevel === action.payload.categoryLevel
       );

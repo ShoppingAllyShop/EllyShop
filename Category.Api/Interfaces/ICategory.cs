@@ -1,7 +1,7 @@
-﻿using CategoryEntity = Comman.Domain.Models.Category;
+﻿using CategoryEntity = Comman.Domain.Elly_Catalog.Category;
 using System.Collections;
-using Category.Api.Models.Request;
-using Comman.Domain.Models;
+using Catalog.Api.Models.CategoryModel.Request;
+
 
 namespace Category.Api.Interfaces
 {

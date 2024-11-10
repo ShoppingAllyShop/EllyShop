@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import Slider from "react-slick";
+import React from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -31,16 +30,7 @@ const images = [
   // Add more images as needed
 ];
 
-function PauseOnHover() {
-  var settings = {
-    dots: true,
-    infinite: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    pauseOnHover: true,
-  };
+const MainPageSilder = () => {
   return (
     <div id="default-carousel" className="relative w-full" data-carousel="slide">
     {/* Carousel wrapper */}
@@ -192,4 +182,4 @@ function PauseOnHover() {
   );
 }
 
-export default PauseOnHover;
+export default MainPageSilder;

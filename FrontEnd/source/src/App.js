@@ -26,8 +26,7 @@ function App() {
         </Route>
         <Route path="/" element={<Mainlayout />}>
           <Route index path="/" element={<MainPage />} />
-          {/* <Route index path="/" element={<PrivateRoute endpoint="/"><MainPage /></PrivateRoute>}  /> */}
-          <Route index path="/product-detail" element={<ProductDetailPage />} />
+          <Route index path="/product-detail/:productId" element={<ProductDetailPage />} />
         </Route>
       </Fragment>
     );

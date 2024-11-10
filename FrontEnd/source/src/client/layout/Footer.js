@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Footer = (props) => {
-  const { policiesandregulations, generalInformation, fanpage } = props.data;
+  const { policies, generalInfomations, socialMedias } = props.data;
   return (
     <div className="footer p-5 bg-black">
       <div className="p-5 grid grid-cols-4 mx-auto max-w-[1700px] container:none ">
@@ -64,13 +64,13 @@ const Footer = (props) => {
             Chính sách và quy định
           </p>
           <div className="border-t-2 w-5 my-5"></div>
-          {policiesandregulations.map((item) => {
+          {policies.map((item) => {
             return (
               <li
                 key={item.id}
                 className={`my-5 flex-none list-none text-white border-b border-gray-500 cursor-pointer`}
               >
-                {item.name}
+              <Link to={item.url}>{item.title} </Link>
               </li>
             );
           })}
@@ -80,13 +80,13 @@ const Footer = (props) => {
             Thông tin chung
           </p>
           <div className="border-t-2 w-5 my-5"></div>
-          {generalInformation.map((item) => {
+          {generalInfomations.map((item) => {
             return (
               <li
                 key={item.id}
                 className={`my-5 flex-none list-none border-b border-gray-500 text-white cursor-pointer`}
               >
-                {item.name}
+              <Link to={item.url}>{item.title} </Link>
               </li>
             );
           })}
@@ -97,13 +97,13 @@ const Footer = (props) => {
             Theo dõi chúng tôi
           </p>
           <div className="border-t-2 w-5 my-5"></div>
-          {fanpage.map((item) => {
+          {socialMedias.map((item) => {
             return (
               <li
                 key={item.id}
                 className={`my-5 flex list-none text-white border-b border-gray-500 cursor-pointer`}
               >
-                <img className="w-6 h-6" src={item.image}/>
+                <img className="w-6 h-6" src={item.picture}/>
  
                 <p className="mx-2">{item.name}</p>
               </li>

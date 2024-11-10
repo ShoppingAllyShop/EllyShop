@@ -4,8 +4,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping, faEye } from "@fortawesome/free-solid-svg-icons";
 import { formatCurrency } from "../../../utils/numberUtil";
 const ProductCard = ({ product }) => {
-  
   const isHasDiscount = product.discount != null;
+  const image1 = product.productImages[0]?.picture;
+  const image2 = product.productImages[1]?.picture;
 
   return (
     <div className="product-card slide relative border mx-5">
@@ -14,15 +15,17 @@ const ProductCard = ({ product }) => {
           -{product.percentDiscount}%
         </div>
       )}
-      <div className="relative group/img overflow-hidden">
-        <img
-          src={product.imagePicture}
-          className="h-[404px] slide-image hinh-1 inset-0 w-full object-cover transition-opacity duration-300 ease-in-out hover:opacity-0"
-        />
-        <img
-          src="https://mediaelly.sgp1.digitaloceanspaces.com/uploads/2024/04/12160025/Tui-xach-nu-thoi-trang-ELLY-EL332-18-600x600.jpg"
-          className="slide-image absolute hinh-2 inset-0 h-[404px] left-0 top-0 object-cover transition-opacity duration-300 ease-in-out opacity-0 hover:opacity-100 "
-        />
+      <div className="relative group/img overflow-hidden cursor-pointer">
+        <Link to={`/product-detail/${product.productId}`}>
+          <img
+            src={image1}
+            className="h-[404px] slide-image hinh-1 inset-0 w-full object-cover transition-opacity duration-300 ease-in-out hover:opacity-0"
+          />
+          <img
+            src={image2}
+            className="slide-image absolute hinh-2 inset-0 h-[404px] left-0 top-0 object-cover transition-opacity duration-300 ease-in-out opacity-0 hover:opacity-100 "
+          />
+        </Link>
         <div
           className="absolute opacity-0 bottom-0 text-center w-full 
         grid grid-cols-2 group-hover/img:opacity-100 translate-y-6 group-hover/img:translate-y-0 transition duration-500"
@@ -33,7 +36,9 @@ const ProductCard = ({ product }) => {
           </div>
           <div className="bg-[#c0392b] text-white border-l border-white">
             <FontAwesomeIcon icon={faEye} />
-            <Link className="">Xem Chi Tiết</Link>
+            <Link to={`/product-detail/${product.productId}`} className="">
+              Xem Chi Tiết
+            </Link>
           </div>
         </div>
       </div>

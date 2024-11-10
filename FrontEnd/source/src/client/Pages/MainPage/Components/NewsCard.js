@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
-const NewsCard = ({ data }) => {
+const NewsCard = ({ data, title }) => {
   const firstItem = data[0];
   const lastFourItems = data.slice(-4);
   //https://mediaelly.sgp1.digitaloceanspaces.com/uploads/2024/01/10155551/z5058129671691_b4fb32c47ed7f13c6daedb2a9ff9a98a.jpg
   return (
     <div className="news-card h-[730px]">
       <div className="uppercase text-center text-2xl first-line:font-bold border py-2">
-        {data[0].typeName}
+        {title}
       </div>
       <div className="border box-border px-4 pt-3 flex flex-col">
         <ul className="">

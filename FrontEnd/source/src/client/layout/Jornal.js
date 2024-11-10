@@ -5,7 +5,6 @@ import "slick-carousel/slick/slick-theme.css";
 
 const Jornal = (props) => {
   const images = props.data;
-  console.log("images",images)
   const settings = {
     className: "center",
     infinite: true,
@@ -20,12 +19,11 @@ const Jornal = (props) => {
           BÁO CHÍ NÓI VỀ ELLY
         </h2>
         <div className=" slider-container border box-border px-4">
-          <div >
+          <div>
             <Slider {...settings}>
               {images.map((item, index) => (
-                <div className="py-2 px-2 h-[92px]">
+                <div className="py-2 px-2 h-[92px]" key={index}>
                   <div
-                    key={index}
                     className="slide border-2 shadow-lg content-center h-[80px] p-2 rounded-md"
                   >
                     <img

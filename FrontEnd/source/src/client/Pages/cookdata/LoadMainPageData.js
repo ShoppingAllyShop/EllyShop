@@ -1,7 +1,8 @@
-const mainPageResponse = {
+//call ContentManagement Api
+const contentMainPageResponse = {
     layoutData: {
         header:{
-            navigations:[{},{}]
+            navigations:[{},{}],
         },
         footer:{
             policies:[{},{}],
@@ -14,15 +15,38 @@ const mainPageResponse = {
         showroom:[{},{}],
         news:[{},{}],
         newsMedia:[{},{}],
+        slider:[{}],
     }
 }
 
-const catalogResponse = {
-    categories:[{},{}],
-    collections:[{},{}],
-    product:{
-        newProducts:[{},{}],
+//call Câtalog Api
+const catalogDataResponse = {
+    categoryResponse: [{},{}],
+    collectionResponse :[{},{}],
+    productResponse : {
+        newProducts:[{},{},{},{}],
         bestSellers:[{},{}],
         favourites:[{},{}],
     }
+
+}
+
+// call ProductDetail API
+//contentmanagementApi
+const productDetailContent = {
+    showroom:[{},{}],
+}
+
+//câtalogApi
+const productDetailData = {
+    guarantee:[{},{}],
+    guide:[{},{}],
+    productImage:[{},{}],
+    productDetail:[{},{}],
+    product:{},
+    color:[{}],
+    size:[{}],
+    favoriteProducts:[{},{}],
+    relativeProducts:[{},{}],
+    rating:[{}]
 }

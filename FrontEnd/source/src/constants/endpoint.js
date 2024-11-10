@@ -13,8 +13,9 @@ export const PUPLIC_ENDPOINT = {
   CATEGORY_GET_ALL: "category/get-all",
 };
 
-
 export const CLIENT_ENDPOINT = {
   MAIN_PAGE_CONTENT: "contentmanagement/main-page-content",
+  CATALOG_CONTENT: "catalog/main-page-content",
+  PRODUCT_CONTENT: "product/get-product-detail",
 };
 

@@ -2,8 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faChevronRight} from "@fortawesome/free-solid-svg-icons";
-const ShowRoom = ({ data }) => {
-  console.log("data",data)
+const ShowRoom = ({ data, title }) => {  
   const groupedByRegion = data.reduce((acc, item) => {
     // Nếu nhóm chưa có, tạo một nhóm mới
     if (!acc[item.region]) {
@@ -13,19 +12,16 @@ const ShowRoom = ({ data }) => {
     acc[item.region].push(item);
     return acc;
   }, {});
-  console.log("groupedByRegion",groupedByRegion)
   const convertBranchObjectToArray = Object.entries(groupedByRegion).map(
     ([key, value]) => ({
       region: key,
       branchs: value,
     })
   );
-  console.log("convertBranchObjectToArray",convertBranchObjectToArray)
-
   return (
     <div className="ShowRoom h-[730px]">
       <p className="uppercase text-center text-2xl first-line:font-bold border py-2">
-        {data.title}
+        {title}
       </p>
       <div className=" px-4 flex flex-col border box-border">
         <div className="h-[375px] truncate">
@@ -43,7 +39,7 @@ const ShowRoom = ({ data }) => {
                     {"Show Room Elly " + item.region}
                   </p>
                 </li>
-                {item.data.map((branchs) => {
+                {item.branchs.map((branchs) => {
                   return (
                     <li className="w-full py-1 border-b">
                       <p className="text-base w-full font-medium inline">

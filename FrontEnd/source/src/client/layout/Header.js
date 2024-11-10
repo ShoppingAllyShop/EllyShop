@@ -6,7 +6,8 @@ import { faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons"; // I
 import "./Mainlayout.js";
 import Navigation from "./Navigation.js";
 import { Link } from "react-router-dom";
-const Header = (props) => {
+
+const Header = ({data}) => {
   const renderTopHeader = () => {
     return (
       <div className="top-header bg-gray-800">
@@ -147,7 +148,7 @@ const Header = (props) => {
     return (
       <div className="bottom-header grid grid-cols-12 container:none mx-auto max-w-[1700px] ">
         <div className="col-span-3">
-          <Link to="/">
+          <Link to="/" reloadDocument>
             <img
               src="https://mediaelly.sgp1.digitaloceanspaces.com/uploads/2020/12/06111440/logo-black.svg"
               alt="Logo"
@@ -155,7 +156,7 @@ const Header = (props) => {
           </Link>
         </div>
         <div className="col-span-9">
-          <Navigation data={props.data} />
+          <Navigation data={data} />
         </div>
       </div>
     );

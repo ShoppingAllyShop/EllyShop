@@ -57,14 +57,12 @@ const LoginPage = ({ handleTest }) => {
   });
 
   const googleResponseMessage = async (response) => {
-    console.log("response", response);
     const params = {
       token: response.access_token,
       pageType: checkIsAdminPage() ? "AdminPage" : "ClientPage",
       provider: AUTH_PROVIDERS.GOOGLE,
     };
 
-    console.log("params", params);
     const endpoint = PUPLIC_ENDPOINT.SOCIAL_LOGIN;
     const [loginResponse] = await Promise.all([
       axiosBase.post(endpoint, params),
@@ -74,7 +72,6 @@ const LoginPage = ({ handleTest }) => {
   };
 
   const googleErrorMessage = (error) => {
-    console.log(error);
   };
 
   const googleLogin = useGoogleLogin({

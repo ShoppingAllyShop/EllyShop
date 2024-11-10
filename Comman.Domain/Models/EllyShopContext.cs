@@ -36,7 +36,7 @@ namespace Comman.Domain.Models
         public virtual DbSet<Silde> Sildes { get; set; } = null!;
         public virtual DbSet<Size> Sizes { get; set; } = null!;
         public virtual DbSet<SocialMedia> SocialMedia { get; set; } = null!;
-        public virtual DbSet<User> Users { get; set; } = null!;
+        public virtual DbSet<Users> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -1,4 +1,4 @@
-﻿using Comman.Domain.Models;
+﻿using Comman.Domain.Elly_ContentManagement;
 using System.Collections;
 
 namespace ContentManagement.API.Models.Responses
@@ -29,5 +29,8 @@ namespace ContentManagement.API.Models.Responses
         public IEnumerable<NewsMedia>? NewsMediaList { get; set; }
         public IEnumerable<Branch>? BranchList { get; set; }
         public IEnumerable<Prize>? PrizeList { get; set; }
+        public IEnumerable<Silde>? SilderList { get; set; }
+
     }
+    
 }

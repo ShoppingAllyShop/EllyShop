@@ -1,9 +1,8 @@
 import React from "react";
 
-const ShowRoom = ({data}) => {
-  const branchs = data.branch;
-  console.log("branchs".branchs)
-  const groupedByRegion = branchs.reduce((acc, item) => {
+const ShowRoom = ({ data }) => {
+
+  const groupedByRegion = data.reduce((acc, item) => {
     // Nếu nhóm chưa có, tạo một nhóm mới
     if (!acc[item.region]) {
       acc[item.region] = [];
@@ -16,27 +15,29 @@ const ShowRoom = ({data}) => {
   const convertBranchObjectToArray = Object.entries(groupedByRegion).map(
     ([key, value]) => ({
       region: key,
-      branchs: value,
+      data: value,
     })
   );
   return (
     <div className="ShowRoom">
-      <div className="">
-        <p className="uppercase font-bold text-center border box-border p-4"> Hệ Thống ShowRoom </p>
+      <div>
+        <p className="uppercase font-bold text-center border box-border p-4">
+          Hệ Thống ShowRoom
+        </p>
       </div>
       <div className="menu p-2">
-      <ul className="p-2 scrollbar-custom overflow-y-scroll h-[52rem]">
-          {convertBranchObjectToArray.map((item) => {
+        <ul className="p-2 scrollbar-custom overflow-y-scroll h-[52rem]">
+          {convertBranchObjectToArray.map((item,index) => {
             return (
-              <>
+              <div key={index}>
                 <li className="h-[32px] w-full">
                   <p className="text-lg border-b-2 w-full truncate uppercase font-semibold">
                     {"Show Room Elly " + item.region}
                   </p>
                 </li>
-                {item.branchs.map((branch) => {
+                {item.data.map((branch) => {
                   return (
-                    <li className="w-full py-1 border-b">
+                    <li className="w-full py-1 border-b" key={branch.id}>
                       <p className="text-base w-full font-medium inline">
                         {branch.branchName}:
                       </p>
@@ -44,7 +45,7 @@ const ShowRoom = ({data}) => {
                     </li>
                   );
                 })}
-              </>
+              </div>
             );
           })}
         </ul>

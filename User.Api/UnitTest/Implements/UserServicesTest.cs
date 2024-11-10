@@ -105,7 +105,7 @@ namespace User.Api.UnitTest.Implements
             var requestModel = new RefreshTokenRequestModel
             {
                 Email = Mail2,
-                RefreshToken = RefreshToken2,
+                RefreshToken = "RefreshToken2",
             };
 
             _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);

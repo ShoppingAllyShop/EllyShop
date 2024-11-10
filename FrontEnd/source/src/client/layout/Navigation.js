@@ -1,11 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState} from "react";
 import { Link } from "react-router-dom";
 import { getFirstCharsByLengthNumber } from "../../utils/stringUtil.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons"; // Import các icon bạn cần
 import { GUID_ID } from "../../constants/common.js";
-const Navigation = (props) => {
-  const { navigation, category, collection, production, discound } = props.data;
+const Navigation = ({data}) => {
+  
+  const { navigation } = data.headerData;
+  const { categoryList, collectionsList } = data;
   const [isDisplayContentProductNav, setIsDisplayContentProductNav] =
     useState(false);
 
@@ -16,13 +18,13 @@ const Navigation = (props) => {
     const dropdownDelayId = "dropdownDelay-" + createId;
     const isProductNavigation = navigationItem.name === "Sản Phẩm";
     return (
-      <li key={navigationItem.id} className="p-3 flex-none z-40 transition duration-400">
+      <li key={navigationItem.id} className="p-3 flex-none z-40 transition duration-100 ">
         <button
           id={dropdownDelayButtonId}
           data-dropdown-toggle={dropdownDelayId}
           data-dropdown-delay={500}
           data-dropdown-trigger="hover"
-          className={`text-black rounded-lg text-sm text-center inline-flex items-center h-full
+          className={`text-black rounded-lg text-center inline-flex items-center h-full 
           ${
             navigationItem.id === "9beddd21-4193-463c-acc8-66dc3c76e568"
               ? "text-red-600"
@@ -32,7 +34,7 @@ const Navigation = (props) => {
         >
           {navigationItem.name}
           <svg
-            className="w-2.5 h-2.5 ms-3 text-black"
+            className={`w-2.5 h-2.5 ms-1  text-black ${ navigationItem.id === GUID_ID.SALE_NAV ? "text-red-600" : ""}`}
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -50,7 +52,7 @@ const Navigation = (props) => {
         {/* Dropdown menu */}
         <div
           id={dropdownDelayId}
-          className={`z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 ${
+          className={`z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 cursor-pointer ${
             isProductNavigation ? "w-full" : "w-44"
           } ${isProductNavigation ? "absolute left-0 top-full" : ""}`}
         >
@@ -78,12 +80,12 @@ const Navigation = (props) => {
   };
 
   //render content of "Sản Phẩm" button
-  const renderDropDownProductItem = (category) => {
-    const levelOneCategory = category.filter(
-      (category) => category.categoryLevel === 1
+  const renderDropDownProductItem = (categoryList) => {
+    const levelOneCategory = categoryList.filter(
+      (categoryList) => categoryList.categoryLevel === 1
     );
-    const levelTwoCategory = category.filter(
-      (category) => category.categoryLevel === 2
+    const levelTwoCategory = categoryList.filter(
+      (categoryList) => categoryList.categoryLevel === 2
     );
     return (
       <div
@@ -92,7 +94,7 @@ const Navigation = (props) => {
       >
         {levelOneCategory.map((item) => {
           let levelTwoData = levelTwoCategory.filter(
-            (category) => category.parentId === item.id
+            (categoryList) => categoryList.parentId === item.id
           );
           return (
             <li
@@ -137,14 +139,14 @@ const Navigation = (props) => {
 
   const renderProductNavigationItem = (item) => {
     return (
-      <li key={item.id} className="flex h-full">
+      <li key={item.id} className="p-3 flex-none content-center h-full ">
         <button
           onMouseEnter={() => setIsDisplayContentProductNav(true)}
           onMouseLeave={() => setIsDisplayContentProductNav(false)}
-          className="h-full p-3 "
+          className="h-full "
         >
           {item.name} <FontAwesomeIcon className="text-xs" icon={faChevronDown} />
-          {isDisplayContentProductNav && renderDropDownProductItem(category)}
+          {isDisplayContentProductNav && renderDropDownProductItem(categoryList)}
         </button>
       </li>
     );
@@ -152,35 +154,39 @@ const Navigation = (props) => {
 
   return (
     <>
-      <ul className="flex items-center h-full">
+      <ul className="flex items-center h-full cursor-pointer">
         {navigation.map((item) => {
+          if(item.navLevel >= 1){
+            return null
+          }
           //render "Woman" navigation
           if (item.id === GUID_ID.WOMAN_NAV) {
-            const womanCategory = category.filter(
-              (category) =>
-                category.gender === false && category.categoryLevel === 2
+            const womanCategory = categoryList.filter(
+              (categoryList) =>
+              categoryList.gender === false && categoryList.categoryLevel === 2
             );
             return renderDropDown(item, womanCategory);
           } else if (item.id === GUID_ID.MAN_NAV) {
             //render "Man" navigation
-            const manCategory = category.filter(
-              (category) =>
-                category.gender === true && category.categoryLevel === 2
+            const manCategory = categoryList.filter(
+              (categoryList) =>
+              categoryList.gender === true && categoryList.categoryLevel === 2
             );
             return renderDropDown(item, manCategory);
           } else if (item.id === GUID_ID.COLLECTION_NAV) {
             //render "Collection" navigation
-            const collectionList = collection;
-            return renderDropDown(item, collectionList);
-          } else if (item.id === GUID_ID.SALE_NAV) {
-            //render "Sale" navigation
-            const saleList = discound;
-            return renderDropDown(item, saleList);
-          } else if (item.id === GUID_ID.PRODUCT_NAV) {
+            const collection = collectionsList;
+            return renderDropDown(item, collection);
+          } 
+           else if (item.id === GUID_ID.PRODUCT_NAV) {
             //render "Sản phẩm" navigation
             return renderProductNavigationItem(item);
           }
-
+          else if (item.id === GUID_ID.SALE_NAV) {
+            //render "Sale" navigation
+            const saleList = navigation.filter((navigation) => navigation.navLevel === 1 );
+            return renderDropDown(item, saleList);
+          }
           //render other navigation
           return (
             <li

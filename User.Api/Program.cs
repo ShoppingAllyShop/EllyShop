@@ -23,6 +23,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
+Console.Title = "User service";
 
 //Add DB
 builder.Services.AddDbContext<EllyShopContext>(option =>

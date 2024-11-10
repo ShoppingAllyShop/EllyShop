@@ -9,7 +9,9 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+
 function SampleNextArrow(props) {
+  
   const { onClick } = props;
   return (
     <button
@@ -32,11 +34,12 @@ function SamplePrevArrow(props) {
     </button>
   );
 }
-const ProductListSlider = ({ data }) => {
+const ProductListSlider = ({ data,itemShowNumber }) => {
+
   const settings = {
     infinite: true,
-    slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToShow: itemShowNumber,
+    slidesToScroll: itemShowNumber,
     autoplay: true,
     autoplaySpeed: 5000,
     nextArrow: <SampleNextArrow />,
@@ -47,15 +50,15 @@ const ProductListSlider = ({ data }) => {
     <>
     <section className="product-slider h-[675px] relative">
       <div className="font-medium first-line:uppercase text-center pb-2">
-        <h2 className="text-4xl">{data[0].tagDescription}</h2>
+        <h2 className="text-4xl">{data[0].tagTitle}</h2>
       </div>
-      <p className="text-center pb-4">{data[0].tagTitle}</p>
+      <p className="text-center pb-4">{data[0].tagDescription}</p>
       <div className="group/arrow">
-        <div className="slider-container mx-20 px-10">
+        <div className="slider-container ">
           <Slider {...settings} className="">
             {data &&
-              data.map((product, index) => (
-                <ProductCard key={index} product={product} />
+              data.map((data, index) => (
+                <ProductCard key={index} product={data} />
               ))}
           </Slider>
         </div>
