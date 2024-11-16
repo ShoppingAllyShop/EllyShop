@@ -7,8 +7,7 @@ namespace Catalog.Api.Interfaces
 {
     public interface IProduct
     {
-        //Task<ProductInfoData?> GetProductAsync(string id);
-        Task<ProductDetailData> GetProductDetail(string id);
+        Task<ProductDetailData> GetProductDetailAsync(string id);
 
         MainPageProductResponse GetMainPageProduct();
         

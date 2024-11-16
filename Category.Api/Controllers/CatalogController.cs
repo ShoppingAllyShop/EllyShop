@@ -27,55 +27,23 @@ namespace Catalog.Api.Controllers
         public  async Task<IActionResult> GetMainPageContent()
         {
             var stopwatch = Stopwatch.StartNew();
-            _logger.LogInformation("Start GetMainPageContent.....");
             try
             {
-                var catalogList = await _catalogServices.GetMainPageContent();
+                _logger.LogInformation("Start GetMainPageContent.....");
+                var catalogList = await _catalogServices.GetMainPageContentAsync();
                 _logger.LogInformation("GetMainPageContent successfully");
                 return Ok(ApiResponseHelper.FormatSuccess(catalogList));
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return BadRequest($"Quá trình GetMainPageContent xảy ra lỗi");
+                return StatusCode(500, ApiResponseHelper.FormatError($"GetMainPageContent api failed.There is a exception!"));
             }
             finally
             {
                 _logger.LogInformation($"Get MainPage Content operation took {stopwatch.ElapsedMilliseconds} ms.");
             }
 
-        }
-
-        // GET: api/<CatalogController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<CatalogController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<CatalogController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<CatalogController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<CatalogController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

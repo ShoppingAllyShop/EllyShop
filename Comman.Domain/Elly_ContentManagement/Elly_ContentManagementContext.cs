@@ -122,6 +122,8 @@ namespace Comman.Domain.Elly_ContentManagement
             {
                 entity.HasNoKey();
 
+                entity.Property(e => e.PictureIndex).HasColumnName("Picture_Index");
+
                 entity.Property(e => e.Position).HasMaxLength(50);
             });
 

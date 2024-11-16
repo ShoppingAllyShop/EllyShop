@@ -3,6 +3,48 @@ import { Link } from "react-router-dom";
 
 const Footer = (props) => {
   const { policies, generalInfomations, socialMedias } = props.data;
+  const renderCompanyInfo = () => {
+    return (
+      <p className="text-white">
+        <strong>CÔNG TY CỔ PHẦN THỜI TRANG QUỐC TẾ GLAMOR</strong>
+        <br />
+        <strong>VPGD:</strong> Tầng 8 tòa nhà SANNAM, 78 Duy Tân, Q.Cầu Giấy, Hà
+        Nội.
+        <br />
+        <strong>Số giấy chứng nhận ĐKKD:</strong>
+        0107370211
+        <br />
+        <strong>Nơi cấp:</strong>Sở Kế hoạch và Đầu tư thành phố Hà Nội
+        <br /> <strong>Ngày cấp:</strong> 24/03/2016
+        <br />
+        <br />
+        <strong>Liên hệ hợp tác: </strong>
+        <a href="tel:0983377038">098.3377.038</a>
+        <br />
+        <strong>Nhượng quyền thương hiệu/ Đặt quà tặng số lượng lớn:</strong>
+        <a href="tel:0985219048">0985.219.048</a>
+        <br />
+        <span
+          style={{ color: "#ff0000" }}
+          data-gtm-vis-recent-on-screen9417962_148={35068}
+          data-gtm-vis-first-on-screen9417962_148={35068}
+          data-gtm-vis-total-visible-time9417962_148={1000}
+          data-gtm-vis-has-fired9417962_148={1}
+        >
+          <strong>
+            TỔNG ĐÀI BÁN HÀNG (08H - 17H):
+            <br />
+          </strong>
+          <a href="tel:0966353000">0966.353.000</a> -
+          <a href="tel:0906636000">0906.636.000</a>
+        </span>
+        <br />
+        <strong>Email:</strong> cskh@elly.vn
+        <br /> <strong>Website</strong>: https://elly.vn
+      </p>
+    );
+  };
+  
   return (
     <div className="footer p-5 bg-black">
       <div className="p-5 grid grid-cols-4 mx-auto max-w-[1700px] container:none ">
@@ -12,45 +54,7 @@ const Footer = (props) => {
             src="https://mediaelly.sgp1.digitaloceanspaces.com/uploads/2016/07/15213842/logo-full-white.png"
             alt=""
           />
-          <p className="text-white">
-            <strong>CÔNG TY CỔ PHẦN THỜI TRANG QUỐC TẾ GLAMOR</strong>
-            <br />
-            <strong>VPGD:</strong> Tầng 8 tòa nhà SANNAM, 78 Duy Tân, Q.Cầu
-            Giấy, Hà Nội.
-            <br />
-            <strong>Số giấy chứng nhận ĐKKD:</strong>
-            0107370211
-            <br />
-            <strong>Nơi cấp:</strong>Sở Kế hoạch và Đầu tư thành phố Hà Nội
-            <br /> <strong>Ngày cấp:</strong> 24/03/2016
-            <br />
-            <br />
-            <strong>Liên hệ hợp tác: </strong>
-            <a href="tel:0983377038">098.3377.038</a>
-            <br />
-            <strong>
-              Nhượng quyền thương hiệu/ Đặt quà tặng số lượng lớn:
-            </strong>
-            <a href="tel:0985219048">0985.219.048</a>
-            <br />
-            <span
-              style={{ color: "#ff0000" }}
-              data-gtm-vis-recent-on-screen9417962_148={35068}
-              data-gtm-vis-first-on-screen9417962_148={35068}
-              data-gtm-vis-total-visible-time9417962_148={1000}
-              data-gtm-vis-has-fired9417962_148={1}
-            >
-              <strong>
-                TỔNG ĐÀI BÁN HÀNG (08H - 17H):
-                <br />
-              </strong>
-              <a href="tel:0966353000">0966.353.000</a> -{" "}
-              <a href="tel:0906636000">0906.636.000</a>
-            </span>
-            <br />
-            <strong>Email:</strong> cskh@elly.vn
-            <br /> <strong>Website</strong>: https://elly.vn
-          </p>
+         {renderCompanyInfo()}
           <Link>
             <img
               className="w-52 my-5 "

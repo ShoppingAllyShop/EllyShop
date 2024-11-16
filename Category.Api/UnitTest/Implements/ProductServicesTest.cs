@@ -2,6 +2,7 @@
 using Catalog.Api.Models.ProductDetailModel.Response;
 using Catalog.Api.Models.ProductModel;
 using Catalog.Api.Models.ProductModel.Respone;
+using Catalog.Api.UnitTest.InitData;
 using Comman.Domain.Elly_Catalog;
 using Common.Infrastructure.Interfaces;
 using CommonLib.Constants;
@@ -39,13 +40,12 @@ namespace Catalog.Api.UnitTest.Implements
         {
             //Arrange
             var service = CreateService();
-            var guaranteeData = CreateGuaranteeData();
-            var guideData = CreateGuideDataData();
-            var productData = CreateProductData();
+            var guaranteeData = MockData.CreateGuaranteeData();
+            var guideData = MockData.CreateGuideDataData();
             var productListData = CreateProductListData();
             var productTagsListData = CreateProductTagsListData();
             var tagListData = CreateTagsListData();
-            var ratingData = CreateRatingData();
+            var ratingData = MockData.CreateRatingData();
 
             _mockUnitOfWork.Setup(x => x.Repository<Guarantees>()).Returns(guaranteeData.MockDbSet().Object);
             _mockUnitOfWork.Setup(x => x.Repository<Guide>()).Returns(guideData.MockDbSet().Object);
@@ -55,7 +55,7 @@ namespace Catalog.Api.UnitTest.Implements
             _mockUnitOfWork.Setup(x => x.Repository<Tags>()).Returns(tagListData.MockDbSet().Object);
 
             //Act
-            var result = await service.GetProductDetail(ProductId1);
+            var result = await service.GetProductDetailAsync(ProductId1);
 
             //Assert
             Assert.NotNull(result);
@@ -68,7 +68,7 @@ namespace Catalog.Api.UnitTest.Implements
         public void GetProduct_Success_ReturnData()
         {
             var service = CreateService();
-            var productData = CreateProductData();
+            //var productData = CreateProductData();
             var productListData = CreateProductListData();
             var productTagsListData = CreateProductTagsListData();
             var tagListData = CreateTagsListData();
@@ -89,86 +89,6 @@ namespace Catalog.Api.UnitTest.Implements
 
 
         #region private
-        private List<Guarantees> CreateGuaranteeData()
-        {
-            return new List<Guarantees>
-            {
-                new Guarantees
-                {
-                    Id = Guid.NewGuid(),
-                    Contents = "Cam kết sản phẩm đúng chất lượng miêu tả trên website.",
-                    Title = "Title1"
-                },
-                new Guarantees
-                {
-                    Id = Guid.NewGuid(),
-                    Contents = "Content 2",
-                    Title = "Title2"
-                },
-            };
-        }
-        private List<Guide> CreateGuideDataData()
-        {
-            return new List<Guide>
-            {
-                new Guide
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Title1",
-                    GuideContent = "Cam kết sản phẩm đúng chất lượng miêu tả trên website."
-                },
-                new Guide
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Title2",
-                    GuideContent = "Content 2"
-                },
-            };
-        }
-        private List<Rating> CreateRatingData()
-        {
-            return new List<Rating>
-            {
-
-                new Rating
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = Guid.NewGuid(),
-                    ProductId = "EC001",
-                    Point = 1
-                },
-                new Rating
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = Guid.NewGuid(),
-                    ProductId = "EC001",
-                    Point = 1
-                },
-            };
-        }
-        private ProductInfoData CreateProductData()
-        {
-            return new ProductInfoData
-            {
-               Id = ProductId1,
-               Name = "sản phẩm abc",
-               DetailDecription = "Mô Tả",
-               Discount = 599000,
-               PercentDiscount = 50,
-               Price = 1299000,
-               ShortDescription = "Mô tả ngắn abcde",
-               ProductImages = new List<ProductImageModel>
-               {
-                   new ProductImageModel
-                   {
-                       Id = Guid.NewGuid(),
-                       ImageIndex = 1,
-                       Picture = "hinh 1",
-                       ProductId = ProductId1
-                  }
-               },
-            };
-        }
 
         private List<Product> CreateProductListData()
         {
@@ -277,73 +197,6 @@ namespace Catalog.Api.UnitTest.Implements
             };
         }
 
-
-        private List<ProductListByTagModel> CreateProductLi2stData()
-        {
-            return new List<ProductListByTagModel>
-            {
-                new ProductListByTagModel
-                {
-                    ProductId = ProductId1,
-                    ProductName = "New Tag",
-                    Price = 100000,
-                    Discount = 50000,
-                    PercentDiscount = 50,
-                    ProductImages = new List<ProductImages>
-                    {
-                        new ProductImages
-                          {
-                               Id = Guid.NewGuid(),
-                               ImageIndex = 1,
-                               Picture = "hinh 1",
-                               ProductId = ProductId1
-                          },
-                        new ProductImages
-                          {
-                               Id = Guid.NewGuid(),
-                               ImageIndex = 2,
-                               Picture = "hinh 2",
-                               ProductId = ProductId1
-                          }
-                    },
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-                TagDescription = "Description",
-                TagName = "Name",
-                TagTitle = "Title",
-                },
-                new ProductListByTagModel{
-
-                    ProductId = ProductId1,
-                    ProductName = "New Tag",
-                    Price = 100000,
-                    Discount = 50000,
-                    PercentDiscount = 50,
-                    ProductImages = new List<ProductImages>
-                    {
-                        new ProductImages
-                          {
-                               Id = Guid.NewGuid(),
-                               ImageIndex = 1,
-                               Picture = "hinh 1",
-                               ProductId = ProductId1
-                          },
-                        new ProductImages
-                          {
-                               Id = Guid.NewGuid(),
-                               ImageIndex = 2,
-                               Picture = "hinh 2",
-                               ProductId = ProductId1
-                          }
-                    },
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-                TagDescription = "Description",
-                TagName = "Name",
-                TagTitle = "Title",
-                }
-            };
-        }
         #endregion
     }
 }

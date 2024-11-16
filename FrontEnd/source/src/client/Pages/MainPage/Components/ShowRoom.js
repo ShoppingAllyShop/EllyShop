@@ -31,9 +31,9 @@ const ShowRoom = ({ data, title }) => {
           />
         </div>
         <ul className="p-2 scrollbar-custom overflow-y-scroll h-[12rem]">
-          {convertBranchObjectToArray.map((item) => {
+          {convertBranchObjectToArray.map((item,index) => {
             return (
-              <>
+              <div key={index}>
                 <li className="h-[32px] w-full">
                   <p className="text-lg border-b-2 w-full truncate uppercase font-semibold">
                     {"Show Room Elly " + item.region}
@@ -49,7 +49,7 @@ const ShowRoom = ({ data, title }) => {
                     </li>
                   );
                 })}
-              </>
+              </div>
             );
           })}
         </ul>

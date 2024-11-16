@@ -4,6 +4,6 @@ namespace Catalog.Api.Interfaces
 {
     public interface ICatalog
     {
-        Task<CatalogDataResponse> GetMainPageContent();
+        Task<CatalogDataResponse> GetMainPageContentAsync();
     }
 }

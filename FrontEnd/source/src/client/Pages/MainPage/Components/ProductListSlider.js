@@ -35,7 +35,6 @@ function SamplePrevArrow(props) {
   );
 }
 const ProductListSlider = ({ data,itemShowNumber }) => {
-
   const settings = {
     infinite: true,
     slidesToShow: itemShowNumber,

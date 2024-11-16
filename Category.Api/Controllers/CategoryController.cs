@@ -41,34 +41,19 @@ namespace Category.Api.Controllers
             try
             {
                 _logger.LogInformation("Start get-all Category API");
-                var categoryList = await _categoryServices.GetAll();
+                var categoryList = await _categoryServices.GetAllAsync();
                 _logger.LogInformation($"Done get-all category api successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
                 return Ok(ApiResponseHelper.FormatSuccess(categoryList));
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return BadRequest($" get-all category api xảy ra lỗi");
+                return StatusCode(500, ApiResponseHelper.FormatError($"GetAll api failed.There is a exception!"));
             }
             finally
             {
                 _logger.LogInformation($" Get-all category api operation took {stopwatch.ElapsedMilliseconds} ms.");
             }
-        }
-
-
-        //GET api/<CategoryController>/5
-        [HttpGet("GetById")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            return Ok("value");
-        }
-
-        // GET api/<CategoryController>/5
-        [HttpGet("main-page-content")]
-        public async Task<IActionResult> GetByName(string id)
-        {
-            return Ok("value");
         }
 
 
@@ -92,7 +77,7 @@ namespace Category.Api.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return BadRequest($"Quá trình thêm danh mục xảy ra lỗi");
+                return StatusCode(500, ApiResponseHelper.FormatError($"AddCategory api failed.There is a exception!"));
             }
             finally
             {
@@ -119,7 +104,7 @@ namespace Category.Api.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return BadRequest($"Quá trình xóa danh mục xảy ra lỗi");
+                return StatusCode(500, ApiResponseHelper.FormatError($"DeleteCategory api failed.There is a exception!"));
             }
             finally
             {
@@ -147,29 +132,12 @@ namespace Category.Api.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return BadRequest($"Quá trình chỉnh sửa danh mục xảy ra lỗi");
+                return StatusCode(500, ApiResponseHelper.FormatError($"EditCategory api failed.There is a exception!"));
             }
             finally
             {
                 _logger.LogInformation($"Edit category operation took {stopwatch.ElapsedMilliseconds} ms.");
             }
-        }
-        // POST api/<CategoryController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<CategoryController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<CategoryController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

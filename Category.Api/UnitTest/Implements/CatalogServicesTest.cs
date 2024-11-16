@@ -48,7 +48,7 @@ namespace Catalog.Api.UnitTest.Implements
 
 
             //Act
-            var result = await service.GetMainPageContent();
+            var result = await service.GetMainPageContentAsync();
 
             //Assert
             Assert.NotNull(result);

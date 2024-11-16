@@ -8,5 +8,6 @@ namespace Comman.Domain.Elly_ContentManagement
         public Guid Id { get; set; }
         public string? Picture { get; set; }
         public string? Position { get; set; }
+        public int? PictureIndex { get; set; }
     }
 }

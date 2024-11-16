@@ -72,13 +72,15 @@ namespace Catalog.Api.Controllers
             var stopwatch = Stopwatch.StartNew();
             try
             {
-                var result = await _productServices.GetProductDetail(id);
+                _logger.LogInformation("Start get-product-detail API");
+                var result = await _productServices.GetProductDetailAsync(id);
+                _logger.LogInformation($"Done get-product-detail api successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
                 return Ok(ApiResponseHelper.FormatSuccess(result));
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return BadRequest($"API GetProductDetail xảy ra lỗi");
+                return StatusCode(500, ApiResponseHelper.FormatError($"GetProductDetail api failed.There is a exception!"));
             }
             finally
             {
@@ -93,14 +95,15 @@ namespace Catalog.Api.Controllers
             var stopwatch = Stopwatch.StartNew();
             try
             {
+                _logger.LogInformation("Start get-mainpage-data API");
                 var result =  _productServices.GetMainPageProduct();
-
+                _logger.LogInformation($"Done get-mainpage-data api successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
                 return Ok(ApiResponseHelper.FormatSuccess(result));
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return BadRequest($"API GetMainpageData xảy ra lỗi");
+                return StatusCode(500, ApiResponseHelper.FormatError($"GetMainpageData api failed.There is a exception!"));
             }
             finally
             {

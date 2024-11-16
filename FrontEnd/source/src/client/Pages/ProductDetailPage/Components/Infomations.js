@@ -5,7 +5,6 @@ import { setSelectedColor } from "../../../../redux/slices/client/selectedColorS
 import { useDispatch, useSelector } from "react-redux";
 
 const Infomations = ({ data }) => {
-  console.log("dataa", data);
   const { id, name, price, discount, shortDescription } = data.product;
   const catelog = data.product.category;
   const colors = data.product.productDetail.map((item) => item.color);
@@ -27,8 +26,6 @@ const Infomations = ({ data }) => {
     const defaultColor = data.product.productImages.find(
       (image) => image?.defaultColor === true
     );
-    console.log("123", uniqueColorsById);
-
     const infoColor = uniqueColorsById.find(
       (color) => color.id === defaultColor.colorId
     );  

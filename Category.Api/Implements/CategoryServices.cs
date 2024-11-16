@@ -23,7 +23,7 @@ namespace Category.Api.Implements
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CategoryEntity>> GetAll()
+        public async Task<IEnumerable<CategoryEntity>> GetAllAsync()
         {
             var result = await _unitOfWork.Repository<CategoryEntity>().AsNoTracking().ToListAsync();
             return result;

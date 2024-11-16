@@ -31,11 +31,11 @@ namespace Catalog.Api.Implements
             _mapper = mapper;
         }
 
-        public async Task<CatalogDataResponse> GetMainPageContent()
+        public async Task<CatalogDataResponse> GetMainPageContentAsync()
         {
             var productList = _product.GetMainPageProduct();
             var collectionsList = await _collection.GetCollection();
-            var categoryList = await _category.GetAll();
+            var categoryList = await _category.GetAllAsync();
 
 
             var CatalogContent = new CatalogDataResponse()

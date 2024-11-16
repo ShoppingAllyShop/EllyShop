@@ -29,52 +29,21 @@ namespace ContentManagement.API.Controllers
             stopwatch.Start();  // Bắt đầu tính thời gian
             try
             {               
-                var result = _contentManagementServices.GetContentMainPage();              
+                _logger.LogInformation("Start main-page-content API");
+                var result = _contentManagementServices.GetContentMainPage();
+                _logger.LogInformation($"Done main-page-content api successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
                 return Ok(ApiResponseHelper.FormatSuccess(result));
             }           
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return BadRequest($"Quá trình load data main page xảy ra lỗi");
+                return StatusCode(500, ApiResponseHelper.FormatError($"main-page-content api failed.There is a exception!"));
             }
             finally
             {
                 stopwatch.Stop();
                 _logger.LogInformation($"Get main page content operation took {stopwatch.ElapsedMilliseconds} ms.");
             }
-        }
-
-        //// GET: api/<ContentMainPageController>
-        //[HttpGet("get-mainpage")]
-        //public IActionResult GetMainPage()
-        //{
-        //    var result = _contentManagementServices.GetContentMainPage();
-        //    return Ok(ApiResponseHelper.FormatSuccess(result));
-        //}
-
-        // GET api/<ContentManagementController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<ContentManagementController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<ContentManagementController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<ContentManagementController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

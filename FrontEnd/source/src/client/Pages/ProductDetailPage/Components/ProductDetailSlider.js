@@ -46,7 +46,6 @@ const ProductDetailSlider = ({ data }) => {
 
   useEffect(() => {
     // Chuyển về slide đầu tiên khi chon mau
-    console.log("huhu");
     if (slider1.current && slider1.current) {
       slider1.current.slickGoTo(0);  
       slider2.current.slickGoTo(0);

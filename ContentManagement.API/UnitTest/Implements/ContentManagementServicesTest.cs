@@ -5,6 +5,7 @@ using ContentManagement.API.Implements;
 using Moq;
 using CategoryEntity = Comman.Domain.Elly_Catalog.Category;
 using Comman.Domain.Elly_ContentManagement;
+using Xunit;
 
 namespace Catalog.Api.UnitTest.Implements
 {
@@ -23,27 +24,27 @@ namespace Catalog.Api.UnitTest.Implements
                 _mockLogger.Object
                 );
         }
-        //#region GetMainPageContent
-        //[Fact]
-        //public async Task GetMainPageContent_Success_ReturnData()
-        //{
-        //    var service = CreateService();
-        //    var productListData = CreateProductListData();
-        //    var categoryListData = CreateCategoryListData();
-        //    var colletionData = CreateColletionData();
+        #region GetMainPageContent
+        [Fact]
+        public void GetMainPageContent_Success_ReturnData()
+        {
+            var service = CreateService();
+            var productListData = CreateProductListData();
+            var categoryListData = CreateCategoryListData();
+            var colletionData = CreateColletionData();
 
-        //    _mockUnitOfWork.Setup(x => x.Repository<Product>()).Returns(productListData.MockDbSet().Object);
-        //    _mockUnitOfWork.Setup(x => x.Repository<CategoryEntity>()).Returns(categoryListData.MockDbSet().Object);
-        //    _mockUnitOfWork.Setup(x => x.Repository<Collection>()).Returns(colletionData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Product>()).Returns(productListData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<CategoryEntity>()).Returns(categoryListData.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Collection>()).Returns(colletionData.MockDbSet().Object);
 
 
-        //    //Act
-        //    var result = await service.GetContentMainPage();
+            //Act
+            var result = service.GetContentMainPage();
 
-        //    //Assert
-        //    Assert.NotNull(result);
-        //}
-        //#endregion
+            //Assert
+            Assert.NotNull(result);
+        }
+        #endregion
         #region private
         private List<CategoryEntity> CreateCategoryListData()
         {

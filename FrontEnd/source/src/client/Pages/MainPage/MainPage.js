@@ -57,8 +57,8 @@ const MainPage = () => {
 
   return (
     <>    
-      <MainPageSilder/>
-      <div className='mx-20 px-10'>
+      {data && <MainPageSilder data={data.silderList}/>}
+      <div className='mx-20 px-10 pt-10'>
         {data && <ProductListSlider itemShowNumber={4} data={data.productList.promotions}/>}
       </div> 
       <div className='mx-20 px-10'>  
@@ -70,7 +70,7 @@ const MainPage = () => {
       <div className='mx-20 px-10'>
         {data && <ProductListSlider itemShowNumber={4} data={data.productList.favourites}/>}
       </div>
-      <CategoryList/>
+      {data && <CategoryList data={data.silderList}/>}
       {data && <NewSection data={data}/>}
       <Banner/>
       {isLoading && <Loading />}   

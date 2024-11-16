@@ -23,7 +23,7 @@ namespace Catalog.Api.Implements
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
-        public async Task<ProductDetailData> GetProductDetail(string id)
+        public async Task<ProductDetailData> GetProductDetailAsync(string id)
         {
             var guaranteeList = _unitOfWork.Repository<Guarantee>().AsNoTracking().AsEnumerable();
             var guideList = _unitOfWork.Repository<Guide>().AsNoTracking().AsEnumerable();

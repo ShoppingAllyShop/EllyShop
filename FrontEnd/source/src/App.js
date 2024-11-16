@@ -9,7 +9,6 @@ import PrivateRoute from "./routes/PrivateRoute";
 import { ADMIN_ENDPOINT } from "./constants/endpoint";
 import ErrorPage from "./components/ErrorPage";
 import Mainlayout from './client/layout/Mainlayout';
-import './client/scss/MainLayout.scss'
 import MainPage from './client/Pages/MainPage/MainPage';
 import ProductDetailPage from './client/Pages/ProductDetailPage/ProductDetailPage';
 

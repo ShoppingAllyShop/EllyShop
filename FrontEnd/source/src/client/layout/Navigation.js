@@ -26,7 +26,7 @@ const Navigation = ({data}) => {
           data-dropdown-trigger="hover"
           className={`text-black rounded-lg text-center inline-flex items-center h-full 
           ${
-            navigationItem.id === "9beddd21-4193-463c-acc8-66dc3c76e568"
+            navigationItem.id === GUID_ID.SALE_NAV
               ? "text-red-600"
               : ""
           }`}
@@ -192,7 +192,7 @@ const Navigation = ({data}) => {
             <li
               key={item.id}
               className={`p-3 flex-none content-center h-full ${
-                item.id === "5e09a47e-1559-4277-9a99-99078f68e058"
+                item.id === GUID_ID.SHOWROOM_NAV
                   ? "text-red-600"
                   : ""
               }`}
