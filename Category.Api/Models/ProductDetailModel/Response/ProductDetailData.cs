@@ -20,7 +20,6 @@ namespace Catalog.Api.Models.ProductDetailModel.Response
             public ProductInfoData? Product { get; set; }
             public IEnumerable<ProductListByTagModel>? NewProducts { get; set; }
             public IEnumerable<ProductListByTagModel>? Favourites { get; set; }
-            public IEnumerable<Rating>? RatingList { get; set; }
-        
+            public IEnumerable<Rating>? RatingList { get; set; }        
     }
 }

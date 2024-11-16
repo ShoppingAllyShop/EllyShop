@@ -6,8 +6,10 @@ using Category.Api.Controllers;
 using Category.Api.Interfaces;
 using Comman.Domain.Elly_Catalog;
 using Common.Infrastructure.Interfaces;
+using CommonLib.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.ComponentModel.DataAnnotations;
 using Xunit;
 using static CommonLib.Constants.AppEnums;
 using CategoryEntity = Comman.Domain.Elly_Catalog.Category;
@@ -28,9 +30,9 @@ namespace Catalog.Api.UnitTest.Controller
               );
         }
 
-        #region CategoryController
+        #region GetAll
         [Fact]
-        public async Task CategoryController_GetAll_Success_ReturnOk_200()
+        public async Task GetAll_Success_ReturnOk_200()
         {
             //Arrange
             var mockResult = new List<CategoryEntity>
@@ -64,7 +66,7 @@ namespace Catalog.Api.UnitTest.Controller
         }
 
         [Fact]
-        public async Task CategoryController_GetAll_Failed_ThrowException_ReturnInternalServerError_500()
+        public async Task GetAll_Failed_ThrowException_ReturnInternalServerError_500()
         {
             //Arrange
 
@@ -79,9 +81,9 @@ namespace Catalog.Api.UnitTest.Controller
         }
         #endregion
 
-        #region CategoryController_AddCategory
+        #region AddCategory
         [Fact]
-        public async Task CategoryController_AddCategory_Success_ReturnOk_200()
+        public async Task AddCategory_Success_ReturnOk_200()
         {
             //Arrange
 
@@ -107,7 +109,29 @@ namespace Catalog.Api.UnitTest.Controller
         }
 
         [Fact]
-        public async Task CategoryController_AddCategory_Failed_ThrowException_ReturnInternalServerError_500()
+        public async Task AddCategory_Failed_ThrowBusinessException()
+        {
+            //Arrange
+
+            _mockCategoryServices.Setup(x => x.AddCategoryAsync(It.IsAny<CategoryRequest>())).ThrowsAsync(new BusinessException());
+
+            //Act
+            var requestModel = new CategoryRequest
+            {
+                Id = Guid.NewGuid(),
+                CategoryLevel = 1,
+                Name = "abc",
+                Gender = true,
+                ParentId = Guid.NewGuid()
+            };
+            var result = await _categoryController.AddCategory(requestModel);
+            //ActAssert
+            var statusCodeResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, statusCodeResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddCategory_Failed_ThrowException_ReturnInternalServerError_500()
         {
             //Arrange
 
@@ -130,9 +154,9 @@ namespace Catalog.Api.UnitTest.Controller
         }
         #endregion
 
-        #region CategoryController_DeleteCategory
+        #region DeleteCategory
         [Fact]
-        public async Task CategoryController_DeleteCategory_Success_ReturnOk_200()
+        public async Task DeleteCategory_Success_ReturnOk_200()
         {
             //Arrange
             var DeleteCateId = Guid.NewGuid();
@@ -158,13 +182,32 @@ namespace Catalog.Api.UnitTest.Controller
         }
 
         [Fact]
-        public async Task CategoryController_DeleteCategory_Failed_ThrowException_ReturnInternalServerError_500()
+        public async Task DeleteCategory_Failed_ThrowBusinessException_ReturnBadRequest_400()
         {
             //Arrange
-            var DeleteCateId = Guid.NewGuid();
-            var DeleteCateName = "";
+            _mockCategoryServices.Setup(x => x.DeleteCategoryAsync(It.IsAny<Guid>(), It.IsAny<string>())).ThrowsAsync(new BusinessException());
 
-            _mockCategoryServices.Setup(x => x.DeleteCategoryAsync(DeleteCateId, DeleteCateName)).Throws(new Exception());
+            var requestModel = new CategoryRequest
+            {
+                Id = Guid.NewGuid(),
+                CategoryLevel = 1,
+                Name = "abc",
+                Gender = true,
+                ParentId = Guid.NewGuid()
+            };
+
+            var result = await _categoryController.DeleteCategory(requestModel);
+
+            //Assert
+            var statusCodeResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, statusCodeResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteCategory_Failed_ThrowException_ReturnInternalServerError_500()
+        {
+            //Arrange
+            _mockCategoryServices.Setup(x => x.DeleteCategoryAsync(It.IsAny<Guid>(), It.IsAny<string>())).ThrowsAsync(new Exception());
 
             var requestModel = new CategoryRequest
             {
@@ -183,9 +226,9 @@ namespace Catalog.Api.UnitTest.Controller
         }
         #endregion
 
-        #region CategoryController_EditCategory
+        #region EditCategory
         [Fact]
-        public async Task CategoryController_EditCategory_Success_ReturnOk_200()
+        public async Task EditCategory_Success_ReturnOk_200()
         {
             //Arrange
             var mockResult = new CategoryEntity
@@ -217,7 +260,7 @@ namespace Catalog.Api.UnitTest.Controller
         }
 
         [Fact]
-        public async Task CategoryController_EditCategory_Failed_ThrowException_ReturnInternalServerError_500()
+        public async Task EditCategory_Failed_ThrowException_ReturnInternalServerError_500()
         {
             //Arrange
 
@@ -237,6 +280,29 @@ namespace Catalog.Api.UnitTest.Controller
             //Assert
             var statusCodeResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, statusCodeResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task EditCategory_Failed_ThrowBusinessException_ReturnBadRequest_400()
+        {
+            //Arrange
+
+            _mockCategoryServices.Setup(x => x.EditCategoryAsync(It.IsAny<CategoryRequest>())).Throws(new BusinessException());
+
+            var requestModel = new CategoryRequest
+            {
+                Id = Guid.NewGuid(),
+                CategoryLevel = 1,
+                Name = "abc",
+                Gender = true,
+                ParentId = Guid.NewGuid()
+            };
+
+            var result = await _categoryController.EditCategory(requestModel);
+
+            //Assert
+            var statusCodeResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, statusCodeResult.StatusCode);
         }
         #endregion
 

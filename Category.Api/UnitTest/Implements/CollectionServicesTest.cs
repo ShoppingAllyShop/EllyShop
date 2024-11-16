@@ -28,7 +28,7 @@ namespace Catalog.Api.UnitTest.Implements
             _mockUnitOfWork.Setup(x => x.Repository<Collection>()).Returns(colletionData.MockDbSet().Object);
 
             //Act
-            var result = await service.GetCollection();
+            var result = await service.GetCollectionAsync();
 
             //Assert
             Assert.NotNull(result);

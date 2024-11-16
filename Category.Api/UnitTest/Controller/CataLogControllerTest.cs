@@ -28,9 +28,9 @@ namespace Catalog.Api.UnitTest.Controller
             );
 
         }
-        #region CataLogController
+        #region GetMainPageContent
         [Fact]
-        public async Task CataLogController_Success_ReturnOk_200()
+        public async Task GetMainPageContent_Success_ReturnOk_200()
         {
             //Arrange
             CatalogDataResponse mockResult = new CatalogDataResponse
@@ -58,12 +58,11 @@ namespace Catalog.Api.UnitTest.Controller
         }
 
         [Fact]
-        public async Task CataLogController_Failed_ThrowException_ReturnInternalServerError_500()
+        public async Task GetMainPageContent_Failed_ThrowException_ReturnInternalServerError_500()
         {
             //Arrange
 
             _mockcatalogServices.Setup(x => x.GetMainPageContentAsync()).Throws(new Exception());
-
 
             var result = await _catalogController.GetMainPageContent();
 
@@ -72,6 +71,7 @@ namespace Catalog.Api.UnitTest.Controller
             Assert.Equal(500, statusCodeResult.StatusCode);
         }
         #endregion
+
         #region private
         private List<CategoryEntity> CreateCategoryListData()
         {

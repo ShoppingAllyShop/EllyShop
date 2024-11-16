@@ -19,7 +19,6 @@ namespace ContentManagement.API.Implements
 
         public MainPageResponse GetContentMainPage()
         {
-
             var layoutContent = GetLayOut();
             var mainPageContent = GetMainPageData();
 

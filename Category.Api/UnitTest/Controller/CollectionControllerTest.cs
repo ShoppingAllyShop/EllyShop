@@ -25,9 +25,9 @@ namespace Catalog.Api.UnitTest.Controller
             );
         }
 
-        #region CollectionController
+        #region GetCollection
         [Fact]
-        public async Task CollectionController_Success_ReturnOk_200()
+        public async Task GetCollection_Success_ReturnOk_200()
         {
             //Arrange
             List<Collection> mockResult = new List<Collection>
@@ -39,7 +39,7 @@ namespace Catalog.Api.UnitTest.Controller
                 Description = "testing abc",
                 }             
             };
-            _mockCollectionServices.Setup(x => x.GetCollection()).ReturnsAsync(mockResult);
+            _mockCollectionServices.Setup(x => x.GetCollectionAsync()).ReturnsAsync(mockResult);
 
             //Action
             var result = await _collectionController.GetCollection();
@@ -50,7 +50,7 @@ namespace Catalog.Api.UnitTest.Controller
         }
 
         [Fact]
-        public async Task CollectionController_Failed_ThrowException_ReturnInternalServerError_500()
+        public async Task GetCollection_Failed_ThrowException_ReturnInternalServerError_500()
         {
             //Arrange
             CollectionResponse mockResult = new CollectionResponse
@@ -59,7 +59,7 @@ namespace Catalog.Api.UnitTest.Controller
                 Name = CollectionName,
                 Discscription = "testing abc",
             };
-            _mockCollectionServices.Setup(x => x.GetCollection()).Throws(new Exception());
+            _mockCollectionServices.Setup(x => x.GetCollectionAsync()).Throws(new Exception());
 
             //Action
             var result = await _collectionController.GetCollection();

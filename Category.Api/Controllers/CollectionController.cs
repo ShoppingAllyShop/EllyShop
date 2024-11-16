@@ -30,7 +30,7 @@ namespace Catalog.Api.Controllers
             {
                 var stopwatch = Stopwatch.StartNew();
                 _logger.LogInformation("Start get-collection API");
-                var collectionList = await _collectionServices.GetCollection();
+                var collectionList = await _collectionServices.GetCollectionAsync();
                 _logger.LogInformation($"Done get-collection api successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
                 return Ok(ApiResponseHelper.FormatSuccess(collectionList));
             }

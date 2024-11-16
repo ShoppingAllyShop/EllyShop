@@ -23,9 +23,9 @@ namespace ContentManagement.API.UnitTest.Controller
             );
 
         }
-        #region ContentManagementController
+        #region GetMainPageContent
         [Fact]
-        public void ContentManagementController_Success_ReturnOk_200()
+        public void GetMainPageContent_Success_ReturnOk_200()
         {
             //Arrange
             MainPageResponse mockResult = new MainPageResponse
@@ -45,14 +45,13 @@ namespace ContentManagement.API.UnitTest.Controller
         }
 
         [Fact]
-        public void ContentManagementController_Failed_ThrowException_ReturnInternalServerError_500()
+        public void GetMainPageContent_Failed_ThrowException_ReturnInternalServerError_500()
         {
             //Arrange
-
             _mockcatalogServices.Setup(x => x.GetContentMainPage()).Throws(new Exception());
 
             //Act
-            var result =  _contentManagementController.GetMainPageContent();
+            var result = _contentManagementController.GetMainPageContent();
 
             //Assert
             var statusCodeResult = Assert.IsType<ObjectResult>(result);
@@ -88,7 +87,6 @@ namespace ContentManagement.API.UnitTest.Controller
                Navigation = CreateNavData()
             };
         }
-
         private List<Navigation> CreateNavData()
         {
             return new List<Navigation>
@@ -115,7 +113,6 @@ namespace ContentManagement.API.UnitTest.Controller
                 }
             }; 
         }
-
         private FooterData CreateFooterData()
         {
             return new FooterData
@@ -126,7 +123,6 @@ namespace ContentManagement.API.UnitTest.Controller
             };
            
         }
-
         private List<SocialMedia> CreateSocialMediaData()
         {
             return new List<SocialMedia>
@@ -300,6 +296,5 @@ namespace ContentManagement.API.UnitTest.Controller
             };
         }
         #endregion
-
     }
 }
