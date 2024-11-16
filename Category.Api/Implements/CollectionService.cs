@@ -17,7 +17,7 @@ namespace Catalog.Api.Implements
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
-        public async Task<IEnumerable<Collection>> GetCollection()
+        public async Task<IEnumerable<Collection>> GetCollectionAsync()
         {
             var result = await _unitOfWork.Repository<Collection>().AsNoTracking().ToListAsync();
             return result;

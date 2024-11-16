@@ -34,7 +34,7 @@ namespace Catalog.Api.Implements
         public async Task<CatalogDataResponse> GetMainPageContentAsync()
         {
             var productList = _product.GetMainPageProduct();
-            var collectionsList = await _collection.GetCollection();
+            var collectionsList = await _collection.GetCollectionAsync();
             var categoryList = await _category.GetAllAsync();
 
 

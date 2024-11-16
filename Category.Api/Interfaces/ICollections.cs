@@ -5,6 +5,6 @@ namespace Catalog.Api.Interfaces
 {
     public interface ICollections
     {
-        Task<IEnumerable<Collection>> GetCollection();
+        Task<IEnumerable<Collection>> GetCollectionAsync();
     }
 }

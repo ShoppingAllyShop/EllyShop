@@ -15,6 +15,5 @@ namespace Catalog.Api.Models.ProductModel
         public string? TagDescription { get; set; }
         public string ? TagTitle { get; set; }
         public string? TagName { get; set; }
-
     }
 }

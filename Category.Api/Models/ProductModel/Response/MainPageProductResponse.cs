@@ -6,6 +6,5 @@
         public IEnumerable<ProductListByTagModel>? BestSellers { get; set; }
         public IEnumerable<ProductListByTagModel>? Favourites { get; set; }
         public IEnumerable<ProductListByTagModel>? Promotions { get; set; }
-
     }
 }
