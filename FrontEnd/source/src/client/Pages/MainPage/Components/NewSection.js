@@ -3,7 +3,6 @@ import NewsCard from "./NewsCard";
 import ShowRoom from "./ShowRoom";
 
 const NewSection = ({data}) => {
-  console.log("221312",data)
   const { branchList,newsList,prizeList } = data
   return (
     <section className="pl-[100px] pr-[100px]">

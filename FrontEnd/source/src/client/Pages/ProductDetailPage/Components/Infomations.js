@@ -52,7 +52,6 @@ const Infomations = ({ data }) => {
         <div className="pt-2 w-full h-full">
           {uniqueColorsById &&
             uniqueColorsById.map((item) => {
-              console.log("asdasd", item);
               return (
                 <button
                   onClick={() => handleClickColor(item)}
