@@ -7,7 +7,7 @@ namespace Comman.Domain.Models
     {
         public Category()
         {
-            Products = new HashSet<Product>();
+            Product = new HashSet<Product>();
         }
 
         public Guid Id { get; set; }
@@ -19,6 +19,6 @@ namespace Comman.Domain.Models
         /// </summary>
         public bool? Gender { get; set; }
 
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<Product> Product { get; set; }
     }
 }

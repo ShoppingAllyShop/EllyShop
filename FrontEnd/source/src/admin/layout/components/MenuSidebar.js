@@ -59,7 +59,6 @@ const MenuSidebar = ({data}) => {
   };
 
   const hanldeClickMenu = () => {
-    console.log('hanldeClickMenu')
     setIsExxpanded(!isExpanded)
   };
 

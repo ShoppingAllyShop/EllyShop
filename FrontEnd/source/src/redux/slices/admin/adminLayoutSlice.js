@@ -9,7 +9,6 @@ const adminLayoutSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      console.log('action',action)
         state.user = action.payload
     }
   },

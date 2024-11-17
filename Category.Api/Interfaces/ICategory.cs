@@ -1,12 +1,13 @@
-﻿using CategoryEntity = Comman.Domain.Models.Category;
+﻿using CategoryEntity = Comman.Domain.Elly_Catalog.Category;
 using System.Collections;
-using Category.Api.Models.Request;
+using Catalog.Api.Models.CategoryModel.Request;
+
 
 namespace Category.Api.Interfaces
 {
     public interface ICategory
     {
-        Task<IEnumerable<CategoryEntity>> GetAll();
+        Task<IEnumerable<CategoryEntity>> GetAllAsync();
         Task<string> AddCategoryAsync (CategoryRequest request);
         Task<string> DeleteCategoryAsync(Guid id, string name);
         Task<CategoryEntity> EditCategoryAsync(CategoryRequest request);
