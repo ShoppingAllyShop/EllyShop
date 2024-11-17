@@ -16,6 +16,7 @@ var issuer = builder.Configuration["Authentication:Issuer"];
 var audience = builder.Configuration["Authentication:Audience"];
 var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
 builder.Services.AddJwtAuthentication(secretKeyBytes, issuer, audience);
+Console.Title = "API Gate Way service";
 
 //Author config
 //builder.Services.AddAuthorization(options =>

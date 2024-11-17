@@ -10,5 +10,12 @@ export const ADMIN_ENDPOINT = {
 export const PUPLIC_ENDPOINT = {
   LOGIN: "user/login",
   SOCIAL_LOGIN: "user/social-login",
-  CATEGORY_GET_ALL: "category/get-all"
+  CATEGORY_GET_ALL: "category/get-all",
 };
+
+export const CLIENT_ENDPOINT = {
+  MAIN_PAGE_CONTENT: "contentmanagement/main-page-content",
+  CATALOG_CONTENT: "catalog/main-page-content",
+  PRODUCT_CONTENT: "product/get-product-detail",
+};
+

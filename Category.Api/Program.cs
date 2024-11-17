@@ -10,22 +10,30 @@ using CommonLib.Constants;
 using AutoMapper;
 using Category.Api.Mapper;
 using Microsoft.Extensions.DependencyInjection;
+using Catalog.Api.Interfaces;
+using Catalog.Api.Implements;
+using Comman.Domain.Elly_Catalog;
 
 var builder = WebApplication.CreateBuilder(args);
+Console.Title = "Catalog service";
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 //builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<EllyShopContext>(option => {
+
+builder.Services.AddDbContext<Elly_CatalogContext>(option => {
     option.UseSqlServer(builder.Configuration.GetConnectionString("EllyShopDB"));
 });
 
 //Add DI
 builder.Services.AddTransient<ICategory, CategoryServices>();
-builder.Services.AddScoped<IUnitOfWork<EllyShopContext>, UnitOfWork<EllyShopContext>>();
+builder.Services.AddTransient<IProduct, ProductService>();
+builder.Services.AddTransient<ICollections, CollectionService>();
+builder.Services.AddTransient<ICatalog, CatalogService>();
+builder.Services.AddScoped<IUnitOfWork<Elly_CatalogContext>, UnitOfWork<Elly_CatalogContext>>();
 
 //Add cors
 var stringUrls = builder.Configuration.GetSection("AllowedOrigins:Urls").Get<List<string>>().ToArray();
