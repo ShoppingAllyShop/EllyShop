@@ -7,13 +7,13 @@ namespace Comman.Domain.Models
     {
         public Color()
         {
-            ProductDetails = new HashSet<ProductDetail>();
+            ProductDetail = new HashSet<ProductDetail>();
         }
 
         public Guid Id { get; set; }
         public string? Name { get; set; }
         public string? ColorCode { get; set; }
 
-        public virtual ICollection<ProductDetail> ProductDetails { get; set; }
+        public virtual ICollection<ProductDetail> ProductDetail { get; set; }
     }
 }

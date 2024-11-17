@@ -16,21 +16,26 @@ namespace Comman.Domain.Models
         {
         }
 
-        public virtual DbSet<Branch> Branches { get; set; } = null!;
+        public virtual DbSet<Branch> Branch { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<Collection> Collections { get; set; } = null!;
         public virtual DbSet<Color> Colors { get; set; } = null!;
         public virtual DbSet<Contact> Contacts { get; set; } = null!;
+        public virtual DbSet<GeneralInfomation> GeneralInfomation { get; set; } = null!;
+        public virtual DbSet<Guarantee> Guarantee { get; set; } = null!;
         public virtual DbSet<Image> Images { get; set; } = null!;
         public virtual DbSet<Navigation> Navigations { get; set; } = null!;
         public virtual DbSet<News> News { get; set; } = null!;
+        public virtual DbSet<NewsMedia> NewsMedia { get; set; } = null!;
+        public virtual DbSet<Policy> Policy { get; set; } = null!;
+        public virtual DbSet<Prize> Prize { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductDetail> ProductDetails { get; set; } = null!;
         public virtual DbSet<RefreshTokens> RefreshTokens { get; set; } = null!;
         public virtual DbSet<Roles> Roles { get; set; } = null!;
         public virtual DbSet<Silde> Sildes { get; set; } = null!;
         public virtual DbSet<Size> Sizes { get; set; } = null!;
-        public virtual DbSet<SoccialMedium> SoccialMedia { get; set; } = null!;
+        public virtual DbSet<SocialMedia> SocialMedia { get; set; } = null!;
         public virtual DbSet<Users> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -46,13 +51,17 @@ namespace Comman.Domain.Models
         {
             modelBuilder.Entity<Branch>(entity =>
             {
-                entity.HasNoKey();
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.ToTable("Branch");
+                entity.Property(e => e.Address).HasMaxLength(255);
 
-                entity.Property(e => e.Address).HasMaxLength(50);
+                entity.Property(e => e.BranchName).HasMaxLength(255);
 
-                entity.Property(e => e.City).HasMaxLength(50);
+                entity.Property(e => e.CityName).HasMaxLength(50);
+
+                entity.Property(e => e.Region)
+                    .HasMaxLength(50)
+                    .HasComment("Phân chia theo vùng");
             });
 
             modelBuilder.Entity<Category>(entity =>
@@ -99,10 +108,26 @@ namespace Comman.Domain.Models
                 entity.Property(e => e.Phone).HasMaxLength(12);
             });
 
+            modelBuilder.Entity<GeneralInfomation>(entity =>
+            {
+                entity.HasKey(e => e.Title);
+
+                entity.Property(e => e.Title).HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<Guarantee>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Contents).HasMaxLength(500);
+
+                entity.Property(e => e.Icon).HasMaxLength(50);
+
+                entity.Property(e => e.Title).HasMaxLength(255);
+            });
+
             modelBuilder.Entity<Image>(entity =>
             {
-                entity.ToTable("Image");
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Picture).HasMaxLength(255);
@@ -112,7 +137,7 @@ namespace Comman.Domain.Models
                 entity.Property(e => e.Type).HasMaxLength(50);
 
                 entity.HasOne(d => d.Product)
-                    .WithMany(p => p.Images)
+                    .WithMany(p => p.Image)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Image_Product1");
@@ -133,61 +158,94 @@ namespace Comman.Domain.Models
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.NewsContent).HasColumnType("text");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Image).HasMaxLength(255);
+
+                entity.Property(e => e.Title).HasMaxLength(255);
+
+            });
+
+            modelBuilder.Entity<NewsMedia>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Image).HasMaxLength(255);
+
+                entity.Property(e => e.NewsMediaContent).HasComment("Content");
+
+                entity.Property(e => e.Title).HasMaxLength(255);
+            });
+
+
+            modelBuilder.Entity<Policy>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Title).HasMaxLength(255);
+
+                entity.Property(e => e.Url).HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<Prize>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Image)
+                    .HasMaxLength(500)
+                    .HasColumnName("image");
+
+                entity.Property(e => e.NewContent).HasMaxLength(255);
 
                 entity.Property(e => e.Title).HasMaxLength(255);
             });
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.ToTable("Product");
-
                 entity.Property(e => e.Id).HasMaxLength(50);
 
                 entity.Property(e => e.Discount).HasColumnType("decimal(10, 2)");
 
                 entity.Property(e => e.Name).HasMaxLength(50);
 
+                entity.Property(e => e.PercentDiscount).HasColumnType("decimal(8, 2)");
+
                 entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
 
-                entity.Property(e => e.ShortDescription).HasColumnType("text");
-
                 entity.HasOne(d => d.Category)
-                    .WithMany(p => p.Products)
+                    .WithMany(p => p.Product)
                     .HasForeignKey(d => d.CategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_Category");
 
                 entity.HasOne(d => d.Collection)
-                    .WithMany(p => p.Products)
+                    .WithMany(p => p.Product)
                     .HasForeignKey(d => d.CollectionId)
                     .HasConstraintName("FK_Product_Collection");
             });
 
             modelBuilder.Entity<ProductDetail>(entity =>
             {
-                entity.ToTable("ProductDetail");
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.DetailDecription).HasColumnType("text");
-
-                entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.ProductId).HasMaxLength(50);
 
                 entity.HasOne(d => d.Color)
-                    .WithMany(p => p.ProductDetails)
+                    .WithMany(p => p.ProductDetail)
                     .HasForeignKey(d => d.ColorId)
                     .HasConstraintName("FK_ProductDetail_Color");
 
                 entity.HasOne(d => d.Product)
-                    .WithMany(p => p.ProductDetails)
+                    .WithMany(p => p.ProductDetail)
                     .HasForeignKey(d => d.ProductId)
                     .HasConstraintName("FK_ProductDetail_Product");
 
                 entity.HasOne(d => d.Size)
-                    .WithMany(p => p.ProductDetails)
+                    .WithMany(p => p.ProductDetail)
                     .HasForeignKey(d => d.SizeId)
                     .HasConstraintName("FK_ProductDetail_Size");
             });
@@ -245,7 +303,7 @@ namespace Comman.Domain.Models
                 entity.Property(e => e.Type).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<SoccialMedium>(entity =>
+            modelBuilder.Entity<SocialMedia>(entity =>
             {
                 entity.HasNoKey();
 

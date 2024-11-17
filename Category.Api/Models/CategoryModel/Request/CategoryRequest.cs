@@ -1,4 +1,4 @@
-﻿namespace Category.Api.Models.Request
+﻿namespace Catalog.Api.Models.CategoryModel.Request
 {
     public class CategoryRequest
     {

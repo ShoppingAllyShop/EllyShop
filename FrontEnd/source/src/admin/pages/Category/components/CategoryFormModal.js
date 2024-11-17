@@ -35,7 +35,6 @@ const CategoryFormModal = ({ level, categoryData, modalType }) => {
   });
 
   const handleShowResult = (content, type) => {
-    console.log('handleShowResult')
     dispatch(setAlert({isDisplay:true, content:content, type:type }));
     dispatch(triggerEditModal({isDisplay:false}))
     
@@ -81,15 +80,13 @@ const CategoryFormModal = ({ level, categoryData, modalType }) => {
       categoryLevel: level,
       parentId: parentId
     };
-    console.log('newCate',newCate)
 
     //Call login api
     const endpoint = ADMIN_ENDPOINT.CATEGORY_ADD;
-    const [addResponse] = await Promise.all([
+    const [addResponse, ] = await Promise.all([
       auth.post(endpoint, newCate)
     ]);
 
-    console.log('addResponse',addResponse)
     if (addResponse?.data?.status === RESPONSE_API_STATUS.SUCCESS) {
       handleShowResult("Bạn đã thêm danh mục mới thành công", ALERT_TYPE.SUCCESS)
 
@@ -108,7 +105,6 @@ const CategoryFormModal = ({ level, categoryData, modalType }) => {
       parentId: selectedCategory[0].parentId,
       gender: data.gender != null ? JSON.parse(data.gender) : data.gender
     };
-    console.log('updateCate',updatedCate)
   
     //Call login api
     const endpoint = ADMIN_ENDPOINT.CATEGORY_EDIT;
@@ -116,7 +112,6 @@ const CategoryFormModal = ({ level, categoryData, modalType }) => {
       auth.post(endpoint, updatedCate)
     ]);
 
-    console.log('editResponse',editResponse)
     if (editResponse?.data?.status === RESPONSE_API_STATUS.SUCCESS) {
       handleShowResult("Bạn đã thêm danh mục mới thành công", ALERT_TYPE.SUCCESS)
 

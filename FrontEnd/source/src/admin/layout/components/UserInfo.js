@@ -10,7 +10,6 @@ import { setUser } from "../../../redux/slices/admin/adminLayoutSlice";
 import storageUtil from "../../../utils/storageUtil";
 
 const UserInfo = ({ user }) => {
-  console.log('user', user)
   const [isDisplayDropdown, setIsDisplayDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
@@ -56,13 +55,11 @@ const UserInfo = ({ user }) => {
   };
 
   const handleClickUserInfo = () => {
-    console.log("isDisplayDropdown", isDisplayDropdown);
     setIsDisplayDropdown(!isDisplayDropdown);
   };
 
   const handleLogout = () => {
     storageUtil.removeItem(USER_LOCAL_STORAGE_KEY, STORAGE_TYPE.SESSION);
-    console.log('cmm1')
     dispatch(setUser({}));
     navigate("login");
   };

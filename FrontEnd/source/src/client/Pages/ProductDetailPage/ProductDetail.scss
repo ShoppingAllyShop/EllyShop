@@ -1,0 +1,13 @@
+.custom-after::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 0, 0, 0.5); /* Màu nền nửa trong suốt */
+}
+
+.slick-slide.slick-active.slick-current{
+    .small-image-block{
+      border: 1px solid gray;
+    }
+}  

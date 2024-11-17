@@ -1,20 +1,21 @@
 ﻿using AutoMapper;
+using Catalog.Api.Models.CategoryModel.Request;
 using Category.Api.Interfaces;
-using Category.Api.Models.Request;
+using Comman.Domain.Elly_Catalog;
 using Comman.Domain.Models;
 using Common.Infrastructure;
 using Common.Infrastructure.Interfaces;
 using CommonLib.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using CategoryEntity = Comman.Domain.Models.Category;
+using CategoryEntity = Comman.Domain.Elly_Catalog.Category;
 namespace Category.Api.Implements
 {
     public class CategoryServices : ICategory
     {
-        private readonly IUnitOfWork<EllyShopContext> _unitOfWork;
+        private readonly IUnitOfWork<Elly_CatalogContext> _unitOfWork;
         private readonly ILogger<CategoryServices> _logger;
         private readonly IMapper _mapper;
-        public CategoryServices(IUnitOfWork<EllyShopContext> unitOfWork, ILogger<CategoryServices> logger,
+        public CategoryServices(IUnitOfWork<Elly_CatalogContext> unitOfWork, ILogger<CategoryServices> logger,
             IMapper mapper)
         {
             _unitOfWork = unitOfWork;
@@ -22,7 +23,7 @@ namespace Category.Api.Implements
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CategoryEntity>> GetAll()
+        public async Task<IEnumerable<CategoryEntity>> GetAllAsync()
         {
             var result = await _unitOfWork.Repository<CategoryEntity>().AsNoTracking().ToListAsync();
             return result;
@@ -45,31 +46,22 @@ namespace Category.Api.Implements
             };
             await _unitOfWork.Repository<CategoryEntity>().AddAsync(newCategory);
             var saveResult = await _unitOfWork.SaveChangesAsync();
-
-            if (saveResult > 0)
-            {
-                _logger.LogInformation($"Create new category successfully: {newCategory}");
-                return newCategory.Name;
-            }
-            return string.Empty;
+    
+            return newCategory.Name;
         }
+
         public async Task<string> DeleteCategoryAsync(Guid id, string name)
         {
             var category = await _unitOfWork.Repository<CategoryEntity>()
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (category == null) throw new BusinessException("Danh mục này không tồn tại");
-            
-            _unitOfWork.Repository<CategoryEntity>().Remove(category);
-            var saveResult = await _unitOfWork.SaveChangesAsync();
 
-            if (saveResult > 0)
-            {
-                _logger.LogInformation($"Remove category successfully.Id: {id}, Name: {name}");
-                return name;
-            }
-            _logger.LogWarning($"Do not have category was removed");
-            return string.Empty;
+            _unitOfWork.Repository<CategoryEntity>().Remove(category);
+            await _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation($"Remove category successfully.Id: {id}, Name: {name}");
+            return name;
         }
 
         public async Task<CategoryEntity> EditCategoryAsync(CategoryRequest request)
@@ -84,6 +76,7 @@ namespace Category.Api.Implements
             await _unitOfWork.SaveChangesAsync();
             return updatedCategory;
         }
+
     }
 }
 
