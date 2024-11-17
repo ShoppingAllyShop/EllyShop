@@ -67,11 +67,14 @@ namespace Catalog.Api.Implements
                         {
                             Id = x.Id,
                             Name = x.Name,
+                            Category = x.Category,
                             ShortDescription = x.ShortDescription,
                             DetailDecription = x.DetailDecription,
                             Price = x.Price,
                             PercentDiscount = x.PercentDiscount,
-                            ProductImages = x.ProductImages.Select(x => new ProductImageModel { Id = x.Id, ProductId = x.ProductId, Picture = x.Picture, ImageIndex = x.ImageIndex }).AsEnumerable(),
+                            Discount = x.Discount,
+                            ProductDetail = x.ProductDetail.Select(x => new ProductDetail { Id = x.Id, Color = x.Color, Size = x.Size, Quantity = x.Quantity }),
+                            ProductImages = x.ProductImages.Select(x => new ProductImageModel { Id = x.Id, ProductId = x.ProductId, Picture = x.Picture, ImageIndex = x.ImageIndex, Type = x.Type, ColorId = x.ColorId, DefaultColor = x.DefaultColor  }).AsEnumerable(),
                         }).FirstOrDefaultAsync();
             if (result == null) throw new BusinessException("Sản phẩm không tìm thấy");
             return result;

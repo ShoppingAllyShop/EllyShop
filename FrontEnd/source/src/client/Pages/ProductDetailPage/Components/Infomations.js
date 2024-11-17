@@ -3,19 +3,21 @@ import HtmlContent from "../../../../components/HtmlContent";
 import { formatCurrency } from "../../../../utils/numberUtil";
 import { setSelectedColor } from "../../../../redux/slices/client/selectedColorSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { GUID_ID } from "../../../../constants/common";
 
 const Infomations = ({ data }) => {
-  const { id, name, price, discount, shortDescription } = data.product;
-  const catelog = data.product.category;
-  const colors = data.product.productDetail.map((item) => item.color);
+  const { id, name, price, discount, shortDescription } = data?.product;
+  const catelog = data?.product?.category;
+  console.log("catelog",catelog)
+  const colors = data?.product?.productDetail?.map((item) => item.color);
   const uniqueColorsById = [
-    ...new Map(colors.map((item) => [item.id, item])).values(),
+    ...new Map(colors?.map((item) => [item.id, item])).values(),
   ].sort((a, b) => a.name.localeCompare(b.name));
-  const sizes = data.product.productDetail.map((item) => item.size);
+  const sizes = data?.product?.productDetail?.map((item) => item.size);
   const uniqueSizesById = [
-    ...new Map(sizes.map((item) => [item?.id, item])).values(),
+    ...new Map(sizes?.map((item) => [item?.id, item])).values(),
   ].sort((a, b) => a?.size1.localeCompare(b?.size1));
-  const guarantees = data.guaranteeList;
+  const guarantees = data?.guaranteeList;
   const [selectedSize, setSelectedSize] = useState("");
   const [activeButtonId, setActiveButtonId] = useState(null);
   const isHasDiscount = discount != null;
@@ -23,15 +25,15 @@ const Infomations = ({ data }) => {
   const selectedColor = useSelector((state) => state?.selectedColor?.data);
 
   useEffect(() => {
-    const defaultColor = data.product.productImages.find(
-      (image) => image?.defaultColor === true
+    const defaultColor = data?.product?.productImages?.find(
+      (image) => image.defaultColor === true
     );
     const infoColor = uniqueColorsById.find(
-      (color) => color.id === defaultColor.colorId
+      (color) => color?.id === defaultColor?.colorId
     );  
-    setActiveButtonId(defaultColor.colorId);
+    setActiveButtonId(defaultColor?.colorId);
 
-    dispatch(setSelectedColor({ id: defaultColor.colorId, name: infoColor.name}));
+    dispatch(setSelectedColor({ id: defaultColor?.colorId, name: infoColor?.name}));
   }, []);
 
   const handleClickColor = (item) => {
@@ -164,7 +166,7 @@ const Infomations = ({ data }) => {
       </div>
       <div className="choose-option-order p-4 w-full bg-gray-300">
         {renderChooseColor()}
-        {catelog.parentId === "abf5840d-a58a-4064-a961-de7b318c6799" &&
+        {catelog?.parentId === GUID_ID.WOMENSHOES_PRODUCTDETAIL &&
           renderChooseSize()}
         {renderPurchaseOrder()}
       </div>
