@@ -14,3 +14,8 @@ export const ALERT_TYPE = {
   ERROR: 1,
   WARNING: 2,
 };
+
+export const CONFIRM_MODAL_TYPE = {
+  NORMAL: 0,
+  DELETE: 1
+}

@@ -25,6 +25,7 @@
     <ProjectReference Include="..\CommonLib.Configurations\CommonLib.Configurations.csproj" />
     <ProjectReference Include="..\CommonLib.Constants\CommonLib.Constants.csproj" />
     <ProjectReference Include="..\CommonLib.Enum\CommonLib.Enums.csproj" />
+    <ProjectReference Include="..\CommonLib.Exceptions\CommonLib.Exceptions.csproj" />
     <ProjectReference Include="..\CommonLib.Helpers\CommonLib.Helpers.csproj" />
     <ProjectReference Include="..\CommonLib.Models\CommonLib.Models.csproj" />
     <ProjectReference Include="..\CommonLib.TestHelpers\CommonLib.TestHelpers.csproj" />

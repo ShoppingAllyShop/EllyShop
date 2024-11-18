@@ -10,6 +10,7 @@ export const BUTTON_NAME = {
   CLOSE: "Đóng",
   EDIT: "Chỉnh sửa",
   ADD: "Thêm",
+  UPDATE: "Cập nhật"
 };
 
 //Button type
@@ -21,6 +22,17 @@ export const BUTTON_TYPE = {
   CLOSE: "Close",
   EDIT: "Edit",
   ADD: "Add",
+  UPDATE: "Update",
+  NEXT: "Next",
+  PREV: "Prev",
+  NUMBER: "Number",
+  PAGE_SIZE_SELECTION: "Page size selection",
+  HEADER_TABLE_NAME: "Header table name"
+};
+
+//Button type
+export const FORM_ELEMENTS = {
+  SEARCH_INPUT: "Search input"
 };
 
 //Guid Id
@@ -68,4 +80,22 @@ export const RESPONSE_API_STATUS = {
 };
 
 //internal role in company except customer
-export const INTERNAL_ROLES_ARRAY = ["Admin", "Store Manager"];
+export const INTERNAL_ROLES_ARRAY = [
+  'Admin', 'Store Manager'
+]
+
+export const SORT_TYPE = {
+  ASCENDING: 'asc',
+  DESCENDING: 'desc'
+}
+
+export const ROLE_NAMES = {
+  CUSTOMER: "Customer",
+  ADMIN: "Admin"
+}
+
+export const PAGE_TYPE = {
+  ADMIN_PAGE: "AdminPage",
+  CLIENT_PAGE: "ClientPage"
+}
+
