@@ -14,10 +14,14 @@ namespace Comman.Domain.Elly_User
         public string UserName { get; set; } = null!;
         public string? PasswordHash { get; set; }
         public string Email { get; set; } = null!;
-        public DateTime? CreatedTime { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public string? ProfilePicture { get; set; }
+        public string? Phone { get; set; }
         public Guid RoleId { get; set; }
 
         public virtual Roles Role { get; set; } = null!;
+        public virtual Employees? Employees { get; set; }
         public virtual ICollection<RefreshTokens> RefreshTokens { get; set; }
     }
 }

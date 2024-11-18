@@ -11,6 +11,7 @@ import ErrorPage from "./components/ErrorPage";
 import Mainlayout from './client/layout/Mainlayout';
 import MainPage from './client/Pages/MainPage/MainPage';
 import ProductDetailPage from './client/Pages/ProductDetailPage/ProductDetailPage';
+import UserPage from "./admin/pages/UserAccount/UserPage";
 
 function App() {
   
@@ -22,6 +23,7 @@ function App() {
         <Route path="/admin" element={<PrivateRoute endpoint=""><AdminLayout /></PrivateRoute>}>
           <Route index path="/admin/dashboard" element={<PrivateRoute endpoint="/dashboard"><Dashboard /></PrivateRoute>}/>
           <Route index path="/admin/category" element={<PrivateRoute endpoint="/category"><Category /></PrivateRoute>} />
+          <Route index path="/admin/user" element={<PrivateRoute endpoint="/user"><UserPage /></PrivateRoute>} />
         </Route>
         <Route path="/" element={<Mainlayout />}>
           <Route index path="/" element={<MainPage />} />

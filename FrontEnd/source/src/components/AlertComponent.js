@@ -6,7 +6,7 @@ const AlertComponent = ({content, type, isShow}) => {
   let iconClassName = ""
   let idName = ""
   let alertBackgroundColor = ""
-
+  
   const initData = type => {
     switch (type) {
       case ALERT_TYPE.SUCCESS:
@@ -36,7 +36,7 @@ const AlertComponent = ({content, type, isShow}) => {
   return (
     <div
       id={idName}
-      className={`${alertBackgroundColor} flex items-center w-full max-w-xs p-4 mb-4
+      className={`${alertBackgroundColor} inline-flex items-center w-fit p-4 mb-4
         absolute top-0 left-1/2 -translate-x-1/2 translate-y-2
        text-gray-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 
        transform transition-transform duration-500 ease-in-out 
@@ -45,19 +45,19 @@ const AlertComponent = ({content, type, isShow}) => {
     >
       <div className={`inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg ${classNameDiv}`}>
         <i className={iconClassName}></i>
-        <span class="sr-only">Check icon</span>
+        <span className="sr-only">Check icon</span>
       </div>
-      <div className="ms-3 text-sm font-normal">{content}</div>
+      <div className="ms-3 text-sm font-normal text-gray-600">{content}</div>
       <button
         type="button"
-        className="inline-flex items-center justify-center h-8 w-8 ms-auto -mx-1.5 -my-1.5 
-                 text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 
-                 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="inline-flex items-center justify-center h-8 ml-2 -my-1.5 
+                  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 
+                  dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
         data-dismiss-target={`#${idName}`}
         aria-label="Close"
       >
         <span className="sr-only">Close</span>
-        <i class="fa-solid fa-xmark"></i>
+        <i className="fa-solid fa-xmark"></i>
       </button>
     </div>
   );

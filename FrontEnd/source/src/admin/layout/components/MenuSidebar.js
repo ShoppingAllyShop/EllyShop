@@ -13,7 +13,7 @@ const MenuSidebar = ({data}) => {
       <>
         <svg
           data-accordion-icon=""
-          className="w-3 h-3 rotate-180 shrink-0 ml-1"
+          className="w-3 h-3 rotate-180 shrink-0 ml-auto"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -63,7 +63,7 @@ const MenuSidebar = ({data}) => {
   };
 
   return (
-    <div className="menu-item" key={data.id}>
+    <>
       <h2 id={accordionHeadingId}>
         <button
           type="button"
@@ -75,7 +75,7 @@ const MenuSidebar = ({data}) => {
           onMouseOut={handleMouseOutMenuItem}
           onClick={hanldeClickMenu}
         >
-          <span className="flex items-center w-full place-content-between">
+          <span className="flex items-center w-full mr-5">
             <i className={`fa fa-${data.icon} mr-2`} />
             {data.name}
             {data.children && renderDropdownIcon()}
@@ -89,7 +89,7 @@ const MenuSidebar = ({data}) => {
       >
         {data.children && renderSubMenuSidebar(data.children)}
       </div>
-    </div>
+    </>
   );
 };
 

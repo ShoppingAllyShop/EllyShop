@@ -1,23 +1,14 @@
-﻿using Comman.Domain.Models;
-using CommonLib.Constants;
+﻿using CommonLib.Exceptions;
 using CommonLib.Helpers;
-using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Text.Json.Serialization;
-using User.Api.Implements;
 using User.Api.Interfaces;
 using User.Api.Models.Requests;
-using Newtonsoft.Json;
-using System;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace User.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -29,13 +20,55 @@ namespace User.Api.Controllers
             _logger = logger;
         }
 
-        [HttpPost("register")]
+        [Route("api/admin/user/search-employee-user")]
+        [HttpGet()]
+        public async Task<IActionResult> SearchEmployeeUser(int? pageNumber, int? pageSize, string? sortBy,
+                                                            string? sortOrder, string? searchInput)
+        {   
+            try
+            {
+                _logger.LogInformation($"Start search employee");
+                var stopwatch = Stopwatch.StartNew();
+               
+                var result = await _userServices.SearchEmployeeUserAsync(pageNumber, pageSize, sortBy, sortOrder, searchInput);
+                _logger.LogInformation($"Create account successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
+                return Ok(ApiResponseHelper.FormatSuccess(new { UserData = result}));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Call SearchEmployeeUser Api was failed.There is a exception!");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Call Api SearchEmployeeUser thất bại"));
+            }
+        }
+
+        [Route("api/admin/user")]
+        [HttpGet()]
+        public  async Task<IActionResult> GetDataAdminUserPage()
+        {
+            try
+            {
+                _logger.LogInformation($"Start get data admin page");
+                var stopwatch = Stopwatch.StartNew();
+                var result = await _userServices.GetDataAdminUserPageAsync();
+                _logger.LogInformation($"Create account successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
+                return Ok(ApiResponseHelper.FormatSuccess(result));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Call GeDataAdminUserPage Api was failed.There is a exception!");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Call Api GeDataAdminUserPage thất bại"));
+            }
+        }
+
+        [Route("api/[controller]/register")]
+        [HttpPost()]
         public async Task<IActionResult> RegisterUser([FromBody] UserAuthRequest request)
         {
             try
             {
+                _logger.LogInformation($"Start register user");
                 var stopwatch = Stopwatch.StartNew();
-                var result = await _userServices.CreateAccount(request);
+                var result = await _userServices.CreateAccountAsync(request);
                 if (result == null)
                 {
                     return BadRequest(ApiResponseHelper.FormatError($"Quá trình tạo tài khoản thất bại"));
@@ -46,7 +79,8 @@ namespace User.Api.Controllers
             }
             catch (ValidationException ex)
             {
-                return BadRequest(ApiResponseHelper.FormatError($"Quá trình tạo tài khoản thất bại. {ex.Message}"));
+                _logger.LogError(ex.Message);
+                return BadRequest(ApiResponseHelper.FormatError($"{ex.Message}"));
             }
             catch (Exception e)
             {
@@ -55,7 +89,57 @@ namespace User.Api.Controllers
             }
         }
 
-        [HttpPost("login")]
+        [Route("api/[controller]/update")]
+        [HttpPost()]
+        public async Task<IActionResult> UpdateUser([FromBody] UserAuthRequest request)
+        {
+            try
+            {
+                _logger.LogInformation($"Start update user. UserId: {request.Id}");
+                var stopwatch = Stopwatch.StartNew();
+                var result = await _userServices.UpdateUserAsync(request);
+
+                _logger.LogInformation($"Update user {request.Id} successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
+                return Ok(ApiResponseHelper.FormatSuccess(result));
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ApiResponseHelper.FormatError($"{ex.Message}"));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Update user {request.Id} failed. Message: {e.Message}");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Update user api failed"));
+            }
+        }
+
+        [Route("api/admin/[controller]/delete")]
+        [HttpPost()]
+        public async Task<IActionResult> DeleteUser([FromBody]DeleteUserRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Start delete user.");
+                var stopwatch = Stopwatch.StartNew();
+                var result = await _userServices.DeleteUserAsync(request);
+                _logger.LogInformation($"Delete user {request.UserId} successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
+                return Ok(ApiResponseHelper.FormatSuccess(result));
+            }
+            catch (BusinessException ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ApiResponseHelper.FormatError($"{ex.Message}"));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Delete user {request.UserId} failed.There is a exception!");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Delete user api failed"));
+            }
+        }
+
+        [Route("api/[controller]/login")]
+        [HttpPost()]
         public async Task<IActionResult> Login([FromBody] UserAuthRequest request)
         {
             try
@@ -79,13 +163,14 @@ namespace User.Api.Controllers
             }
         }
 
-        [HttpPost("social-login")]
+        [Route("api/[controller]/social-login")]
+        [HttpPost()]
         public async Task<IActionResult> SocialLogin([FromBody] SocialLoginRequest request)
         {
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-                var result = await _userServices.HandleSocialLogin(request);
+                var result = await _userServices.HandleSocialLoginAsync(request);
 
                 _logger.LogInformation("Login successfully !");
                 _logger.LogInformation($"Login operation took {stopwatch.ElapsedMilliseconds} ms to complete.");
@@ -98,12 +183,13 @@ namespace User.Api.Controllers
             }
         }
 
-        [HttpPost("refresh-token")]
+        [Route("api/[controller]/refresh-token")]
+        [HttpPost()]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestModel model)
         {
             try
             {
-                var result = await _userServices.RefreshToken(model);
+                var result = await _userServices.RefreshTokenAsync(model);
                 if (string.IsNullOrEmpty(result))
                 {
                     return Unauthorized("Invalid or expired refresh token");

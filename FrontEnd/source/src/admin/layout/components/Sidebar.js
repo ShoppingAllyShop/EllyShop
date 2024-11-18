@@ -7,20 +7,18 @@ const Sidebar = () => {
 
   const renderMainMenu = (item) => {
     return (
-      <div className="menu-item" key={item.id}>
-        <h2>
-          <Link
-            to={item.path}
-            className="flex items-center justify-between w-full p-3 font-medium rtl:text-right text-gray-100 dark:border-gray-700 dark:text-gray-400
-                    hover:bg-gray-700 dark:hover:bg-gray-800 gap-3 bg-black"
-          >
-            <span className="flex items-center">
-              <i className={`fa fa-${item.icon} mr-2`} />
-              {item.name}
-            </span>
-          </Link>
-        </h2>
-      </div>
+      <h2>
+        <Link
+          to={item.path}
+          className="flex items-center justify-between w-full p-3 font-medium rtl:text-right text-gray-100 dark:border-gray-700 dark:text-gray-400
+                hover:bg-gray-700 dark:hover:bg-gray-800 gap-3 bg-black"
+        >
+          <span className="flex items-center pr-6">
+            <i className={`fa fa-${item.icon} mr-2`} />
+            {item.name}
+          </span>
+        </Link>
+      </h2>
     );
   };
 
@@ -35,17 +33,19 @@ const Sidebar = () => {
       >
         {menuSidebarList.map((item) => {
           if (item.name === "Trang chủ") {
-            return renderMainMenu(item);
+            return (
+              <div className="menu-item pl-7" key={item.id}>{renderMainMenu(item)}</div>
+            )
           }
 
           return (
-            <MenuSidebar data={item}/>            
+            <div className="menu-item pl-7" key={item.id}><MenuSidebar data={item}/></div>                     
           );
         })}
       </div>
     );
   };
-  // transition duration-600 -translate-x-96 sm:translate-x-0
+  
   return (
     <div
       id="side-bar"

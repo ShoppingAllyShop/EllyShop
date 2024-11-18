@@ -3,7 +3,6 @@ using CommonLib.Constants;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using System.Text;
-using static CommonLib.Constants.AppEnums;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
