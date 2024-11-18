@@ -1,29 +1,23 @@
 ﻿using Comman.Domain.Elly_User;
 using Common.Infrastructure.Interfaces;
-using CommonLib.Helpers.Implements;
+using CommonLib.Constants;
+using CommonLib.Enums;
+using CommonLib.Exceptions;
 using CommonLib.Helpers.Interfaces;
 using CommonLib.Models.Settings;
-using Microsoft.EntityFrameworkCore;
+using CommonLib.TestHelpers;
 using Microsoft.Extensions.Options;
 using Moq;
-using System.Linq.Expressions;
-using System.Net.Mail;
+using System.ComponentModel.DataAnnotations;
 using User.Api.Implements;
 using User.Api.Implements.TokenValidator;
 using User.Api.Interfaces.Factory;
 using User.Api.Models;
 using User.Api.Models.Requests;
 using User.Api.Models.Responses;
+using User.Api.UnitTest.InitData;
 using Xunit;
-using Xunit.Sdk;
 using static CommonLib.Constants.AppEnums;
-using CommonLib.TestHelpers;
-using System.Reflection.Metadata.Ecma335;
-using User.Api.Interfaces;
-using Microsoft.VisualBasic;
-using CommonLib.Enums;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace User.Api.UnitTest.Implements
 {
@@ -44,17 +38,14 @@ namespace User.Api.UnitTest.Implements
         private readonly string PassInput1 = "123456";
         private readonly string RefreshToken1 = "JSNtfseRpkkj3m59bVe1cJN4444/mTLRTVIwLl5w4c=";
         private readonly string RefreshToken2 = "JSNtfseRpkkj3m59bVe1cJN5555/mTLRTVIwLl5w4c=";
+        private readonly string RefreshToken3 = "JSNtfseRpkkj3m59bVe1cJN6666/mTLRTVIwLl5w4c=";
         private readonly Guid UserId1 = new Guid("af24e5b0-a03d-4301-b54d-2229867604a9");
         private readonly Guid UserId2 = new Guid("af24e5b0-a03d-4301-b54d-2229867604a8");
+        private readonly Guid UserId3 = new Guid("af24e5b0-a03d-4301-b54d-2229867604a7");
 
         private readonly Guid AdminRoleId = new Guid("5A387B6E-1B29-47E1-84F6-D25D4287B11C");
         private readonly Guid CustomerRoleId = new Guid("87A989E6-C641-4222-AF8B-9CFC3C9B1183");
         private readonly string AuthenSecretKey = "FakeSecretKey1111111111111111111";
-
-        public UserServicesTest()
-        {
-
-        }
 
         private UserServices CreateService()
         {
@@ -64,7 +55,7 @@ namespace User.Api.UnitTest.Implements
                 _mockLogger.Object,
                 _mockUnitOfWork.Object,
                 _mockApiServices.Object,
-                _mockValidatorFactory.Object);
+                _mockValidatorFactory.Object);                 
         }
 
         #region RefreshToken
@@ -79,18 +70,15 @@ namespace User.Api.UnitTest.Implements
             {
                 Email = Mail1,
                 RefreshToken = RefreshToken1,
-                Role = new RoleModel
-                {
-                    RoleId = Guid.NewGuid(),
-                    RoleName = UserRoleEnum.Customer.GetEnumDescription()
-                }
+                RoleId = Guid.NewGuid(),
+                RoleName = UserRoleEnum.Customer.GetEnumDescription()
             };
 
             _mockAuthenticationSettings.Setup(x => x.Value).Returns(authenAppSetttings);
             _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
 
             //Act
-            var result = await service.RefreshToken(requestModel);
+            var result = await service.RefreshTokenAsync(requestModel);
 
             //Assert
             Assert.NotEqual(string.Empty, result);
@@ -111,7 +99,7 @@ namespace User.Api.UnitTest.Implements
             _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
 
             //Act
-            var result = await service.RefreshToken(requestModel);
+            var result = await service.RefreshTokenAsync(requestModel);
 
             //Assert
             Assert.Equal(string.Empty, result);
@@ -132,7 +120,7 @@ namespace User.Api.UnitTest.Implements
             _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(CreateRefreshTokenData().MockDbSet().Object);
 
             //Act
-            var result = await service.RefreshToken(requestModel);
+            var result = await service.RefreshTokenAsync(requestModel);
 
             //Assert
             Assert.Equal(string.Empty, result);
@@ -199,7 +187,7 @@ namespace User.Api.UnitTest.Implements
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => service.HandleSocialLogin(requestModel));
+            await Assert.ThrowsAsync<Exception>(() => service.HandleSocialLoginAsync(requestModel));
         }
 
 
@@ -215,7 +203,7 @@ namespace User.Api.UnitTest.Implements
             var authenAppSetttings = CreateAuthenAppSettingData();
             var userInfo = new ValidateTokenOAuthResponse()
             {
-                Email = Mail1,
+                Email = "mail3",
                 Name = "Test"
             };          
 
@@ -233,7 +221,7 @@ namespace User.Api.UnitTest.Implements
             };
 
             // Act & Assert
-            var result = await service.HandleSocialLogin(requestModel);
+            var result = await service.HandleSocialLoginAsync(requestModel);
 
             _mockUnitOfWork.Verify(x => x.SaveChangesAsync(), Times.Once);
             Assert.IsType<UserResponse>(result);
@@ -252,7 +240,7 @@ namespace User.Api.UnitTest.Implements
             var authenAppSetttings = CreateAuthenAppSettingData();
             var userInfo = new ValidateTokenOAuthResponse()
             {
-                Email = Mail1,
+                Email = "mail3",
                 Name = "Test1"
             };
 
@@ -270,7 +258,7 @@ namespace User.Api.UnitTest.Implements
             };
 
             // Act & Assert
-            var result = await service.HandleSocialLogin(requestModel);
+            var result = await service.HandleSocialLoginAsync(requestModel);
 
             _mockUnitOfWork.Verify(x => x.SaveChangesAsync(), Times.Once);
             Assert.IsType<UserResponse>(result);
@@ -314,16 +302,15 @@ namespace User.Api.UnitTest.Implements
             
 
             _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userData.MockDbSet().Object);
-
+            
             // Act & Assert
             var requestModel = new UserAuthRequest
             {
                 Email = Mail2,
-                Password = "123456"
+                Password = "1234567"
             };
-            //await Assert.ThrowsAsync<ValidationException>(() => service.HandleLoginAsync(requestModel));
+
             await Assert.ThrowsAsync<ValidationException>(() => service.HandleLoginAsync(requestModel));
-            //Assert.IsType<ValidationException>(exception);
         }
         #endregion
 
@@ -349,15 +336,12 @@ namespace User.Api.UnitTest.Implements
                 Email = "new@mail.com",
                 Password = "123456",
                 isCustomer = true,
-                Role = new RoleModel
-                {
-                    RoleId = CustomerRoleId,
-                    RoleName = UserRoleEnum.Customer.ToString()
-                }
+                RoleId = CustomerRoleId,
+                RoleName = UserRoleEnum.Customer.ToString()
             };
 
             //Act
-            var result = await service.CreateAccount(requestModel);
+            var result = await service.CreateAccountAsync(requestModel);
 
             //Assert
             _mockUnitOfWork.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -383,13 +367,158 @@ namespace User.Api.UnitTest.Implements
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<ValidationException>(() => service.CreateAccount(requestModel));
+            await Assert.ThrowsAsync<ValidationException>(() => service.CreateAccountAsync(requestModel));
         }
 
         #endregion
 
-        #region PrivateFunctions
+        #region SearchEmployeeUserAsync
+        [Fact]
+        public async Task SearchEmployeeUserAsync_Success()
+        {
+            //Arrange
+            var service = CreateService();
+            var userList = CreateUserData();
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userList.MockDbSet().Object);
 
+            //Act
+            var result = await service.SearchEmployeeUserAsync(1, 10, null, null, null);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<SearchEmployeeUserResponse>(result);
+        }
+        #endregion
+
+        #region GetDataAdminUserPage
+        [Fact]
+        public async Task GetDataAdminUserPage_Success()
+        {
+            //Arrange
+            var service = CreateService();
+            var userList = CreateUserData();
+            var positionList = MockData.CreatePositionList();
+            var departmentList = MockData.CreateDepartmentList();
+            var roleList = MockData.CreateRoleList();
+
+            _mockUnitOfWork.Setup(x => x.Repository<Position>()).Returns(positionList.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Department>()).Returns(departmentList.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Roles>()).Returns(roleList.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userList.MockDbSet().Object);
+
+            //Act
+            var result = await service.GetDataAdminUserPageAsync();
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<DataAdminUserPageResponse>(result);
+        }
+        #endregion
+
+        #region UpdateUserAsync
+        [Fact]
+        public async Task UpdateUserAsync_Success()
+        {
+            //Arranges
+            var service = CreateService();
+            var userList = CreateUserData();
+            var requestModel = new UserAuthRequest
+            {
+                Id = UserId1,
+                UserName = "New name",
+                RoleId = new Guid(GuidContstants.CustomerRole)
+            };
+            var positionList = MockData.CreatePositionList();
+            var departmentList = MockData.CreateDepartmentList();
+            var roleList = MockData.CreateRoleList();
+
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userList.MockDbSet().Object);
+
+            //Act
+            var result = await service.UpdateUserAsync(requestModel);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_Failed_InvalidUser_ThrowValidationException()
+        {
+            //Arrange
+            var service = CreateService();
+            var userData = CreateUserData();
+            var requestModel = MockData.CreateUserAuthRequest();
+
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userData.MockDbSet().Object);
+
+            // Act & Assert            
+            await Assert.ThrowsAsync<ValidationException>(() => service.UpdateUserAsync(requestModel));
+        }
+        #endregion
+
+        #region UpdateUserAsync
+        [Fact]
+        public async Task DeleteUserAsync_Success()
+        {
+            //Arranges
+            var service = CreateService();
+            var userList = CreateUserData();
+            var requestModel = new DeleteUserRequest
+            {
+                UserId = UserId1,
+                PageNumber = 1,
+                PageSize = 10,
+                SearchInput = ""
+            };
+            var mockRefreshToken = new List<RefreshTokens>
+            {
+                new RefreshTokens
+                {
+                    Id = Guid.NewGuid(),
+                    Token = "token",
+                    Expiry = DateTime.UtcNow.AddDays(3),
+                    UserId = UserId1
+                }
+            };
+            var positionList = MockData.CreatePositionList();
+            var departmentList = MockData.CreateDepartmentList();
+            var roleList = MockData.CreateRoleList();
+
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userList.MockDbSet().Object);
+            _mockUnitOfWork.Setup(x => x.Repository<RefreshTokens>()).Returns(mockRefreshToken.MockDbSet().Object);
+
+            //Act
+            var result = await service.DeleteUserAsync(requestModel);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<DeleteUserResponse>(result);
+        }
+
+        [Fact]
+        public async Task DeleteUserAsync_Failed_InvalidUser_ThrowBusinessException()
+        {
+            //Arrange
+            var service = CreateService();
+            var userData = CreateUserData();
+            var requestModel = new DeleteUserRequest
+            {
+                UserId = Guid.NewGuid(),
+                PageNumber = 1,
+                PageSize = 10,
+                SearchInput = ""
+            };
+
+            _mockUnitOfWork.Setup(x => x.Repository<Users>()).Returns(userData.MockDbSet().Object);
+
+            // Act & Assert            
+            await Assert.ThrowsAsync<BusinessException>(() => service.DeleteUserAsync(requestModel));
+        }
+        #endregion
+
+
+        #region PrivateFunctions
         private void MockValidator(AuthProvider provider)
         {
             _serviceProvider = UnitTestUtils.CreateServiceProvider();
@@ -418,9 +547,35 @@ namespace User.Api.UnitTest.Implements
                     UserName = "Test",
                     Id = UserId1,
                     PasswordHash = PassHash1,
+                    RoleId = new Guid(GuidContstants.AdminRole),
                     Role = new Roles
                     {
-                        Id = Guid.NewGuid(),
+                        Id = new Guid(GuidContstants.AdminRole),
+                        RoleName = "Admin"
+                    }
+                },
+                new Users
+                {
+                    Id = Guid.NewGuid(),
+                    Email = Mail2,
+                    UserName = "name2",
+                    PasswordHash = PassHash1,
+                    RoleId = new Guid(GuidContstants.AdminRole),
+                    Role = new Roles
+                    {
+                        Id = new Guid(GuidContstants.AdminRole),
+                        RoleName = "Admin"
+                    }
+                },
+                new Users
+                {
+                    Id = UserId3,
+                    Email = "mail3",
+                    UserName = "name3",
+                    RoleId = new Guid(GuidContstants.CustomerRole),
+                    Role = new Roles
+                    {
+                        Id = new Guid(GuidContstants.CustomerRole),
                         RoleName = "Customer"
                     }
                 }
@@ -444,7 +599,14 @@ namespace User.Api.UnitTest.Implements
                    UserId = UserId2,
                    Token = RefreshToken2,
                    Expiry = DateTime.UtcNow.AddDays(-1)
-                }
+                },
+                 new RefreshTokens
+                 {
+                     Id = Guid.NewGuid(),
+                     UserId = UserId3,
+                     Token = RefreshToken3,
+                     Expiry = DateTime.UtcNow.AddDays(3)
+                 }
             };
         }
 
@@ -465,25 +627,7 @@ namespace User.Api.UnitTest.Implements
                     ClientPage = 60
                 }
             };
-        }    
-
-        private List<Roles> CreateRoleData()
-        {
-            return new List<Roles>
-            {
-                new Roles
-                {
-                    Id = AdminRoleId,
-                    RoleName = "Admin"
-                },
-                new Roles
-                {
-                    Id = CustomerRoleId,
-                    RoleName = "Customer"
-                }
-            };
         }
-
         #endregion
     }
 }

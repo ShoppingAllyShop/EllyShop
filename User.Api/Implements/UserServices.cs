@@ -5,32 +5,22 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using CommonLib.Models.Settings;
-using Google.Apis.Auth;
-using Newtonsoft.Json.Linq;
 using User.Api.Models;
 using System.Security.Cryptography;
 using Comman.Domain.Elly_User;
-using Microsoft.AspNetCore.Mvc;
 using Common.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using CommonLib.Constants;
-using Microsoft.VisualBasic;
 using static CommonLib.Constants.AppEnums;
-using User.Api.Constant;
-using System.Runtime.CompilerServices;
 using CommonLib.Helpers.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using User.Api.Interfaces.Factory;
-using CommonLib.Enums;
 using User.Api.Models.Requests;
 using User.Api.Models.Responses;
-using Google.Apis.Auth.OAuth2.Requests;
-using Microsoft.AspNetCore.Identity;
 using System.Data;
-using System.Xml.Linq;
-using System.Collections.Generic;
-using System.Text.Json;
-using Moq;
+using CommonLib.Models.Base;
+using CommonLib.Exceptions;
+using User.Api.Constant;
 
 namespace User.Api.Implements
 {
@@ -46,7 +36,8 @@ namespace User.Api.Implements
         public UserServices(IOptions<AuthenticationSetting> authenticationSettings,
             IOptions<FacebookSetting> facebookSettings,
             ILogger<UserServices> logger,
-            IUnitOfWork<Elly_UserContext> unitOfWork, IApiServices apiServices, ITokenValidatorFactory validatorFactory)
+            IUnitOfWork<Elly_UserContext> unitOfWork,
+            IApiServices apiServices, ITokenValidatorFactory validatorFactory)
         {
             _authenticationSettings = authenticationSettings;
             _facebookSettings = facebookSettings;
@@ -87,8 +78,7 @@ namespace User.Api.Implements
             _logger.LogInformation($"Function {nameof(GenerateAccessToken)} was done.");
             return accessToken;
         }
-
-        public async Task<UserResponse> HandleSocialLogin(SocialLoginRequest request)
+        public async Task<UserResponse> HandleSocialLoginAsync(SocialLoginRequest request)
         {
             var validator = _validatorFactory.CreateValidator(request.Provider);
             var resultValidateToken = await validator.ValidateToken(request.Token);
@@ -96,7 +86,7 @@ namespace User.Api.Implements
 
             // Kiểm tra người dùng trong DB hoặc tạo mới nếu cần
             var newRefreshToken = string.Empty;
-            var isExistUser = await _unitOfWork.Repository<Users>().AnyAsync(x => x.Email == resultValidateToken.Email);            
+            var isExistUser = await _unitOfWork.Repository<Users>().AnyAsync(x => x.Email == resultValidateToken.Email);
             if (!isExistUser)
             {
                 var createdTime = DateTime.UtcNow;
@@ -107,7 +97,7 @@ namespace User.Api.Implements
                 {
                     Id = newUserId,
                     Email = resultValidateToken.Email,
-                    CreatedTime = createdTime,
+                    CreatedAt = createdTime,
                     UserName = resultValidateToken.Name,
                     RoleId = new Guid(GuidContstants.CustomerRole) //Chỉ có Customer mới login bằng social
                 };
@@ -120,7 +110,7 @@ namespace User.Api.Implements
                     Expiry = DateTime.UtcNow.AddDays(3),
                     CreatedAt = createdTime,
                     UpdatedAt = createdTime
-                };              
+                };
 
                 await _unitOfWork.Repository<RefreshTokens>().AddAsync(newRefreshTokenObj);
                 await _unitOfWork.SaveChangesAsync();
@@ -128,14 +118,14 @@ namespace User.Api.Implements
             }
             else
             {
-                newRefreshToken = await RenewRefreshToken(resultValidateToken.Email, true);
+                newRefreshToken = await RenewRefreshTokenAsync(resultValidateToken.Email, true);
             }
 
             //Tạo access token và result
             //var isCustomer = true; //Chỉ client page mới xài social login
             var user = await _unitOfWork.Repository<Users>().Include(x => x.Role).FirstOrDefaultAsync(x => x.Email == resultValidateToken.Email);
             var accessToken = GenerateAccessToken(resultValidateToken.Email, user?.Role.RoleName ?? string.Empty);
-           
+
             var result = new UserResponse()
             {
                 AccessToken = accessToken,
@@ -149,24 +139,22 @@ namespace User.Api.Implements
                 }
             };
 
-            _logger.LogInformation($"Function {nameof(HandleSocialLogin)} was done.");
+            _logger.LogInformation($"Function {nameof(HandleSocialLoginAsync)} was done.");
             return result;
-        }      
-
-        public async Task<string> RefreshToken(RefreshTokenRequestModel requestModel)
+        }
+        public async Task<string> RefreshTokenAsync(RefreshTokenRequestModel requestModel)
         {
             //validate refresh token
-            var storedToken = await GetRefreshToken(requestModel.RefreshToken);
+            var storedToken = await GetRefreshTokenAsync(requestModel.RefreshToken);
             if (storedToken == null) return string.Empty;
 
             var isValidRefreshToken = ValidateRefreshToken(storedToken, requestModel.RefreshToken);
             if (!isValidRefreshToken) return string.Empty;
 
             //create new access token
-            var newAccessToken = GenerateAccessToken(requestModel.Email, requestModel.Role.RoleName);
+            var newAccessToken = GenerateAccessToken(requestModel.Email, requestModel.RoleName);
             return newAccessToken;
         }
-
         public async Task<UserResponse> HandleLoginAsync(UserAuthRequest model)
         {
             var validatedUserResult = await ValidateUserAsync(model.Email, model.Password);
@@ -175,9 +163,9 @@ namespace User.Api.Implements
                 throw new ValidationException("Email hoặc mật khẩu không đúng");
             }
 
-            var renewRefreshToken = await RenewRefreshToken(model.Email, model.isCustomer);
+            var renewRefreshToken = await RenewRefreshTokenAsync(model.Email, model.isCustomer);
             var accessToken = GenerateAccessToken(model.Email, validatedUserResult.Role.RoleName);
-            
+
             return new UserResponse()
             {
                 AccessToken = accessToken,
@@ -191,7 +179,7 @@ namespace User.Api.Implements
                 }
             };
         }
-        public async Task<UserResponse?> CreateAccount(UserAuthRequest model)
+        public async Task<UserResponse?> CreateAccountAsync(UserAuthRequest model)
         {
             var isHasAccount = await _unitOfWork.Repository<Users>().AsNoTracking().AnyAsync(x => x.Email == model.Email);
             if (isHasAccount) throw new ValidationException("Email này đã tồn tại");
@@ -203,14 +191,17 @@ namespace User.Api.Implements
 
             //create user
             var userId = Guid.NewGuid();
-            var roleId = model.isCustomer ? new Guid (GuidContstants.CustomerRole) : model.Role.RoleId;
+            var roleId = model.isCustomer ? new Guid(GuidContstants.CustomerRole) : model.RoleId;
             var newUser = new Users()
             {
                 Id = userId,
                 Email = model.Email,
-                CreatedTime = createdTime,
+                CreatedAt = createdTime,
+                UpdatedAt = createdTime,
                 UserName = model.UserName,
-                PasswordHash = hashedPassword, 
+                ProfilePicture = model.ProfilePicture,
+                Phone = model.Phone,                
+                PasswordHash = hashedPassword,
                 RoleId = roleId
             };
             await _unitOfWork.Repository<Users>().AddAsync(newUser);
@@ -222,27 +213,124 @@ namespace User.Api.Implements
                 Expiry = !model.isCustomer ? DateTime.UtcNow.AddDays(1) : DateTime.UtcNow.AddDays(30),
                 CreatedAt = createdTime,
                 UpdatedAt = createdTime
-            };           
+            };
 
             await _unitOfWork.Repository<RefreshTokens>().AddAsync(newRefreshTokenObj);
-            var accessToken = GenerateAccessToken(model.Email, model.Role.RoleName);
+            var accessToken = GenerateAccessToken(model.Email, model.RoleName);
             var result = await _unitOfWork.SaveChangesAsync();
 
-            if (result > 0)
+            var useResponse = new UserResponse()
             {
-                var useResponse = new UserResponse()
+                UserId = userId,
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                UserName = model.UserName,
+                Email = model.Email
+            };
+
+            _logger.LogInformation($"Save user process was done. Total there are {result} records was saved");
+            return useResponse;
+        }
+        public async Task<SearchEmployeeUserResponse> SearchEmployeeUserAsync(int? pageNumber = null, int? pageSize = null, string? sortBy = null, 
+                                                            string? sortOrder = null, string? searchInput = null)
+        {
+            int pageNumberValue = pageNumber ?? UserConstant.pageNumberDefault;
+            int pageSizeValue = pageSize ?? UserConstant.pageSizeDefault;
+            string sortByValue = sortBy ?? UserConstant.sortByDefault;
+            string sortOrderValue = sortOrder ?? UserConstant.sortOrderDefault;
+            string searchInputValue = searchInput ?? UserConstant.searchInputDefault;
+
+            var query = _unitOfWork.Repository<Users>().AsNoTracking().Where(x => x.RoleId.ToString() != GuidContstants.CustomerRole)
+                .Include(x => x.Employees)
+                .Select(x => new UserInfo
                 {
-                    AccessToken = accessToken,
-                    RefreshToken = refreshToken,
-                    UserName = model.UserName,
-                    Email = model.Email
-                };
+                    UserId = x.Id,
+                    UserName = x.UserName,
+                    DepartmentId = x.Employees != null ? x.Employees.Department.Id : Guid.Empty,
+                    Department = x.Employees != null ? x.Employees.Department.DepartmentName : string.Empty,
+                    Email = x.Email,
+                    PositionId = x.Employees != null ? x.Employees.Position.Id : Guid.Empty,
+                    Position = x.Employees != null ? x.Employees.Position.PositionName : string.Empty,
+                    RoleId = x.Role.Id,
+                    RoleName = x.Role.RoleName,
+                    Phone = x.Phone ?? string.Empty
+                }).AsQueryable();
 
-                _logger.LogInformation($"Save user process was done. Total there are {result} records was saved");
-                return useResponse;
-            }
+            if (!string.IsNullOrEmpty(searchInputValue)) query = query.Where(x => x.UserName.Contains(searchInputValue) || x.Email.Contains(searchInputValue) || x.Department.Contains(searchInputValue)
+                                                                        || x.Position.Contains(searchInputValue) || x.RoleName.Contains(searchInputValue));
+            query = sortOrderValue.ToLower() == ConmonConstants.DescendingShortcut ? query.OrderByDescending(e => EF.Property<object>(e, sortByValue)) : query.OrderBy(e => EF.Property<object>(e, sortByValue));
+            var totalRecords = await query.CountAsync();
+            var userInfoList = query.Skip((pageNumberValue - 1) * pageSizeValue).Take(pageSizeValue);
 
-            return null;
+            var result = new SearchEmployeeUserResponse
+            {
+                UserList = userInfoList,
+                Paging = new PagingResponseBase
+                {
+                    PageNumber = pageNumberValue,
+                    PageSize = pageSizeValue,
+                    TotalItems = totalRecords,
+                    SortBy = sortByValue,
+                    SortOrder = sortOrderValue
+                }
+            };
+            return result;
+        }       
+
+        public async Task<DataAdminUserPageResponse> GetDataAdminUserPageAsync()
+        {
+            var positions = _unitOfWork.Repository<Position>().AsNoTracking().AsEnumerable();
+            var departments = _unitOfWork.Repository<Department>().AsNoTracking().AsEnumerable();
+            var roles = _unitOfWork.Repository<Roles>().AsNoTracking().AsEnumerable();
+            var data = await SearchEmployeeUserAsync();
+            var result = new DataAdminUserPageResponse
+            {               
+                ContentPageData = new ContentPageData
+                {
+                    Roles = roles,
+                    Departments = departments,
+                    Positions = positions,
+                },
+                UserData = data
+            };
+
+            return result;
+        }
+
+        public async Task<string> UpdateUserAsync(UserAuthRequest request)
+        {
+            var user = await _unitOfWork.Repository<Users>()
+              .AsNoTracking()
+              .FirstOrDefaultAsync(x => x.Id == request.Id);
+            if (user == null) throw new ValidationException("Danh mục này không tồn tại");
+
+            user.UserName = request.UserName;
+            user.Phone = request.Phone;
+            user.RoleId = request.RoleId;
+
+            _unitOfWork.UpdateEntity(user);
+            await _unitOfWork.SaveChangesAsync();
+            return user.UserName;
+        }
+
+        public async Task<DeleteUserResponse> DeleteUserAsync(DeleteUserRequest model)
+        {
+            var user = await _unitOfWork.Repository<Users>()
+              .AsNoTracking().Include(x => x.RefreshTokens)
+              .FirstOrDefaultAsync(x => x.Id == model.UserId);
+            if (user == null) throw new BusinessException("Danh mục này không tồn tại");
+
+            _unitOfWork.Repository<Users>().Remove(user);
+            _unitOfWork.Repository<RefreshTokens>().RemoveRange(user.RefreshTokens);
+            await _unitOfWork.SaveChangesAsync();
+
+            var pagingUserList = await SearchEmployeeUserAsync(model.PageNumber, model.PageSize, model.SortBy, model.SortOrder, model.SearchInput);
+            var result = new DeleteUserResponse
+            {
+                PagingUserList = pagingUserList,
+                UserName = user.UserName
+            };
+            return result;
         }
 
         #region Private
@@ -266,12 +354,12 @@ namespace User.Api.Implements
             return true;
         }
 
-        private async Task<RefreshTokens?> GetRefreshToken(string refreshToken)
+        private async Task<RefreshTokens?> GetRefreshTokenAsync(string refreshToken)
         {
             return await _unitOfWork.Repository<RefreshTokens>().Where(x => x.Token == refreshToken).SingleOrDefaultAsync();
         }
 
-        private async Task<string> RenewRefreshToken(string email, bool isCustomer)
+        private async Task<string> RenewRefreshTokenAsync(string email, bool isCustomer)
         {
             //update refresh Token
             var newRefreshToken = GenerateRefreshToken();
@@ -292,11 +380,11 @@ namespace User.Api.Implements
 
             if (saveDataResult > 0)
             {
-                _logger.LogInformation($"Function {nameof(RenewRefreshToken)} was successfully");
+                _logger.LogInformation($"Function {nameof(RenewRefreshTokenAsync)} was successfully");
                 return newRefreshToken;
 
             }
-                _logger.LogInformation($"Function {nameof(RenewRefreshToken)} was unsuccessfully.It returned empty string.");
+            _logger.LogInformation($"Function {nameof(RenewRefreshTokenAsync)} was unsuccessfully.It returned empty string.");
             return string.Empty;
         }
 
@@ -351,7 +439,7 @@ namespace User.Api.Implements
             return hash.SequenceEqual(storedPasswordHash);
         }
 
-        private async Task<Roles?> GetRole(Guid userId, bool isCustomer)
+        private async Task<Roles?> GetRoleAsync(Guid userId, bool isCustomer)
         {
             var role = await _unitOfWork.Repository<Roles>().AsNoTracking()
                 .Where(x => x.Id == userId).FirstOrDefaultAsync();
@@ -371,8 +459,6 @@ namespace User.Api.Implements
         }
 
         #endregion
-
-
 
     }
 }
