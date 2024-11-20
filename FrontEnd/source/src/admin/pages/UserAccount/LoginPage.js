@@ -208,7 +208,7 @@ const LoginPage = ({ handleTest }) => {
             type="submit"
             className="bg-blue-700 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-600"
           >
-            Đăng nhập douma
+            Đăng nhập huhuhu
           </button>
         </div>
       </form>
