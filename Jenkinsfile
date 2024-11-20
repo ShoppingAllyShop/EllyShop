@@ -7,7 +7,7 @@ pipeline {
         stage('Checkout clone or update repo') {
             steps {
                 script {
-                    checkout scm
+                    git branch: 'lp/241118_jenkins_test', url: 'https://github.com/ShoppingAllyShop/EllyShop.git'
                 }
             }
         }
