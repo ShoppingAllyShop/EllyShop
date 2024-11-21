@@ -22,6 +22,11 @@ export const menuSidebarList = [
         name: "Sản phẩm",
         path: "/admin/product",
       },
+      {
+        id: "69ae0a2d-0485-4097-97d9-3dde2e916dee",
+        name: "Bộ Sưu Tập ",
+        path: "/admin/collection",
+      },
     ],
   },
   {

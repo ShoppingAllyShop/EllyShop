@@ -3,8 +3,9 @@ import { BUTTON_TYPE, FORM_ELEMENTS } from "../../../../constants/common";
 import { debounce } from "../../../../utils/timeUtil";
 import { useDispatch } from "react-redux";
 import { setCreateUpdateUserModal } from "../../../../redux/slices/admin/userSlice";
+import { setCreateUpdateCollectionModal } from "../../../../redux/slices/admin/collectionSlice";
 
-const TopPaging = ({ data, paging, onSearchEmployeeUser }) => {
+const TopPaging = ({ data, paging, onSearch }) => {
   const dispatch = useDispatch()
   const [searchValue, setSearchValue] = useState("");
   const selectedPageSizeRef = useRef(null)
@@ -39,7 +40,7 @@ const TopPaging = ({ data, paging, onSearchEmployeeUser }) => {
     }
 
     //call back parent
-    onSearchEmployeeUser(params);
+    onSearch(params);
   };
 
   const hanldeClickAddBtn = () => {
@@ -51,6 +52,7 @@ const TopPaging = ({ data, paging, onSearchEmployeeUser }) => {
       roles: roles
     }
     dispatch(setCreateUpdateUserModal({isShow: true, type: "Add", data: modalData}))
+    dispatch(setCreateUpdateCollectionModal({isShow: true, type: "Add"}))
   };
 
   const renderSelectQuantityNumber = () => {
