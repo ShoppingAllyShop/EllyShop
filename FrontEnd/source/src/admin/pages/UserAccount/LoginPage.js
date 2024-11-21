@@ -200,7 +200,7 @@ const LoginPage = ({ handleTest }) => {
             href="#"
             className="text-xs text-gray-500 hover:text-gray-900 text-end w-full mt-2"
           >
-            Forget Password phai khong?
+            Forget Password phai khong ta?
           </Link>
         </div>
         <div className="mt-8">
