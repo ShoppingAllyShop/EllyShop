@@ -15,21 +15,27 @@ pipeline {
             steps {
                 script {
                     // Sử dụng git diff để tìm các thư mục service thay đổi
-                    echo "Start Detect Changed Services aaaaaaaaaaa"
-                    def aaa = sh(script: "git diff --name-only HEAD~1", returnStdout: true).trim()
-                    echo "met qua ${aaa}"
+                    // Lấy danh sách file thay đổi (ví dụ giả định ở đây)
+                    def changedFiles = sh(
+                        script: "git diff --name-only HEAD~1",
+                        returnStdout: true
+                    ).trim()
 
-                    def changes = sh(script: "git diff --name-only HEAD~1 | grep '^service'", returnStdout: true).trim()
-                    echo "changes aaaaaaaaaa: ${changes}"
+                    echo "Changed files: ${changedFiles}"
 
-                    if (changes) {
-                        def services = changes.split('\n')
-                                                .collect { it.split('/')[0] }
-                                                .unique()
-                        echo "services: ${services}"
+                    // Tách rootpath
+                    if (changedFiles) {
+                        def rootPaths = changedFiles
+                            .split('\n')                          // Chia từng dòng
+                            .collect { it.split('/')[0] }         // Lấy phần rootpath (trước `/source`)
+                            .unique()                            // Loại bỏ trùng lặp
 
-                        env.CHANGED_SERVICES = services.join(' ')
+                        echo "Unique root paths: ${rootPaths}"
+
+                        // Gán vào biến môi trường nếu cần dùng tiếp
+                        env.CHANGED_SERVICES = rootPaths.join(' ')
                     } else {
+                        echo "No changes detected."
                         env.CHANGED_SERVICES = ''
                     }
                 }
