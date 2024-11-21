@@ -55,7 +55,7 @@ pipeline {
                         }
                         // Build Docker image
                         sh """
-                        docker-compose -f ${DOCKER_COMPOSE_FILE} build ${   }
+                        docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
                         """
 
                         // Deploy (ví dụ: chỉ start container thay đổi)
