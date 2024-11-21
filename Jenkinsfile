@@ -27,7 +27,7 @@ pipeline {
                     if (changedFiles) {
                         def rootPaths = changedFiles
                             .split('\n')                          // Chia từng dòng
-                            .collect { it.split('/')[0] }         // Lấy phần rootpath (trước `/source`)
+                            .collect { it.split('/')[0].toLowerCase() }         // Lấy phần rootpath (trước `/source`)
                             .unique()                            // Loại bỏ trùng lặp
 
                         echo "Unique root paths: ${rootPaths}"
