@@ -50,7 +50,7 @@ pipeline {
                     // Lặp qua các service thay đổi và thực hiện build + deploy
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
-                        if (service !== "frontend"){
+                        if (service != "frontend"){
                             echo "skip service ${service}"
                         }
                         // Build Docker image
