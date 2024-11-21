@@ -30,7 +30,7 @@ pipeline {
                             .collect { it.split('/')[0].toLowerCase() }         // Lấy phần rootpath (trước `/source`)
                             .unique()                            // Loại bỏ trùng lặp
 
-                        echo "Unique root paths: ${rootPaths}"
+                        echo "Unique root paths: ${rootPaths}"  
 
                         // Gán vào biến môi trường nếu cần dùng tiếp
                         env.CHANGED_SERVICES = rootPaths.join(' ')
@@ -50,10 +50,12 @@ pipeline {
                     // Lặp qua các service thay đổi và thực hiện build + deploy
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
-
+                        if (service !== "frontend"){
+                            echo "skip service ${service}"
+                        }
                         // Build Docker image
                         sh """
-                        docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
+                        docker-compose -f ${DOCKER_COMPOSE_FILE} build ${   }
                         """
 
                         // Deploy (ví dụ: chỉ start container thay đổi)
