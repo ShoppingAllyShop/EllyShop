@@ -15,6 +15,7 @@ pipeline {
             steps {
                 script {
                     // Sử dụng git diff để tìm các thư mục service thay đổi
+                    echo "Start Detect Changed Services aaaaaaaaaaa"
                     def changes = sh(script: "git diff --name-only HEAD~1 | grep '^service'", returnStdout: true).trim()
                     echo "changes aaaaaaaaaa: ${changes}"
 
