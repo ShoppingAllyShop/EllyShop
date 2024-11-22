@@ -8,7 +8,6 @@ import { GUID_ID } from "../../../../constants/common";
 const Infomations = ({ data }) => {
   const { id, name, price, discount, shortDescription } = data?.product;
   const catelog = data?.product?.category;
-  console.log("catelog",catelog)
   const colors = data?.product?.productDetail?.map((item) => item.color);
   const uniqueColorsById = [
     ...new Map(colors?.map((item) => [item.id, item])).values(),

@@ -156,13 +156,13 @@ const UserPage = () => {
                   <TopPaging
                     data={data}
                     paging={paging} 
-                    onSearchEmployeeUser={(params) => callSearchEmployeeUser(params)}
+                    onSearch={(params) => callSearchEmployeeUser(params)}
                   />}
               <div className="datatable-container">{renderTable()}</div>
               {paging && paging?.totalPages > 0 && 
                 <BottomPaging
                   paging={paging}
-                  onSearchEmployeeUser={(params) => callSearchEmployeeUser(params)}
+                  onSearch={(params) => callSearchEmployeeUser(params)}
                 />
               }
             </div>

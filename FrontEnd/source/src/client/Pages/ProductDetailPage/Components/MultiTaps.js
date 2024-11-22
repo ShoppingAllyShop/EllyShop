@@ -4,7 +4,7 @@ import Rating from "./Rating";
 import BuyGuide from "./BuyGuide";
 import RefundPolicy from "./RefundPolicy";
 import SizeGuide from "./SizeGuide";
-import { TEXT_CONSTANTS, Title_Multitap_List } from "../../../../constants/clientPageConstants";
+import { TEXT_CONSTANTS, Title_Multitap_List } from "../Constants/clientPageConstants";
 
 const MultiTaps = ({ data }) => {
   const brach = data.branchList;

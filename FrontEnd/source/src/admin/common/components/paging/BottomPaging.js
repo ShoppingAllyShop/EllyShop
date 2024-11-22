@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { BUTTON_TYPE } from "../../../../constants/common";
 
-const BottomPaging = ({paging, onSearchEmployeeUser}) => {
+const BottomPaging = ({paging, onSearch}) => {
 
     const handleSetSearchParams = (e, type) => {
         let params = {
@@ -28,7 +28,7 @@ const BottomPaging = ({paging, onSearchEmployeeUser}) => {
         }
 
         //call back parent
-        onSearchEmployeeUser(params)
+        onSearch(params)
     };
 
     const renderPrevButton = () => {

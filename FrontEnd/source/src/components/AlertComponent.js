@@ -36,7 +36,7 @@ const AlertComponent = ({content, type, isShow}) => {
   return (
     <div
       id={idName}
-      className={`${alertBackgroundColor} inline-flex items-center w-fit p-4 mb-4
+      className={`${alertBackgroundColor} z-[600] inline-flex items-center w-fit p-4 mb-4
         absolute top-0 left-1/2 -translate-x-1/2 translate-y-2
        text-gray-500 rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 
        transform transition-transform duration-500 ease-in-out 
