@@ -7,7 +7,7 @@ const Header = ({ user }) => {
   const handleClickBurgerButton = () => {
   };
   return (
-    <div className="sticky w-full flex-grow items-center justify-between shadow-sm md:px-6 2xl:px-11 grid grid-cols-2 h-[84px] bg-white z-[999]">
+    <div className="sticky w-full flex-grow items-center justify-between shadow-sm md:px-6 2xl:px-11 grid grid-cols-2 h-[84px] bg-white z-[500]">
       <div className="left-content flex items-center relative w-full h-full pl-4">
         <div className="mr-5 block lg:hidden">
           <HamburgerButton

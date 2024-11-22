@@ -1,5 +1,6 @@
 import { combineReducers } from "redux";
 import adminCategoryReducer from "./slices/admin/categorySlice";
+import adminCollectionReducer from "./slices/admin/collectionSlice";
 import adminLayoutReducer from "./slices/admin/adminLayoutSlice";
 import clientLayoutReducer from "./slices/client/layoutSlice";
 import selectedColorSlice from "./slices/client/selectedColorSlice";
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   //Admin page
   adminCategory: adminCategoryReducer,
   adminLayout: adminLayoutReducer,
-  adminUserPage: adminUserReducer
+  adminUserPage: adminUserReducer,
+  adminCollection: adminCollectionReducer,
 });
 
 export default rootReducer;
