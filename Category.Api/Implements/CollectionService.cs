@@ -64,10 +64,8 @@ namespace Catalog.Api.Implements
                 PagingCollectionList = pagingCollectionList,
             };
 
-            _logger.LogInformation($"Remove category successfully.Id: {collection.Id}");
+            _logger.LogInformation($"Remove collection successfully.Id: {collection.Id}");
             return result;
-
-           
         }
 
         public async Task<Collection> EditCollectionAsync(CollectionRequest request)
@@ -77,10 +75,10 @@ namespace Catalog.Api.Implements
               .FirstOrDefaultAsync(x => x.Id == request.Id);
             if (collection == null) throw new BusinessException("Bộ sưu tập này không tồn tại");
 
-            var updatedCategory = _mapper.Map<Collection>(request);
-            _unitOfWork.UpdateEntity(updatedCategory);
+            var updatedCollection = _mapper.Map<Collection>(request);
+            _unitOfWork.UpdateEntity(updatedCollection);
             await _unitOfWork.SaveChangesAsync();
-            return updatedCategory;
+            return updatedCollection;
         }
 
         public async Task<IEnumerable<Collection>> GetCollectionAsync()
@@ -89,20 +87,11 @@ namespace Catalog.Api.Implements
             return result;
         }
 
-        public async Task<DataCollectionResponse> GetDataAdminCollectionPageAsync()
+        public async Task<DataCollectionResponse> GetDataCollectionPageAsync()
         {
-            //var positions = _unitOfWork.Repository<Position>().AsNoTracking().AsEnumerable();
-            //var departments = _unitOfWork.Repository<Department>().AsNoTracking().AsEnumerable();
-            //var roles = _unitOfWork.Repository<Roles>().AsNoTracking().AsEnumerable();
             var data = await SearchCollectionAsync();
             var result = new DataCollectionResponse
             {
-                //ContentPageData = new ContentPageData
-                //{
-                //    Roles = roles,
-                //    Departments = departments,
-                //    Positions = positions,
-                //},
                 CollectionData = data
             };
 

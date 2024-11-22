@@ -12,4 +12,11 @@ export const updatedCollection = (state, updatedCollection) => {
 export const addItem = (state, data) => {
     state.data.collectionData.collectionList = [data.newItem, ...state.data.collectionData.collectionList]
     if(data.isRemoveLastItem) state.data.collectionData.collectionList.pop()
+    if(data.newTotalPages !== state.data.collectionData.paging.totalPages)
+    {
+      state.data.collectionData.paging.totalItems += 1
+      state.data.collectionData.paging.totalPages = data.newTotalPages
+      state.data.collectionData.paging.hasNextPage = state.data.collectionData.paging.pageNumber < data.newTotalPages
+      state.data.collectionData.paging.hasPreviousPage = state.data.collectionData.paging.pageNumber > 1
+    }
   };

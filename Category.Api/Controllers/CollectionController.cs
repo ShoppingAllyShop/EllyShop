@@ -33,7 +33,7 @@ namespace Catalog.Api.Controllers
             {
                 var stopwatch = Stopwatch.StartNew();
                 _logger.LogInformation("Start get-collection API");
-                var collectionList = await _collectionServices.GetDataAdminCollectionPageAsync();
+                var collectionList = await _collectionServices.GetDataCollectionPageAsync();
                 _logger.LogInformation($"Done get-collection api successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
                 return Ok(ApiResponseHelper.FormatSuccess(collectionList));
             }
@@ -69,15 +69,15 @@ namespace Catalog.Api.Controllers
             var stopwatch = Stopwatch.StartNew();
             try
             {
-                _logger.LogInformation("Start AddCategory API");
+                _logger.LogInformation("Start AddCollection API");
                 var result = await _collectionServices.AddCollectionAsync(requestModel);
-                _logger.LogInformation($"Done add category api successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
+                _logger.LogInformation($"Done add collection api successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
                 return Ok(ApiResponseHelper.FormatSuccess(result));
             }
             catch (BusinessException ex)
             {
                 _logger.LogError(ex.Message);
-                return Ok(ApiResponseHelper.FormatError(ex.Message));
+                return BadRequest(ApiResponseHelper.FormatError(ex.Message));
             }
             catch (Exception e)
             {
@@ -155,13 +155,13 @@ namespace Catalog.Api.Controllers
                 var stopwatch = Stopwatch.StartNew();
 
                 var result = await _collectionServices.SearchCollectionAsync(pageNumber, pageSize, sortBy, sortOrder, searchInput);
-                _logger.LogInformation($"Create account successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
+                _logger.LogInformation($"Search Collection successfully.It took {stopwatch.ElapsedMilliseconds} ms to complete.");
                 return Ok(ApiResponseHelper.FormatSuccess(new { CollectionData = result }));
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Call SearchEmployeeUser Api was failed.There is a exception!");
-                return StatusCode(500, ApiResponseHelper.FormatError($"Call Api SearchEmployeeUser thất bại"));
+                _logger.LogError(e, "Call SearchCollection Api was failed.There is a exception!");
+                return StatusCode(500, ApiResponseHelper.FormatError($"Call Api SearchCollection thất bại"));
             }
         }
     }

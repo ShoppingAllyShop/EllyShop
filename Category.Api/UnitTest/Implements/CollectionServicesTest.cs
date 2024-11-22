@@ -45,7 +45,7 @@ namespace Catalog.Api.UnitTest.Implements
         }
         #endregion
 
-        #region addCollection
+        #region AddCollectionAsync
         [Fact]
         public async Task AddCollectionAsync_Success_ReturnName()
         {
@@ -68,7 +68,7 @@ namespace Catalog.Api.UnitTest.Implements
         }
 
         [Fact]
-        public async Task AddCollectionAsync_Failed_ThrowException()
+        public async Task AddCollectionAsync_Failed_ThrowBusinessException()
         {
             //Arrange
             var service = CreateService();
@@ -113,7 +113,7 @@ namespace Catalog.Api.UnitTest.Implements
             Assert.IsType<Collection>(result);
         }
         [Fact]
-        public async Task EditCollection_Failed_ReturnException()
+        public async Task EditCollection_Failed_ThrowBusinessException()
         {
             //Arrange
             var service = CreateService();

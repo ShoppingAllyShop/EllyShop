@@ -11,7 +11,7 @@ namespace Catalog.Api.Interfaces
         Task<DeleteCollectionReponse> DeleteCollectionAsync(DeleteCollectionRequest model);
         Task<Collection> EditCollectionAsync(CollectionRequest request);
         Task<string> AddCollectionAsync(CollectionRequest request);
-        Task<DataCollectionResponse> GetDataAdminCollectionPageAsync();
+        Task<DataCollectionResponse> GetDataCollectionPageAsync();
         Task<IEnumerable<Collection>> GetCollectionAsync();
     }
 }

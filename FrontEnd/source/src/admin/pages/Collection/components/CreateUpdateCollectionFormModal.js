@@ -9,12 +9,15 @@ import {
   RESPONSE_API_STATUS,
 } from "../../../../constants/common";
 import { useDispatch, useSelector } from "react-redux";
-import {addNewItemData, setCreateUpdateCollectionModal,
-  setAlert, updateCollection,deleteCollection } from "../../../../redux/slices/admin/collectionSlice";
-import { Tooltip } from "flowbite-react";
 import {
-  ADMIN_ENDPOINT,
-} from "../../../../constants/endpoint";
+  addNewItemData,
+  setCreateUpdateCollectionModal,
+  setAlert,
+  updateCollection,
+  deleteCollection,
+} from "../../../../redux/slices/admin/collectionSlice";
+import { Tooltip } from "flowbite-react";
+import { ADMIN_ENDPOINT } from "../../../../constants/endpoint";
 import {
   ALERT_TYPE,
   CONFIRM_MODAL_TYPE,
@@ -25,7 +28,7 @@ import ConfirmModal from "../../../../components/Modals/ConfirmModal";
 import { COLLECTION_FORM_CONST } from "../constants/formConstants";
 import { REGEX_PATTERN } from "../../../../constants/regex";
 
-const CreateUpdateCollectionFormModal = ({ data, type}) => {
+const CreateUpdateCollectionFormModal = ({ data, type }) => {
   const dispatch = useDispatch();
   const axiosAuth = useAxiosAuth();
   const isAddForm = type === BUTTON_TYPE.ADD;
@@ -38,24 +41,34 @@ const CreateUpdateCollectionFormModal = ({ data, type}) => {
     isDisplay: false,
     content: "",
   });
-  const {paging, collectionData}  = useSelector(
+  const { paging, collectionList } = useSelector(
     (state) => state?.adminCollection?.data?.collectionData
   );
   const searchInputData = useSelector(
     (state) => state?.adminUserPage?.searchInput
   );
-  const labelStyle = "block mb-2 text-sm font-medium text-gray-900 dark:text-white";
-  const schema = yup.object({
-      name: yup.string().required(COLLECTION_FORM_CONST.VALIDATION_ERRORS.REQUIRED),
-      description: yup.string()
-    }).required();
+  const labelStyle =
+    "block mb-2 text-sm font-medium text-gray-900 dark:text-white";
+  const schema = yup
+    .object({
+      name: yup
+        .string()
+        .required(COLLECTION_FORM_CONST.VALIDATION_ERRORS.REQUIRED),
+      description: yup.string(),
+    })
+    .required();
 
   const originaFormData = {
     name: !isAddForm ? data?.collectionData?.name : "",
     description: !isAddForm ? data?.collectionData?.description : "",
   };
 
-  const { register, handleSubmit, watch, formState: { errors }} = useForm({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
     mode: "onSubmit",
     criteriaMode: "all",
     resolver: yupResolver(schema),
@@ -92,8 +105,13 @@ const CreateUpdateCollectionFormModal = ({ data, type}) => {
     return () => clearTimeout(timer);
   };
 
+  const reCalculatePageTotal = () => {
+    const newPageTotal = Math.ceil((paging.totalItems + 1) / paging.pageSize)     
+    return newPageTotal
+  };
+
   const handleEditColleciton = async (formData) => {
-    formData.id = data?.collectionData.id
+    formData.id = data?.collectionData.id;
     try {
       const endpoint = ADMIN_ENDPOINT.COLLECTION_EDIT;
       const [editCollectionResponse] = await Promise.all([
@@ -126,21 +144,26 @@ const CreateUpdateCollectionFormModal = ({ data, type}) => {
     try {
       const endpoint = ADMIN_ENDPOINT.COLLECTION_ADD;
       const [addCollectionResponse] = await Promise.all([
-        axiosAuth.post(endpoint,formData),
+        axiosAuth.post(endpoint, formData),
       ]);
 
       if (
         addCollectionResponse?.status === STATUS_RESPONSE_HTTP_ENUM.OK &&
         addCollectionResponse?.data.status === RESPONSE_API_STATUS.SUCCESS
       ) {
-
-        dispatch(addNewItemData({newItem: formData}))
-        // dispatch(addNewItemData({newItem: formData, isRemoveLastItem: userList?.length === paging.pageSize}))
+        const newTotalPages = reCalculatePageTotal();
+        dispatch(
+          addNewItemData({
+            newItem: formData,
+            isRemoveLastItem: collectionList?.length === paging.pageSize,
+            newTotalPages: newTotalPages
+          })
+        );
         handleShowResultAlert(
           COLLECTION_FORM_CONST.MESSAGES.CREATE_SUCCESS,
           ALERT_TYPE.SUCCESS
         );
-        dispatch(setCreateUpdateCollectionModal({ isShow: false }))
+        dispatch(setCreateUpdateCollectionModal({ isShow: false }));
       }
     } catch (error) {
       const { status, message } = error.response?.data;
@@ -178,11 +201,16 @@ const CreateUpdateCollectionFormModal = ({ data, type}) => {
         deleteUserResponse?.data.status === RESPONSE_API_STATUS.SUCCESS
       ) {
         handleShowResultAlert(
-          COLLECTION_FORM_CONST.MESSAGES.DELETE_SUCCESS(data?.collectionData?.name),
+          COLLECTION_FORM_CONST.MESSAGES.DELETE_SUCCESS(
+            data?.collectionData?.name
+          ),
           ALERT_TYPE.SUCCESS
         );
         dispatch(setCreateUpdateCollectionModal({ isShow: false }));
-        dispatch(deleteCollection(deleteUserResponse?.data?.result.pagingCollectionList.collectionList)
+        dispatch(
+          deleteCollection(
+            deleteUserResponse?.data?.result.pagingCollectionList
+          )
         );
       }
     } catch (error) {
@@ -257,7 +285,7 @@ const CreateUpdateCollectionFormModal = ({ data, type}) => {
             <div className="w-full space-y-5 py-4">
               <div className="sm:col-span-2">
                 <InputField
-                  label={COLLECTION_FORM_CONST.LABELS.USERNAME}
+                  label={COLLECTION_FORM_CONST.LABELS.NAME}
                   labelStyle={labelStyle}
                   name="name"
                   register={register}

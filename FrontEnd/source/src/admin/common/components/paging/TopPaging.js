@@ -51,8 +51,8 @@ const TopPaging = ({ data, paging, onSearch }) => {
       departments: departments,
       roles: roles
     }
-    dispatch(setCreateUpdateUserModal({isShow: true, type: "Add", data: modalData}))
-    dispatch(setCreateUpdateCollectionModal({isShow: true, type: "Add"}))
+    dispatch(setCreateUpdateUserModal({isShow: true, type: BUTTON_TYPE.ADD, data: modalData}))
+    dispatch(setCreateUpdateCollectionModal({isShow: true, type: BUTTON_TYPE.ADD}))
   };
 
   const renderSelectQuantityNumber = () => {

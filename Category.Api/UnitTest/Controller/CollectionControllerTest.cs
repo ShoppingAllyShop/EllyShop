@@ -124,8 +124,8 @@ namespace Catalog.Api.UnitTest.Controller
             var result = await _collectionController.AddCollection(requestModel);
 
             //ActAssert
-            var statusCodeResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(200, statusCodeResult.StatusCode);
+            var statusCodeResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, statusCodeResult.StatusCode);
         }
 
         [Fact]
@@ -254,9 +254,9 @@ namespace Catalog.Api.UnitTest.Controller
         }
         #endregion
 
-        #region GetDataAdminCollectionPageAsync
+        #region GetDataCollectionPage
         [Fact]
-        public async Task GetDataAdminCollectionPage_Success_ReturnOk_200()
+        public async Task GetDataCollectionPage_Success_ReturnOk_200()
         {
             //Arrange
             DataCollectionResponse mockResult = new DataCollectionResponse
@@ -275,7 +275,7 @@ namespace Catalog.Api.UnitTest.Controller
                 }
             };
 
-            _mockCollectionServices.Setup(x => x.GetDataAdminCollectionPageAsync()).ReturnsAsync(mockResult);
+            _mockCollectionServices.Setup(x => x.GetDataCollectionPageAsync()).ReturnsAsync(mockResult);
 
 
             //Act
@@ -287,10 +287,10 @@ namespace Catalog.Api.UnitTest.Controller
         }
 
         [Fact]
-        public async Task GetDataAdminCollectionPage_Failed_ThrowException_ReturnInternalServerError_500()
+        public async Task GetDataCollectionPage_Failed_ThrowException_ReturnInternalServerError_500()
         {
             //Arrange
-            _mockCollectionServices.Setup(x => x.GetDataAdminCollectionPageAsync()).Throws(new Exception());
+            _mockCollectionServices.Setup(x => x.GetDataCollectionPageAsync()).Throws(new Exception());
             //Act
             var result = await _collectionController.GetDataCollectionPage();
 
@@ -302,9 +302,9 @@ namespace Catalog.Api.UnitTest.Controller
 
         #endregion
 
-        #region SearchEmployeeUser
+        #region SearchCollection
         [Fact]
-        public async Task SearchEmployeeUser_Success_ReturnOk_200()
+        public async Task SearchCollection_Success_ReturnOk_200()
         {
             //Arrange
             SearchCollectionResponse mockResult = CreateSearchCollectionResponse();
@@ -322,7 +322,7 @@ namespace Catalog.Api.UnitTest.Controller
         }
 
         [Fact]
-        public async Task SearchEmployeeUser_Failed_ThrowException_ReturnInternalServerError_500()
+        public async Task SearchCollection_Failed_ThrowException_ReturnInternalServerError_500()
         {
             //Arrange
             _mockCollectionServices.Setup(x => x.SearchCollectionAsync(It.IsAny<int>(), It.IsAny<int>()

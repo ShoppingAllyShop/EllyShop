@@ -28,7 +28,7 @@ const collectionSlice = createSlice({
       updatedCollection(state.data.collectionData.collectionList, action.payload)
     },
     deleteCollection: (state, action) => {
-      state.data.collectionData.collectionList = action.payload     
+      state.data.collectionData = action.payload     
     },
     setCollectionData:(state, action) => {
       state.data.collectionData = action.payload      

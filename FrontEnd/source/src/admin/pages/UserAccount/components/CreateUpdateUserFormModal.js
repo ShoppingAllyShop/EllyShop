@@ -14,7 +14,6 @@ import useAxiosAuth from "../../../../api/useAxiosAuth";
 import ConfirmModal from "../../../../components/Modals/ConfirmModal";
 import { USER_FORM_CONST } from "../constants/formConstants";
 import { REGEX_PATTERN } from "../../../../constants/regex";
-// import { Tooltip } from "flowbite";
 
 const CreateUpdateUserFormModal = ({ data, type, error, onCreateUser }) => {
   const dispatch = useDispatch()
@@ -171,7 +170,7 @@ const CreateUpdateUserFormModal = ({ data, type, error, onCreateUser }) => {
       ) {
         handleShowResultAlert( USER_FORM_CONST.MESSAGES.DELETE_CONFIRM(deleteUserResponse?.data?.result.userName), ALERT_TYPE.SUCCESS)
         dispatch(setCreateUpdateUserModal({isShow: false}));
-        dispatch(setUserList(deleteUserResponse?.data?.result.pagingUserList.userList))
+        dispatch(setUserList(deleteUserResponse?.data?.result.pagingUserList))
       }  
     } catch (error) {
       const {status, message} = error?.response?.data

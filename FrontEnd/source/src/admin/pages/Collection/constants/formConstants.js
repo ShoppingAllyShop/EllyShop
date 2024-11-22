@@ -5,16 +5,13 @@ export const COLLECTION_FORM_CONST = {
     },
     MESSAGES: {
       NOT_CHANGED: "Bạn chưa thay đổi thông tin",
-      UPDATE_SUCCESS: (userName) => `Tài khoản ${userName} cập nhật thành công`,
+      UPDATE_SUCCESS: (name) => `Bộ sưu tập ${name} cập nhật thành công`,
       CREATE_SUCCESS: "Tạo bộ sưu tập mới thành công",
-      DELETE_CONFIRM: (userName) => `Bạn có chắc muốn xóa tài khoản ${userName}?`,
-      DELETE_SUCCESS: (userName) => `bộ sưu tập  ${userName} xóa thành công`
+      DELETE_CONFIRM: (name) => `Bạn có chắc muốn xóa bộ sưu tập ${name}?`,
+      DELETE_SUCCESS: (name) => `Bộ sưu tập ${name} xóa thành công`
     },
     LABELS: {
-      USERNAME: "Tên",
-      EMAIL: "Mô Tả",
-      ROLE: "Vai trò",
-      OPTIONS: "Lựa chọn"
+      NAME: "Tên",
     },
     TITLES: {
       CREATE: "TẠO BỘ SƯU TẬP",
