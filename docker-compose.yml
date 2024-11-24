@@ -14,7 +14,8 @@ services:
         - ellyshop_gateway_network
   
   frontend:
-    image: ${DOCKER_REGISTRY-}frontend
+    # image: ${DOCKER_REGISTRY-}frontend
+    image: elly-front-end-test
     ports:
         - 3000:80
     # volumes:

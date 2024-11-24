@@ -1,7 +1,8 @@
 pipeline {
     agent any
     environment {
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        DOCKER_COMPOSE_FILE = 'docker-compose.yml',
+        DOCKER_HUB_USERNAME = 'tomcorleone'
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -41,27 +42,51 @@ pipeline {
                 }
             }
         }
+        stage('Login to Docker') {
+            steps {
+                withCredentials([string(credentialsId: 'elly_dockerhub_token', variable: 'DOCKER_HUB_TOKEN')]) {
+                    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_HUB_TOKEN'
+                }
+            }
+        }
         stage('Build and Deploy') {
             when {
                 expression { env.CHANGED_SERVICES != '' }
             }
             steps {
                 script {
+
+                    // Đăng nhập Docker Hub bằng Access Token
+                    sh """
+                    docker login -u ${env.DOCKER_HUB_USERNAME} -p ${env.DOCKER_HUB_TOKEN}
+                    """
+
                     // Lặp qua các service thay đổi và thực hiện build + deploy
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
                             echo "skip service ${service}"
                         }
+                        // Tạo tag với ngày giờ
+                        def imageTag = "tomcorleone/elly-mayo-frontend}:${new Date().format('yyyyMMdd-HHmmss')}"
+                        echo "imageTag: ${imageTag}"
                         // Build Docker image
                         sh """
                         docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
+                        docker tag ${service} ${imageTag}
+                        """
+
+                         // Push Docker image lên Docker Hub
+                        sh """
+                        docker push ${imageTag}
                         """
 
                         // Deploy (ví dụ: chỉ start container thay đổi)
-                        sh """
-                        docker-compose -f ${DOCKER_COMPOSE_FILE} up -d ${service}
-                        """
+                        // sh """
+                        // docker-compose -f ${DOCKER_COMPOSE_FILE} up -d ${service}
+                        // """
+
+                        
                     }
                 }
             }
