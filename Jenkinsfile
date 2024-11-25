@@ -62,9 +62,10 @@ pipeline {
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
                             echo "skip service ${service}"
+                            continue
                         }
                         // Tạo tag với ngày giờ
-                        def imageTag = "tomcorleone/elly-mayo-frontend}:${new Date().format('yyyyMMdd-HHmmss')}"
+                        def imageTag = "tomcorleone/elly-mayo-frontend:${new Date().format('yyyyMMdd-HHmmss')}"
                         echo "imageTag: ${imageTag}"
 
                         // Build Docker image
