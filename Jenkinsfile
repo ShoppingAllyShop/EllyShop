@@ -45,7 +45,7 @@ pipeline {
         stage('Login to Docker') {
             steps {
                 withCredentials([string(credentialsId: 'elly_dockerhub_token', variable: 'DOCKER_HUB_TOKEN')]) {
-                    sh 'docker login -u $DOCKER_HUB_USERNAME --password-stdin $DOCKER_HUB_TOKEN'
+                    sh 'docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_TOKEN'
                 }
             }
         }
