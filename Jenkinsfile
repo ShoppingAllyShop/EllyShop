@@ -3,6 +3,7 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
+        TAG_NAME_FRONTEND = 'elly-frontend'
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -66,26 +67,19 @@ pipeline {
                             return
                         }
                         // Tạo tag với ngày giờ
-                        def imageTag = "tomcorleone/elly-mayo-frontend:${new Date().format('yyyyMMdd-HHmmss')}"
-                        echo "imageTag: ${imageTag}"
+                        def dockerImageTag = "tomcorleone/elly-mayo-frontend:${new Date().format('yyyyMMdd-HHmmss')}"
+                        echo "dockerImageTag: ${dockerImageTag}"
 
                         // Build Docker image
-                        echo "Build service: ${service}"
-                        def imageName = sh(script: """
-                            docker-compose -f ${DOCKER_COMPOSE_FILE} images ${service} | tail -n 1 | awk '{print \$2 ":" \$3}'
-                            """, returnStdout: true).trim()
-                    
-                        echo "Image name: ${imageName}"
-
                         sh """
                         docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
-                        docker tag ${imageName} ${imageTag}
+                        docker tag ${TAG_NAME_FRONTEND} ${dockerImageTag}
                         """
 
                          // Push Docker image lên Docker Hub
-                        echo "Push image: ${service}"
+                        echo "Push image: ${TAG_NAME_FRONTEND}"
                         try {
-                            sh "docker push ${imageTag}"
+                            sh "docker push ${dockerImageTag}"
                         } catch (e) {
                             error "Push to dockerhub failed: ${e}"
                         }
