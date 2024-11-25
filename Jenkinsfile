@@ -71,9 +71,15 @@ pipeline {
 
                         // Build Docker image
                         echo "Build service: ${service}"
+                        def imageName = sh(script: """
+                            docker-compose -f ${DOCKER_COMPOSE_FILE} images ${service} | tail -n 1 | awk '{print \$2 ":" \$3}'
+                            """, returnStdout: true).trim()
+                    
+                        echo "Image name: ${imageName}"
+
                         sh """
                         docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
-                        docker tag ${service} ${imageTag}
+                        docker tag ${imageName} ${imageTag}
                         """
 
                          // Push Docker image lên Docker Hub
@@ -84,12 +90,14 @@ pipeline {
                             error "Push to dockerhub failed: ${e}"
                         }
 
+                        //clean image
+                        // echo "Clear image: ${service}"
+                        // sh "docker image rm...."
+
                         // Deploy (ví dụ: chỉ start container thay đổi)
                         // sh """
                         // docker-compose -f ${DOCKER_COMPOSE_FILE} up -d ${service}
-                        // """
-
-                        
+                        // """                        
                     }
                 }
             }
