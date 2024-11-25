@@ -66,13 +66,16 @@ pipeline {
                         // Tạo tag với ngày giờ
                         def imageTag = "tomcorleone/elly-mayo-frontend}:${new Date().format('yyyyMMdd-HHmmss')}"
                         echo "imageTag: ${imageTag}"
+
                         // Build Docker image
+                        echo "Build service: ${service}"
                         sh """
                         docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
                         docker tag ${service} ${imageTag}
                         """
 
                          // Push Docker image lên Docker Hub
+                        echo "Push image: ${service}"
                         sh """
                         docker push ${imageTag}
                         """
