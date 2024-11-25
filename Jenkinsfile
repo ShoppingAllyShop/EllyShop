@@ -58,6 +58,7 @@ pipeline {
             steps {
                 script {                
                     // Lặp qua các service thay đổi và thực hiện build + deploy
+                     echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
