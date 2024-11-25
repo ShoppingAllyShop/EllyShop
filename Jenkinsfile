@@ -62,7 +62,7 @@ pipeline {
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
                             echo "skip service ${service}"
-                            continue
+                            return
                         }
                         // Tạo tag với ngày giờ
                         def imageTag = "tomcorleone/elly-mayo-frontend:${new Date().format('yyyyMMdd-HHmmss')}"
@@ -77,9 +77,11 @@ pipeline {
 
                          // Push Docker image lên Docker Hub
                         echo "Push image: ${service}"
-                        sh """
-                        docker push ${imageTag}
-                        """
+                        try {
+                            sh "docker push ${imageTag}"
+                        } catch (e) {
+                            error "Push to dockerhub failed: ${e}"
+                        }
 
                         // Deploy (ví dụ: chỉ start container thay đổi)
                         // sh """
