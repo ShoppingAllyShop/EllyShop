@@ -56,13 +56,7 @@ pipeline {
                 expression { env.CHANGED_SERVICES != '' }
             }
             steps {
-                script {
-
-                    // Đăng nhập Docker Hub bằng Access Token
-                    sh """
-                    docker login -u ${env.DOCKER_HUB_USERNAME} -p ${env.DOCKER_HUB_TOKEN}
-                    """
-
+                script {                
                     // Lặp qua các service thay đổi và thực hiện build + deploy
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
