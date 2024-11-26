@@ -1,3 +1,23 @@
+// define port for services
+def selectPort(serviceName) {
+    switch (serviceName) {
+        case 'frontend':
+            return '3000'
+            break
+        case 'gateway':
+            return '7000'
+            break
+        case 'user':
+            return '7135'
+            break
+        case 'catalog':
+            return '7021'
+            break
+        default:
+            echo 'Select port error!!'
+    }
+}
+
 pipeline {
     agent any
     environment {
@@ -52,54 +72,80 @@ pipeline {
                 }
             }
         }
-        // stage('Build') {
-        //     when {
-        //         expression { env.CHANGED_SERVICES != '' }
-        //     }
-        //     steps {
-        //         script {                
-        //             // Lặp qua các service thay đổi và thực hiện build + deploy
-        //              echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
-        //             env.CHANGED_SERVICES.split(' ').each { service ->
-        //                 echo "Building and Deploying ${service}"
-        //                 if (service != "frontend"){
-        //                     echo "skip service ${service}"
-        //                     return
-        //                 }
-        //                 // Tạo tag với ngày giờ
-        //                 def dockerImageTag = "tomcorleone/elly-mayo-frontend:latest"
+        stage('Build') {
+            when {
+                expression { env.CHANGED_SERVICES != '' }
+            }
+            steps {
+                script {                
+                    // Lặp qua các service thay đổi và thực hiện build + deploy
+                     echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
+                    env.CHANGED_SERVICES.split(' ').each { service ->
+                        echo "Building and Deploying ${service}"
+                        if (service != "frontend"){
+                            echo "skip service ${service}"
+                            return
+                        }
+                        // Tạo tag với ngày giờ
+                        def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
                         
-        //                 // Build Docker image
-        //                 sh """
-        //                 docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
-        //                 docker tag ${TAG_NAME_IMAGE_FRONTEND} ${dockerImageTag}
-        //                 """
+                        // Build Docker image
+                        sh """
+                        docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
+                        docker tag ${TAG_NAME_IMAGE_FRONTEND} ${dockerImageTag}
+                        """
 
-        //                  // Push Docker image lên Docker Hub
-        //                 echo "Push image: ${TAG_NAME_IMAGE_FRONTEND}"
-        //                 try {
-        //                     sh "docker push ${dockerImageTag}"
-        //                 } catch (e) {
-        //                     error "Push to dockerhub failed: ${e}"
-        //                 }
+                         // Push Docker image lên Docker Hub
+                        echo "Push image: ${TAG_NAME_IMAGE_FRONTEND}"
+                        try {
+                            sh "docker push ${dockerImageTag}"
+                        } catch (e) {
+                            error "Push to dockerhub failed: ${e}"
+                        }
 
-        //                 //clean image
-        //                 // echo "Clear image: ${service}"
-        //                 // sh "docker image rm...."
+                        //clean image
+                        // echo "Clear image: ${service}"
+                        // sh "docker image rm...."
 
-        //                 // Deploy (ví dụ: chỉ start container thay đổi)
-        //                 // sh """
-        //                 // docker-compose -f ${DOCKER_COMPOSE_FILE} up -d ${service}
-        //                 // """                        
-        //             }
-        //         }
-        //     }
-        // }
-        stage('SSh server'){
+                        // Deploy (ví dụ: chỉ start container thay đổi)
+                        // sh """
+                        // docker-compose -f ${DOCKER_COMPOSE_FILE} up -d ${service}
+                        // """                        
+                    }
+                }
+            }
+        }
+        stage('Deploy server'){
             steps{
                script{
                 sshagent(['ellly_ssh_remote']) {
-                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.168 touch phantanloc.text'
+                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.168'
+
+                    env.CHANGED_SERVICES.split(' ').each { service ->
+                        echo "Building and Deploying ${service}"
+                        if (service != "frontend"){
+                            echo "skip service ${service}"
+                            return
+                        }
+                        // Tạo tag với ngày giờ
+                        def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
+                        def imageName = "elly_${service}"
+                        def port = selectPort(service)
+
+                    sh """
+                        # Kéo Docker image từ Docker Hub
+                        docker pull ${dockerImageTag}
+
+                        # Dừng và xóa container cũ nếu có
+                        docker stop ${imageName} || true
+                        docker rm ${imageName} || true
+
+                        # Chạy container mới
+                        docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
+                      """                
+                    }
+
+                   
                 }
                } 
             }
