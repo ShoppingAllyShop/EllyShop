@@ -59,39 +59,9 @@ pipeline {
             steps {
                 script {                
                     // Lặp qua các service thay đổi và thực hiện build + deploy
-                     echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
-                    env.CHANGED_SERVICES.split(' ').each { service ->
-                        echo "Building and Deploying ${service}"
-                        if (service != "frontend"){
-                            echo "skip service ${service}"
-                            return
-                        }
-                        // Tạo tag với ngày giờ
-                        def dockerImageTag = "tomcorleone/elly-mayo-frontend:latest"
+                    echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
+                    echo "build success"
                         
-                        // Build Docker image
-                        sh """
-                        docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
-                        docker tag ${TAG_NAME_IMAGE_FRONTEND} ${dockerImageTag}
-                        """
-
-                         // Push Docker image lên Docker Hub
-                        echo "Push image: ${TAG_NAME_IMAGE_FRONTEND}"
-                        try {
-                            sh "docker push ${dockerImageTag}"
-                        } catch (e) {
-                            error "Push to dockerhub failed: ${e}"
-                        }
-
-                        //clean image
-                        // echo "Clear image: ${service}"
-                        // sh "docker image rm...."
-
-                        // Deploy (ví dụ: chỉ start container thay đổi)
-                        // sh """
-                        // docker-compose -f ${DOCKER_COMPOSE_FILE} up -d ${service}
-                        // """                        
-                    }
                 }
             }
         }
