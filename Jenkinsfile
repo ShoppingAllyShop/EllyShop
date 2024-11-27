@@ -134,7 +134,7 @@ pipeline {
                         echo "Start pull and run image with dockerImageTag: ${dockerImageTag},
                         imageName: ${imageName}, port: ${dockerImageTag}"
 
-                    sh """
+                    sh  """
                         # Kéo Docker image từ Docker Hub
                         docker pull ${dockerImageTag}
 
@@ -144,10 +144,8 @@ pipeline {
 
                         # Chạy container mới
                         docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
-                      """                
-                    }
-
-                   
+                        """                
+                    }                   
                 }
                } 
             }
