@@ -131,6 +131,8 @@ pipeline {
                         def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
                         def imageName = "elly_${service}"
                         def port = selectPort(service)
+                        echo "Start pull and run image with dockerImageTag: ${dockerImageTag},
+                        imageName: ${imageName}, port: ${dockerImageTag}"
 
                     sh """
                         # Kéo Docker image từ Docker Hub
