@@ -43,7 +43,7 @@ pipeline {
                     sh "git clean -fd" 
 
                     def changedFiles = sh(
-                        script: "git diff --name-only HEAD~1",
+                        script: "git diff --name-only origin/lp/241118_jenkins_test",
                         returnStdout: true
                     ).trim()
 
