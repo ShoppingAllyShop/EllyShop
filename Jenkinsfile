@@ -39,14 +39,11 @@ pipeline {
                 script {
                     // Sử dụng git diff để tìm các thư mục service thay đổi
                     // Lấy danh sách file thay đổi
-                    sh "git log --oneline -2"  // Xem 2 commit gần nhất
-                    sh "git status"  // Kiểm tra trạng thái workspace
-
                     sh "git reset --hard"
                     sh "git clean -fd" 
 
                     def changedFiles = sh(
-                        script: "git diff --name-only lp/241118_jenkins_test",
+                        script: "git diff --name-only HEAD~1",
                         returnStdout: true
                     ).trim()
 
