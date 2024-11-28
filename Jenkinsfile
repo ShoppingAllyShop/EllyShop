@@ -43,7 +43,7 @@ pipeline {
                     sh "git status"
                     sh "git fetch origin lp/241118_jenkins_test"
                     def changedFiles = sh(
-                        script: "git diff --name-only HEAD lp/241118_jenkins_test",
+                        script: "git diff --name-only HEAD~1",
                         returnStdout: true
                     ).trim()
 
