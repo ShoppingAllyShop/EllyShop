@@ -15,6 +15,7 @@ def selectPort(serviceName) {
             break
         default:
             echo 'Select port error!!'
+            break
     }
 }
 
