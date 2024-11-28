@@ -37,11 +37,10 @@ pipeline {
         stage('Detect Changed Services') {
             steps {
                 script {
-                    sh "git fetch --all"
                     // Sử dụng git diff để tìm các thư mục service thay đổi
-                    // Lấy danh sách file thay đổi (ví dụ giả định ở đây)
-                    sh "git fetch --all"
-                    sh "git merge lp/241118_jenkins_test"
+                    // Lấy danh sách file thay đổi
+                    sh "git log --oneline -2"  // Xem 2 commit gần nhất
+                    sh "git status"  // Kiểm tra trạng thái workspace
 
                     def changedFiles = sh(
                         script: "git diff --name-only lp/241118_jenkins_test",
