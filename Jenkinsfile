@@ -38,12 +38,9 @@ pipeline {
             steps {
                 script {
                     // Sử dụng git diff để tìm các thư mục service thay đổi
-                    // Lấy danh sách file thay đổi
-                    sh "git reset --hard"
-                    sh "git clean -fd" 
-
+                    // Lấy danh sách file thay đổi (ví dụ giả định ở đây)
                     def changedFiles = sh(
-                        script: "git diff --name-only origin/lp/241118_jenkins_test",
+                        script: "git diff --name-only HEAD~1",
                         returnStdout: true
                     ).trim()
 
