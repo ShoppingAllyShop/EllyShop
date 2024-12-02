@@ -43,7 +43,8 @@ pipeline {
                     sh "git status"
                     sh "git fetch origin lp/241118_jenkins_test"
                     def changedFiles = sh(
-                        script: "git diff --name-only HEAD~1",
+                        //script: "git diff --name-only HEAD~1",
+                        script: "git --no-pager diff origin/lp/241118_jenkins_test --name-only",
                         returnStdout: true
                     ).trim()
 
@@ -122,7 +123,7 @@ pipeline {
         stage('Deploy server'){
             steps{
                script{
-                sshagent(['ellly_ssh_remote']) {
+                sshagent(['elly_ssh_remote']) {
                     sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.168'
 
                     env.CHANGED_SERVICES.split(' ').each { service ->
