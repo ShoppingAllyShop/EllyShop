@@ -71,20 +71,31 @@ pipeline {
         stage('Login to Docker') {
             steps {
                 withCredentials([string(credentialsId: 'elly_dockerhub_token', variable: 'DOCKER_HUB_TOKEN')]) {
-                    sh '''
-                    echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-                    '''
+                    script {
+                        def loginStatus = sh(
+                            script: '''
+                                echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+                            ''',
+                            returnStatus: true  // Trả về trạng thái thành công hoặc thất bại
+                        )
+                        
+                        if (loginStatus == 0) {
+                            echo "DockerHub login successful!"
+                        } else {
+                            error "DockerHub login failed!"
+                        }
+                    }
                 }
             }
         }
-        stage('Build') {
-            echo "Start build...."
+        stage('Build') {           
             when {
                 expression { env.CHANGED_SERVICES != '' }
             }
             steps {
                 script {                
                     // Lặp qua các service thay đổi và thực hiện build + deploy
+                         echo "Start build.."
                      echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
