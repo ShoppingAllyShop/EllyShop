@@ -39,12 +39,12 @@ pipeline {
                 script {
                     // Sử dụng git diff để tìm các thư mục service thay đổi
                     // Lấy danh sách file thay đổi (ví dụ giả định ở đây)
-                    sh "git branch"
-                    sh "git status"
-                    sh "git fetch origin lp/241118_jenkins_test"
+                    // sh "git branch"
+                    // sh "git status"
+                    // sh "git fetch origin lp/241118_jenkins_test"
                     def changedFiles = sh(
-                        //script: "git diff --name-only HEAD~1",
-                        script: "git --no-pager diff origin/lp/241118_jenkins_test --name-only",
+                        script: "git diff --name-only HEAD~1 HEAD",
+                        //script: "git --no-pager diff origin/lp/241118_jenkins_test --name-only",
                         returnStdout: true
                     ).trim()
 
