@@ -124,7 +124,7 @@ pipeline {
             steps{
                script{
                 sshagent(['elly_ssh_remote']) {
-                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.168'
+                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235'
 
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
