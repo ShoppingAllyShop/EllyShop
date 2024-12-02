@@ -78,6 +78,7 @@ pipeline {
             }
         }
         stage('Build') {
+            echo "Start build...."
             when {
                 expression { env.CHANGED_SERVICES != '' }
             }
