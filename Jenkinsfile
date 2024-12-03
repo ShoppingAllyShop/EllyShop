@@ -126,7 +126,7 @@ pipeline {
                script{
                 sshagent(['elly_ssh_ubuntu']) {
                     // sh 'chmod 600 $SSH_PRIVATE_KEY'
-                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235'
+                    sh 'ssh -o StrictHostKeyChecking=no -l root 14.225.254.235'
 
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
