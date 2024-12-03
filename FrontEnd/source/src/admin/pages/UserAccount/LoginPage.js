@@ -278,7 +278,7 @@ const LoginPage = ({ handleTest }) => {
               href="#"
               className="text-xs text-gray-500 capitalize text-center w-full"
             >
-              Don&apos;t have any account yet? aaa
+              Don&apos;t have any account yet?
               <span className="text-blue-700"> Sign Up</span>
             </Link>
           </div>
