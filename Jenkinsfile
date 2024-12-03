@@ -125,7 +125,7 @@ pipeline {
             steps{
                script{
                 sshagent(['elly_ssh_ubuntu']) {
-                    // sh 'chmod 600 $SSH_PRIVATE_KEY'
+                    sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
                     sh 'ssh -o StrictHostKeyChecking=no -l root 14.225.254.235'
 
                     env.CHANGED_SERVICES.split(' ').each { service ->
