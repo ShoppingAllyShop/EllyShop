@@ -124,10 +124,9 @@ pipeline {
         stage('Deploy server'){
             steps{
                script{
-                sshagent(['elly_ssh_remote']) {
-                    //sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235 touch ptl.txt'
-                    sh 'ssh-add -l'  // Liệt kê các khóa được thêm vào ssh-agent
-                    sh 'ssh -v -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235 "echo Connected"'
+                sshagent(['elly_ssh_ubuntu']) {
+                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235 touch ptl.txt'
+
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
