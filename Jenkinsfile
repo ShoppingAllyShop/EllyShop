@@ -125,8 +125,12 @@ pipeline {
             steps{
                script{
                 sshagent(['ellly_ssh_remote']) {
-                    // sh 'chmod 600 $SSH_PRIVATE_KEY'
-                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235'
+                    withEnv(['SSH_PRIVATE_KEY=$(mktemp)']) {
+                        writeFile(file: env.SSH_PRIVATE_KEY, text: credentials('ellly_ssh_remote'))
+                        sh 'chmod 600 ${SSH_PRIVATE_KEY}'
+                        sh 'ssh -i ${SSH_PRIVATE_KEY} -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235'
+                    }
+                    //sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235'
 
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
