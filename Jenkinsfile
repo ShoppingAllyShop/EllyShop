@@ -124,9 +124,9 @@ pipeline {
         }
         stage('Deploy server'){
             steps{
-              sshagent([SSH_KEY]) {
+               script{
+                sshagent([SSH_KEY]) {
                     // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
-                    sh 'ssh phantanloc@14.225.254.255 "ls"'
                     sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.255'
                     //sh 'chmod 600 /var/jenkins_home/workspace/EllyShop@tmp/*.key'
 
@@ -154,6 +154,7 @@ pipeline {
                         """
                     }                   
                 }
+               } 
             }
         }
         //  stage('Deploy server'){
