@@ -25,6 +25,7 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
         TAG_NAME_IMAGE_FRONTEND = 'elly-frontend'
+        SSH_KEY = credentials('elly_ssh_ubuntu')
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -122,38 +123,12 @@ pipeline {
             }
         }
         stage('Deploy server'){
-            steps{
-               script{
-                sshagent(['elly_ssh_ubuntu']) {
-                    // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
-                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc@14.225.254.255'
-                    //sh 'chmod 600 /var/jenkins_home/workspace/EllyShop@tmp/*.key'
-
-                    env.CHANGED_SERVICES.split(' ').each { service ->
-                        echo "Building and Deploying ${service}"
-                        if (service != "frontend"){
-                            echo "skip service ${service}"
-                            return
-                        }
-                        // Tạo tag với ngày giờ
-                        def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
-                        def imageName = "elly_${service}"
-                        def port = selectPort(service)
-                        echo "Start pull and run image"
-                        echo "dockerImageTag: ${dockerImageTag}, imageName: ${imageName}, port: ${port}"
-
-                        // SSH và thực thi các lệnh từ xa
-                        sh """
-                            ssh -o StrictHostKeyChecking=no phantanloc@14.225.254.235 << EOF
-                                docker pull ${dockerImageTag}
-                                docker stop ${imageName} || true
-                                docker rm ${imageName} || true
-                                docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
-                            EOF
-                        """
-                    }                   
+            steps {
+                script {
+                    sh """
+                    ssh -i ${SSH_KEY} phantanloc@14.225.254.235 'touch ptl.txt'
+                    """
                 }
-               } 
             }
         }
         //  stage('Deploy server'){
