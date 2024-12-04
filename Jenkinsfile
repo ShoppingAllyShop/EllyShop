@@ -121,6 +121,13 @@ pipeline {
                 }
             }
         }
+        stage('Change mod'){
+            steps {
+                script {
+                    sh 'chmod 600 /var/jenkins_home/workspace/EllyShop@tmp/*.key'
+                }
+            }
+        }
         stage('Deploy server'){
             steps{
                script{
