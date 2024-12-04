@@ -126,7 +126,7 @@ pipeline {
                script{
                 sshagent(['elly_ssh_ubuntu']) {
                     // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
-                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc@14.225.254.235'
+                    // sh 'ssh -o StrictHostKeyChecking=no -l phantanloc@14.225.254.235'
 
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
@@ -139,19 +139,17 @@ pipeline {
                         def imageName = "elly_${service}"
                         def port = selectPort(service)
                         echo "Start pull and run image"
-                        echo "dockerImageTag: ${dockerImageTag}. imageName: ${imageName}. port: ${dockerImageTag}"
+                        echo "dockerImageTag: ${dockerImageTag}, imageName: ${imageName}, port: ${port}"
 
-                    sh  """
-                        # Kéo Docker image từ Docker Hub
-                        docker pull ${dockerImageTag}
-
-                        # Dừng và xóa container cũ nếu có
-                        docker stop ${imageName} || true
-                        docker rm ${imageName} || true
-
-                        # Chạy container mới
-                        docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
-                        """                
+                        // SSH và thực thi các lệnh từ xa
+                        sh """
+                            ssh -o StrictHostKeyChecking=no phantanloc@14.225.254.235 << EOF
+                                docker pull ${dockerImageTag}
+                                docker stop ${imageName} || true
+                                docker rm ${imageName} || true
+                                docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
+                            EOF
+                        """
                     }                   
                 }
                } 
