@@ -125,10 +125,11 @@ pipeline {
         stage('Deploy server'){
             steps {
                 script {
-                    sh """
-                    ssh -i ${SSH_KEY} phantanloc@14.225.254.235 'touch ptl.txt'
-                    """
+                    sshagent([SSH_KEY]) {
+                        sh "ssh phantanloc@14.225.254.235 'touch ptl.txt'"
+                    }
                 }
+                
             }
         }
         //  stage('Deploy server'){
