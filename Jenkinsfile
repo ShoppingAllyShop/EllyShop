@@ -142,7 +142,7 @@ pipeline {
                 // }
                 script {
                     sh """
-                    echo '$SSH_KEY' > /tmp/jenkins_ssh_key
+                    echo "${SSH_KEY}" > /tmp/jenkins_ssh_key
                     chmod 600 /tmp/jenkins_ssh_key
                     cat /tmp/jenkins_ssh_key
                     """
