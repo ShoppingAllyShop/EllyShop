@@ -25,6 +25,7 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
         TAG_NAME_IMAGE_FRONTEND = 'elly-frontend'
+        SSH_KEY = credentials('elly_ssh_ubuntu')
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -121,18 +122,11 @@ pipeline {
                 }
             }
         }
-        stage('Change mod'){
-            steps {
-                script {
-                    sh 'chmod 600 /var/jenkins_home/workspace/EllyShop@tmp/*.key'
-                }
-            }
-        }
         stage('Deploy server'){
             steps{
-               script{
-                sshagent(['elly_ssh_ubuntu']) {
+              sshagent([SSH_KEY]) {
                     // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
+                    sh 'ssh phantanloc@14.225.254.255 "ls"'
                     sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.255'
                     //sh 'chmod 600 /var/jenkins_home/workspace/EllyShop@tmp/*.key'
 
@@ -160,7 +154,6 @@ pipeline {
                         """
                     }                   
                 }
-               } 
             }
         }
         //  stage('Deploy server'){
