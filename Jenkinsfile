@@ -25,7 +25,6 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
         TAG_NAME_IMAGE_FRONTEND = 'elly-frontend'
-        SSH_KEY = credentials('elly_ssh_ubuntu')
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -84,10 +83,10 @@ pipeline {
             }
             steps {
                 script {                
-                    // Lặp qua các service thay đổi và thực hiện build + deploy
-                         echo "Start build"
-                     echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
-                    env.CHANGED_SERVICES.split(' ').each { service ->
+                        // Lặp qua các service thay đổi và thực hiện build + deploy
+                        echo "Start build"
+                        echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
+                        env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
                             echo "skip service ${service}"
@@ -125,9 +124,9 @@ pipeline {
         stage('Deploy server'){
             steps{
                script{
-                sshagent([SSH_KEY]) {
+                sshagent(['elly_ssh_ubuntu']) {
                     // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
-                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.255'
+                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc@14.225.254.255'
                     //sh 'chmod 600 /var/jenkins_home/workspace/EllyShop@tmp/*.key'
 
                     env.CHANGED_SERVICES.split(' ').each { service ->
