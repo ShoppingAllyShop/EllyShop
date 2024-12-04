@@ -127,6 +127,9 @@ pipeline {
                 sshagent(['elly_ssh_ubuntu']) {
                     // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
                     // sh 'ssh -o StrictHostKeyChecking=no -l phantanloc@14.225.254.235'
+                    sh '''
+                            find /var/jenkins_home/workspace/EllyShop@tmp -name "*.key" -exec chmod 600 {} \;
+                        '''
 
                     env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
