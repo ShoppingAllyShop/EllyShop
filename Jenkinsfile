@@ -124,37 +124,37 @@ pipeline {
         // }
         stage('Deploy server'){
             steps {
-                // script {
-                //     // sh """
-                //     // ssh -i $SSH_KEY phantanloc@14.225.254.255 touch ptl.txt'
-                //     // """
-                //      sh 'ls -l $SSH_KEY'
-                //      sh 'chmod 600 $SSH_KEY'
-                //      sh 'ls -l $SSH_KEY'
-                //     //  sh('ssh -o StrictHostKeyChecking=no -i $SSH_KEY phantanloc@14.225.254.235 touch ptl.txt')
-
-                //      sh "chmod 600 ${SSH_KEY}"
-
-                //     // Kết nối SSH và thực hiện lệnh
-                //     sh """
-                //     ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} phantanloc@14.225.254.235 touch ptl.txt
-                //     """
-                // }
                 script {
-                    sh """
-                    echo "${SSH_KEY}" > /tmp/jenkins_ssh_key
-                    chmod 600 /tmp/jenkins_ssh_key
-                    cat /tmp/jenkins_ssh_key
-                    """
+                    // sh """
+                    // ssh -i $SSH_KEY phantanloc@14.225.254.255 touch ptl.txt'
+                    // """
+                     sh 'ls -l $SSH_KEY'
+                     sh 'chmod 600 $SSH_KEY'
+                     sh 'ls -l $SSH_KEY'
+                    //  sh('ssh -o StrictHostKeyChecking=no -i $SSH_KEY phantanloc@14.225.254.235 touch ptl.txt')
 
-                    // Thực thi lệnh SSH sử dụng key đã sửa quyền
-                    sh """
-                    ssh -o StrictHostKeyChecking=no -i /tmp/jenkins_ssh_key phantanloc@14.225.254.235 touch ptl.txt
-                    """
+                    //  sh "chmod 600 ${SSH_KEY}"
 
-                    // Xóa file tạm sau khi sử dụng (để bảo mật)
-                    sh "rm -f /tmp/jenkins_ssh_key"
+                    // Kết nối SSH và thực hiện lệnh
+                    sh """
+                    ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} phantanloc@14.225.254.235 touch ptl.txt
+                    """
                 }
+                // script {
+                //     sh """
+                //     echo "${SSH_KEY}" > /tmp/jenkins_ssh_key
+                //     chmod 600 /tmp/jenkins_ssh_key
+                //     cat /tmp/jenkins_ssh_key
+                //     """
+
+                //     // Thực thi lệnh SSH sử dụng key đã sửa quyền
+                //     sh """
+                //     ssh -o StrictHostKeyChecking=no -i /tmp/jenkins_ssh_key phantanloc@14.225.254.235 touch ptl.txt
+                //     """
+
+                //     // Xóa file tạm sau khi sử dụng (để bảo mật)
+                //     sh "rm -f /tmp/jenkins_ssh_key"
+                // }
             }
         }
         //  stage('Deploy server'){
