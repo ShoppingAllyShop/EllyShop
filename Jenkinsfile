@@ -128,7 +128,7 @@ pipeline {
                     // sh """
                     // ssh -i $SSH_KEY phantanloc@14.225.254.255 touch ptl.txt'
                     // """
-                     sh('ssh -i $SSH_KEY phantanloc@14.225.254.235 touch ptl.txt')
+                     sh('ssh -o StrictHostKeyChecking=no -i $SSH_KEY phantanloc@14.225.254.235 touch ptl.txt')
                 }
             }
         }
