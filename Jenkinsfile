@@ -28,13 +28,13 @@ pipeline {
         SSH_KEY = credentials('elly_ssh_ubuntu')
     }
     stages {
-        // stage('Checkout clone or update repo') {
-        //     steps {
-        //         script {
-        //             git branch: 'lp/241118_jenkins_test', url: 'https://github.com/ShoppingAllyShop/EllyShop.git'
-        //         }
-        //     }
-        // }
+        stage('Checkout clone or update repo') {
+            steps {
+                script {
+                    git branch: 'lp/241118_jenkins_test', url: 'https://github.com/ShoppingAllyShop/EllyShop.git'
+                }
+            }
+        }
         // stage('Detect Changed Services') {
         //     steps {
         //         script {
