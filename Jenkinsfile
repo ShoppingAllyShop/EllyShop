@@ -128,7 +128,7 @@ pipeline {
                     sh '''
                     echo "Using private key..."
                     chmod 600 $PRIVATE_KEY
-                    ssh -o StrictHostKeyChecking=no -i $PRIVATE_KEY phantanlocr@14.225.254.235 "echo 'Hello from Jenkins'"
+                    ssh -o StrictHostKeyChecking=no -i $PRIVATE_KEY phantanloc@14.225.254.235 "echo 'Hello from Jenkins'"
                     '''
                 }
                 // script {
