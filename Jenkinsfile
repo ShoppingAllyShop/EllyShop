@@ -126,13 +126,11 @@ pipeline {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'Elly_SSH_phantanloc', keyFileVariable: 'PRIVATE_KEY')]) {
                     sh '''
-                    whoami
-                    ls -ld $(pwd)
-                    echo "Using private key..."
-                    ls -l $PRIVATE_KEY
-                    sudo chmod 600 $PRIVATE_KEY
-                    stat -c "%a %n" $PRIVATE_KEY
-                    ssh -o StrictHostKeyChecking=no -i $PRIVATE_KEY phantanloc@14.225.254.235 "echo 'Hello from Jenkins'"
+                    cp $PRIVATE_KEY /tmp/temp_key
+                    chmod 600 /tmp/temp_key
+                    ls -l /tmp/temp_key
+                    stat -c "%a %n" /tmp/temp_key
+                    ssh -o StrictHostKeyChecking=no -i /tmp/temp_key phantanloc@14.225.254.235 "echo 'Hello from Jenkins'"
                     '''
                 }
                 // script {
