@@ -126,6 +126,7 @@ pipeline {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'Elly_SSH_phantanloc', keyFileVariable: 'PRIVATE_KEY')]) {
                     sh '''
+                    whoami
                     ls -ld $(pwd)
                     echo "Using private key..."
                     chmod 600 $PRIVATE_KEY
