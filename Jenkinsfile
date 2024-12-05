@@ -129,6 +129,7 @@ pipeline {
                     whoami
                     ls -ld $(pwd)
                     echo "Using private key..."
+                    ls -l $PRIVATE_KEY
                     chmod 600 $PRIVATE_KEY
                     stat -c "%a %n" $PRIVATE_KEY
                     ssh -o StrictHostKeyChecking=no -i $PRIVATE_KEY phantanloc@14.225.254.235 "echo 'Hello from Jenkins'"
