@@ -122,77 +122,77 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Deploy server'){
-            steps {
-                script {
-                    // sh """
-                    // ssh -i $SSH_KEY phantanloc@14.225.254.255 touch ptl.txt'
-                    // """
-                     sh 'ls -l $SSH_KEY'
-                     sh 'chmod 600 $SSH_KEY'
-                     sh 'ls -l $SSH_KEY'
-                    //  sh('ssh -o StrictHostKeyChecking=no -i $SSH_KEY phantanloc@14.225.254.235 touch ptl.txt')
+        // stage('Deploy server'){
+        //     steps {
+        //         script {
+        //             // sh """
+        //             // ssh -i $SSH_KEY phantanloc@14.225.254.255 touch ptl.txt'
+        //             // """
+        //              sh 'ls -l $SSH_KEY'
+        //              sh 'chmod 600 $SSH_KEY'
+        //              sh 'ls -l $SSH_KEY'
+        //             //  sh('ssh -o StrictHostKeyChecking=no -i $SSH_KEY phantanloc@14.225.254.235 touch ptl.txt')
 
-                    //  sh "chmod 600 ${SSH_KEY}"
+        //             //  sh "chmod 600 ${SSH_KEY}"
 
-                    // Kết nối SSH và thực hiện lệnh
-                    sh """
-                    ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} phantanloc@14.225.254.235 touch ptl.txt
-                    """
-                }
-                // script {
-                //     sh """
-                //     echo "${SSH_KEY}" > /tmp/jenkins_ssh_key
-                //     chmod 600 /tmp/jenkins_ssh_key
-                //     cat /tmp/jenkins_ssh_key
-                //     """
-
-                //     // Thực thi lệnh SSH sử dụng key đã sửa quyền
-                //     sh """
-                //     ssh -o StrictHostKeyChecking=no -i /tmp/jenkins_ssh_key phantanloc@14.225.254.235 touch ptl.txt
-                //     """
-
-                //     // Xóa file tạm sau khi sử dụng (để bảo mật)
-                //     sh "rm -f /tmp/jenkins_ssh_key"
-                // }
-            }
-        }
-        //  stage('Deploy server'){
-        //     steps{
-        //        script{
-        //         sshagent(credentials: ['elly_ssh_ubuntu']) {
-        //             // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
-        //             sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235'
-
-        //             env.CHANGED_SERVICES.split(' ').each { service ->
-        //                 echo "Building and Deploying ${service}"
-        //                 if (service != "frontend"){
-        //                     echo "skip service ${service}"
-        //                     return
-        //                 }
-        //                 // Tạo tag với ngày giờ
-        //                 def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
-        //                 def imageName = "elly_${service}"
-        //                 def port = selectPort(service)
-        //                 echo "Start pull and run image"
-        //                 echo "dockerImageTag: ${dockerImageTag}. imageName: ${imageName}. port: ${dockerImageTag}"
-
-        //             sh  """
-        //                 # Kéo Docker image từ Docker Hub
-        //                 docker pull ${dockerImageTag}
-
-        //                 # Dừng và xóa container cũ nếu có
-        //                 docker stop ${imageName} || true
-        //                 docker rm ${imageName} || true
-
-        //                 # Chạy container mới
-        //                 docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
-        //                 """                
-        //             }                   
+        //             // Kết nối SSH và thực hiện lệnh
+        //             sh """
+        //             ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} phantanloc@14.225.254.235 touch ptl.txt
+        //             """
         //         }
-        //        } 
+        //         // script {
+        //         //     sh """
+        //         //     echo "${SSH_KEY}" > /tmp/jenkins_ssh_key
+        //         //     chmod 600 /tmp/jenkins_ssh_key
+        //         //     cat /tmp/jenkins_ssh_key
+        //         //     """
+
+        //         //     // Thực thi lệnh SSH sử dụng key đã sửa quyền
+        //         //     sh """
+        //         //     ssh -o StrictHostKeyChecking=no -i /tmp/jenkins_ssh_key phantanloc@14.225.254.235 touch ptl.txt
+        //         //     """
+
+        //         //     // Xóa file tạm sau khi sử dụng (để bảo mật)
+        //         //     sh "rm -f /tmp/jenkins_ssh_key"
+        //         // }
         //     }
         // }
+         stage('Deploy server'){
+            steps{
+               script{
+                sshagent(credentials: ['elly_ssh_ubuntu']) {
+                    // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
+                    sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235'
+
+                    env.CHANGED_SERVICES.split(' ').each { service ->
+                        echo "Building and Deploying ${service}"
+                        if (service != "frontend"){
+                            echo "skip service ${service}"
+                            return
+                        }
+                        // Tạo tag với ngày giờ
+                        def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
+                        def imageName = "elly_${service}"
+                        def port = selectPort(service)
+                        echo "Start pull and run image"
+                        echo "dockerImageTag: ${dockerImageTag}. imageName: ${imageName}. port: ${dockerImageTag}"
+
+                    sh  """
+                        # Kéo Docker image từ Docker Hub
+                        docker pull ${dockerImageTag}
+
+                        # Dừng và xóa container cũ nếu có
+                        docker stop ${imageName} || true
+                        docker rm ${imageName} || true
+
+                        # Chạy container mới
+                        docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
+                        """                
+                    }                   
+                }
+               } 
+            }
+        }
     }
     post {
         always {
