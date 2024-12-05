@@ -35,93 +35,93 @@ pipeline {
                 }
             }
         }
-        // stage('Detect Changed Services') {
-        //     steps {
-        //         script {
-        //             // Sử dụng git diff để tìm các thư mục service thay đổi
-        //             // Lấy danh sách file thay đổi (ví dụ giả định ở đây)
-        //             // sh "git branch"
-        //             // sh "git status"
-        //             // sh "git fetch origin lp/241118_jenkins_test"
-        //             def changedFiles = sh(
-        //                 script: "git diff --name-only HEAD~1 HEAD",
-        //                 //script: "git --no-pager diff origin/lp/241118_jenkins_test --name-only",
-        //                 returnStdout: true
-        //             ).trim()
+        stage('Detect Changed Services') {
+            steps {
+                script {
+                    // Sử dụng git diff để tìm các thư mục service thay đổi
+                    // Lấy danh sách file thay đổi (ví dụ giả định ở đây)
+                    // sh "git branch"
+                    // sh "git status"
+                    // sh "git fetch origin lp/241118_jenkins_test"
+                    def changedFiles = sh(
+                        script: "git diff --name-only HEAD~1 HEAD",
+                        //script: "git --no-pager diff origin/lp/241118_jenkins_test --name-only",
+                        returnStdout: true
+                    ).trim()
 
-        //             echo "Changed files: ${changedFiles}"
+                    echo "Changed files: ${changedFiles}"
 
-        //             // Tách rootpath
-        //             if (changedFiles) {
-        //                 def rootPaths = changedFiles
-        //                     .split('\n')                          // Chia từng dòng
-        //                     .collect { it.split('/')[0].toLowerCase() }         // Lấy phần rootpath (trước `/source`)
-        //                     .unique()                            // Loại bỏ trùng lặp
+                    // Tách rootpath
+                    if (changedFiles) {
+                        def rootPaths = changedFiles
+                            .split('\n')                          // Chia từng dòng
+                            .collect { it.split('/')[0].toLowerCase() }         // Lấy phần rootpath (trước `/source`)
+                            .unique()                            // Loại bỏ trùng lặp
 
-        //                 echo "Unique root paths: ${rootPaths}"  
+                        echo "Unique root paths: ${rootPaths}"  
 
-        //                 // Gán vào biến môi trường nếu cần dùng tiếp
-        //                 env.CHANGED_SERVICES = rootPaths.join(' ')
-        //             } else {
-        //                 echo "No changes detected."
-        //                 env.CHANGED_SERVICES = ''
-        //             }
-        //         }
-        //     }
-        // }
-        // stage('Login to Docker') {
-        //     steps {
-        //         withCredentials([string(credentialsId: 'elly_dockerhub_token', variable: 'DOCKER_HUB_TOKEN')]) {
-        //             sh '''
-        //             echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-        //             '''
-        //         }
-        //     }
-        // }
-        // stage('Build') {           
-        //     when {
-        //         expression { env.CHANGED_SERVICES != '' }
-        //     }
-        //     steps {
-        //         script {                
-        //                 // Lặp qua các service thay đổi và thực hiện build + deploy
-        //                 echo "Start build"
-        //                 echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
-        //                 env.CHANGED_SERVICES.split(' ').each { service ->
-        //                 echo "Building and Deploying ${service}"
-        //                 if (service != "frontend"){
-        //                     echo "skip service ${service}"
-        //                     return
-        //                 }
-        //                 // Tạo tag với ngày giờ
-        //                 def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
+                        // Gán vào biến môi trường nếu cần dùng tiếp
+                        env.CHANGED_SERVICES = rootPaths.join(' ')
+                    } else {
+                        echo "No changes detected."
+                        env.CHANGED_SERVICES = ''
+                    }
+                }
+            }
+        }
+        stage('Login to Docker') {
+            steps {
+                withCredentials([string(credentialsId: 'elly_dockerhub_token', variable: 'DOCKER_HUB_TOKEN')]) {
+                    sh '''
+                    echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+                    '''
+                }
+            }
+        }
+        stage('Build') {           
+            when {
+                expression { env.CHANGED_SERVICES != '' }
+            }
+            steps {
+                script {                
+                        // Lặp qua các service thay đổi và thực hiện build + deploy
+                        echo "Start build"
+                        echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
+                        env.CHANGED_SERVICES.split(' ').each { service ->
+                        echo "Building and Deploying ${service}"
+                        if (service != "frontend"){
+                            echo "skip service ${service}"
+                            return
+                        }
+                        // Tạo tag với ngày giờ
+                        def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
                         
-        //                 // Build Docker image
-        //                 sh """
-        //                 docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
-        //                 docker tag ${TAG_NAME_IMAGE_FRONTEND} ${dockerImageTag}
-        //                 """
+                        // Build Docker image
+                        sh """
+                        docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
+                        docker tag ${TAG_NAME_IMAGE_FRONTEND} ${dockerImageTag}
+                        """
 
-        //                  // Push Docker image lên Docker Hub
-        //                 echo "Push image: ${TAG_NAME_IMAGE_FRONTEND}"
-        //                 try {
-        //                     sh "docker push ${dockerImageTag}"
-        //                 } catch (e) {
-        //                     error "Push to dockerhub failed: ${e}"
-        //                 }
+                         // Push Docker image lên Docker Hub
+                        echo "Push image: ${TAG_NAME_IMAGE_FRONTEND}"
+                        try {
+                            sh "docker push ${dockerImageTag}"
+                        } catch (e) {
+                            error "Push to dockerhub failed: ${e}"
+                        }
 
-        //                 //clean image
-        //                 // echo "Clear image: ${service}"
-        //                 // sh "docker image rm...."
+                        //clean image
+                        // echo "Clear image: ${service}"
+                        // sh "docker image rm...."
 
-        //                 // Deploy (ví dụ: chỉ start container thay đổi)
-        //                 // sh """
-        //                 // docker-compose -f ${DOCKER_COMPOSE_FILE} up -d ${service}
-        //                 // """                        
-        //             }
-        //         }
-        //     }
-        // }
+                        // Deploy (ví dụ: chỉ start container thay đổi)
+                        // sh """
+                        // docker-compose -f ${DOCKER_COMPOSE_FILE} up -d ${service}
+                        // """                        
+                    }
+                }
+            }
+        }
         stage('Deploy server'){
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'Elly_SSH_phantanloc', keyFileVariable: 'PRIVATE_KEY')]) {
@@ -130,40 +130,9 @@ pipeline {
                     chmod 600 /tmp/temp_key
                     ls -l /tmp/temp_key
                     stat -c "%a %n" /tmp/temp_key
-                    ssh -o StrictHostKeyChecking=no -i /tmp/temp_key phantanloc@14.225.254.235 "echo 'Hello from Jenkins'"
+                    ssh -o StrictHostKeyChecking=no -i /tmp/temp_key phantanloc@14.225.254.235 touch ptldedptrai.txxt
                     '''
                 }
-                // script {
-                //     // sh """
-                //     // ssh -i $SSH_KEY phantanloc@14.225.254.255 touch ptl.txt'
-                //     // """
-                //      sh 'ls -l $SSH_KEY'
-                //      sh 'chmod 600 $SSH_KEY'
-                //      sh 'ls -l $SSH_KEY'
-                //     //  sh('ssh -o StrictHostKeyChecking=no -i $SSH_KEY phantanloc@14.225.254.235 touch ptl.txt')
-
-                //     //  sh "chmod 600 ${SSH_KEY}"
-
-                //     // Kết nối SSH và thực hiện lệnh
-                //     sh """
-                //     ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} phantanloc@14.225.254.235 touch ptl.txt
-                //     """
-                // }
-                // script {
-                //     sh """
-                //     echo "${SSH_KEY}" > /tmp/jenkins_ssh_key
-                //     chmod 600 /tmp/jenkins_ssh_key
-                //     cat /tmp/jenkins_ssh_key
-                //     """
-
-                //     // Thực thi lệnh SSH sử dụng key đã sửa quyền
-                //     sh """
-                //     ssh -o StrictHostKeyChecking=no -i /tmp/jenkins_ssh_key phantanloc@14.225.254.235 touch ptl.txt
-                //     """
-
-                //     // Xóa file tạm sau khi sử dụng (để bảo mật)
-                //     sh "rm -f /tmp/jenkins_ssh_key"
-                // }
             }
         }
         //  stage('Deploy server'){
