@@ -160,7 +160,7 @@ pipeline {
          stage('Deploy server'){
             steps{
                script{
-                sshagent(credentials: ['elly_ssh_ubuntu']) {
+                sshagent(credentials: ['Elly_SSH']) {
                     // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
                     sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235'
 
