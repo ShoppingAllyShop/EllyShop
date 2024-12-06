@@ -25,7 +25,6 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
         TAG_NAME_IMAGE_FRONTEND = 'elly-frontend'
-        SSH_KEY = credentials('elly_ssh_ubuntu')
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -137,14 +136,14 @@ pipeline {
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
                             echo "skip service ${service}"
-                            return
+                            continue
                         }
                         // Tạo tag với ngày giờ
                         def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
                         def imageName = "elly_${service}"
                         def port = selectPort(service)
                         echo "Start pull and run image"
-                        echo "dockerImageTag: ${dockerImageTag}. imageName: ${imageName}. port: ${dockerImageTag}"
+                        echo "dockerImageTag: ${dockerImageTag}. imageName: ${imageName}. port: ${port}"
 
                     sh  """
                         # Kéo Docker image từ Docker Hub
@@ -157,7 +156,8 @@ pipeline {
                         # Chạy container mới
                         docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
                         """                
-                    }                   
+                    }
+                    sh 'rm -f /tmp/temp_key' // Clean up key            
                 }
             }
         }
