@@ -25,6 +25,7 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
         TAG_NAME_IMAGE_FRONTEND = 'elly-frontend'
+        CHANGED_SERVICES = ''
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -60,10 +61,10 @@ pipeline {
                         echo "Unique root paths: ${rootPaths}"  
 
                         // Gán vào biến môi trường nếu cần dùng tiếp
-                        env.CHANGED_SERVICES = rootPaths.join(' ')
+                        CHANGED_SERVICES = rootPaths.join(' ')
                     } else {
                         echo "No changes detected."
-                        env.CHANGED_SERVICES = ''
+                        CHANGED_SERVICES = ''
                     }
                 }
             }
@@ -79,14 +80,14 @@ pipeline {
         }
         stage('Build') {           
             when {
-                expression { env.CHANGED_SERVICES != '' }
+                expression { CHANGED_SERVICES != '' }
             }
             steps {
                 script {                
                         // Lặp qua các service thay đổi và thực hiện build + deploy
                         echo "Start build"
-                        echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
-                        env.CHANGED_SERVICES.split(' ').each { service ->
+                        echo "CHANGED_SERVICES: ${CHANGED_SERVICES}"
+                        CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
                             echo "skip service ${service}"
@@ -132,7 +133,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no -i /tmp/temp_key phantanloc@14.225.254.235
                     '''
 
-                    env.CHANGED_SERVICES.split(' ').each { service ->
+                    CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
                             echo "skip service ${service}"
