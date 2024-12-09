@@ -136,7 +136,7 @@ pipeline {
                             echo "Building and Deploying ${service}"
                             if (service != "frontend"){
                                 echo "skip service ${service}"
-                                continue
+                                return
                             }
                             // Tạo tag với ngày giờ
                             def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
