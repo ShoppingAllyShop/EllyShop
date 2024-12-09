@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
-        TAG_NAME_IMAGE_FRONTEND = ''
+        ALLOWED_DEPLOY_SERVICES = ["frontend", "user.api"]
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -61,7 +61,7 @@ pipeline {
                         echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
                         env.CHANGED_SERVICES.split(' ').each { service ->
                             echo "Building and Deploying ${service}"
-                            if (service != "frontend") {
+                            if (!ALLOWED_DEPLOY_SERVICES.contains(service)){
                                 echo "skip service ${service}"
                                 return
                             }
@@ -107,7 +107,7 @@ pipeline {
                     script {
                         env.CHANGED_SERVICES.split(' ').each { service ->
                             echo "Building and Deploying ${service}"
-                            if (service != "frontend"){
+                            if (!ALLOWED_DEPLOY_SERVICES.contains(service)){
                                 echo "skip service ${service}"
                                 return
                             }
@@ -149,7 +149,7 @@ def selectPort(serviceName) {
         case 'gateway':
             return '7000'
             break
-        case 'user':
+        case 'user.api':
             return '7135'
             break
         case 'catalog':
@@ -159,4 +159,10 @@ def selectPort(serviceName) {
             echo 'Select port error!!'
             break
     }
+}
+
+def allowedDeployServices = ["frontend", "user.api" ]
+
+def checkIsDeploy(serviceName) {
+    
 }
