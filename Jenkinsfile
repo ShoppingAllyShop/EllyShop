@@ -41,15 +41,15 @@ pipeline {
                 }
             }
         }
-        // stage('Login to Docker') {
-        //     steps {
-        //         withCredentials([string(credentialsId: 'elly_dockerhub_token', variable: 'DOCKER_HUB_TOKEN')]) {
-        //             sh '''
-        //                 echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Login to Docker') {
+            steps {
+                withCredentials([string(credentialsId: 'elly_dockerhub_token', variable: 'DOCKER_HUB_TOKEN')]) {
+                    sh '''
+                        echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+                    '''
+                }
+            }
+        }
         stage('Build and push image to registry') {           
             when {
                 expression { env.CHANGED_SERVICES != '' }
@@ -163,5 +163,5 @@ def selectPort(serviceName) {
 }
 
 def getServiceList(){
-  return ['Item1', 'Item2', 'Item3']
+  return ['frontend', 'user.api']
 }
