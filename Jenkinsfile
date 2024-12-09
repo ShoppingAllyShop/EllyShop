@@ -108,7 +108,7 @@ pipeline {
                     script {
                         env.CHANGED_SERVICES.split(' ').each { service ->
                             echo "Building and Deploying ${service}"
-                            if (!ALLOWED_DEPLOY_SERVICES.contains(service)){
+                            if (ALLOWED_DEPLOY_SERVICES.contains(service) == false){
                                 echo "skip service ${service}"
                                 return
                             }
