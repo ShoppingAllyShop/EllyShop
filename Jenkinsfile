@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
-        TAG_NAME_IMAGE_FRONTEND = 'elly-frontend'
+        TAG_NAME_IMAGE_FRONTEND = ''
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -61,7 +61,7 @@ pipeline {
                         echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
                         env.CHANGED_SERVICES.split(' ').each { service ->
                             echo "Building and Deploying ${service}"
-                            if (service != "frontend"){
+                            if (service != "frontend") {
                                 echo "skip service ${service}"
                                 return
                             }
@@ -71,7 +71,7 @@ pipeline {
                             // Build Docker image
                             sh """
                                 docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
-                                docker tag ${TAG_NAME_IMAGE_FRONTEND} ${dockerImageTag}
+                                docker tag ${service} ${dockerImageTag}
                             """
 
                             // Push Docker image lên Docker Hub

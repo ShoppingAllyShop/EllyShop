@@ -35,7 +35,7 @@ services:
         - ellyshop_gateway_network
   
   user.api:
-    image: ${DOCKER_REGISTRY-}userapi
+    image: user.api
     ports:
         - 7135:80
     hostname: ellyuser
