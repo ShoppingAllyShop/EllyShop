@@ -133,7 +133,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no -i /tmp/temp_key phantanloc@14.225.254.235
                     '''
 
-                    env.CHANGED_SERVICES.split(' ').each { service ->
+                    @env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
                             echo "skip service ${service}"
