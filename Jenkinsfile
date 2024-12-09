@@ -8,10 +8,8 @@ pipeline {
     stages {
         stage('Checkout clone or update repo') {
             steps {
-                script {
-                    sh '''
-                         echo "aaaaaaaaaa: ${ALLOWED_DEPLOY_SERVICES.contains('jiji')}"
-                    '''
+                script {                    
+                    echo "aaaaaaaaaa: ${ALLOWED_DEPLOY_SERVICES.contains('jiji')}"                    
                 }
             }
         }
