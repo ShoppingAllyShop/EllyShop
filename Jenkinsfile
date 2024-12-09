@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
-        ALLOWED_DEPLOY_SERVICES = ['frontend', 'user.api']
+        ALLOWED_DEPLOY_SERVICES = getServiceList()
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -161,8 +161,6 @@ def selectPort(serviceName) {
     }
 }
 
-def allowedDeployServices = ["frontend", "user.api" ]
-
-def checkIsDeploy(serviceName) {
-    
+def getServiceList(){
+  return ['Item1', 'Item2', 'Item3']
 }
