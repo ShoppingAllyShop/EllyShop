@@ -25,7 +25,6 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
         TAG_NAME_IMAGE_FRONTEND = 'elly-frontend'
-        //CHANGED_SERVICES = ''
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -64,7 +63,7 @@ pipeline {
                         env.CHANGED_SERVICES = rootPaths.join(' ')
                     } else {
                         echo "No changes detected."
-                        CHANGED_SERVICES = ''
+                        env.CHANGED_SERVICES = ''
                     }
                 }
             }
@@ -132,31 +131,32 @@ pipeline {
                         stat -c "%a %n" /tmp/temp_key
                         ssh -o StrictHostKeyChecking=no -i /tmp/temp_key phantanloc@14.225.254.235
                     '''
+                    script {
+                        env.CHANGED_SERVICES.split(' ').each { service ->
+                            echo "Building and Deploying ${service}"
+                            if (service != "frontend"){
+                                echo "skip service ${service}"
+                                continue
+                            }
+                            // Tạo tag với ngày giờ
+                            def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
+                            def imageName = "elly_${service}"
+                            def port = selectPort(service)
+                            echo "Start pull and run image"
+                            echo "dockerImageTag: ${dockerImageTag}. imageName: ${imageName}. port: ${port}"
 
-                    @env.CHANGED_SERVICES.split(' ').each { service ->
-                        echo "Building and Deploying ${service}"
-                        if (service != "frontend"){
-                            echo "skip service ${service}"
-                            continue
+                            sh  """
+                            # Kéo Docker image từ Docker Hub
+                            docker pull ${dockerImageTag}
+
+                            # Dừng và xóa container cũ nếu có
+                            docker stop ${imageName} || true
+                            docker rm ${imageName} || true
+
+                            # Chạy container mới
+                            docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
+                            """                
                         }
-                        // Tạo tag với ngày giờ
-                        def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
-                        def imageName = "elly_${service}"
-                        def port = selectPort(service)
-                        echo "Start pull and run image"
-                        echo "dockerImageTag: ${dockerImageTag}. imageName: ${imageName}. port: ${port}"
-
-                    sh  """
-                        # Kéo Docker image từ Docker Hub
-                        docker pull ${dockerImageTag}
-
-                        # Dừng và xóa container cũ nếu có
-                        docker stop ${imageName} || true
-                        docker rm ${imageName} || true
-
-                        # Chạy container mới
-                        docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
-                        """                
                     }
                     sh 'rm -f /tmp/temp_key' // Clean up key            
                 }
