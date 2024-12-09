@@ -146,17 +146,12 @@ pipeline {
                             echo "dockerImageTag: ${dockerImageTag}. imageName: ${imageName}. port: ${port}"
 
                             sh """
-                                ssh -o StrictHostKeyChecking=no -i /tmp/temp_key phantanloc@14.225.254.235 << 'EOF'
-                                    # Kéo Docker image từ Docker Hub
-                                    docker pull ${dockerImageTag}
-
-                                    # Dừng và xóa container cũ nếu có
-                                    docker stop ${imageName} || true
-                                    docker rm ${imageName} || true
-
-                                    # Chạy container mới
+                                ssh -o StrictHostKeyChecking=no -i /tmp/temp_key phantanloc@14.225.254.235 '
+                                    docker pull ${dockerImageTag} &&
+                                    docker stop ${imageName} || true &&
+                                    docker rm ${imageName} || true &&
                                     docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
-                                EOF
+                                '
                             """
 
                             // sh  """
