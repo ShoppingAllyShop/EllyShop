@@ -1,24 +1,3 @@
-// define port for services
-def selectPort(serviceName) {
-    switch (serviceName) {
-        case 'frontend':
-            return '3000'
-            break
-        case 'gateway':
-            return '7000'
-            break
-        case 'user':
-            return '7135'
-            break
-        case 'catalog':
-            return '7021'
-            break
-        default:
-            echo 'Select port error!!'
-            break
-    }
-}
-
 pipeline {
     agent any
     environment {
@@ -107,6 +86,7 @@ pipeline {
                                     docker rmi ${TAG_NAME_IMAGE_FRONTEND} || echo "Image ${TAG_NAME_IMAGE_FRONTEND} already removed"
                                     docker rmi ${dockerImageTag} || echo "Image ${dockerImageTag} already removed"
                                 """
+                                echo "Repmove successfulfly. Image: ${service}"
                             } catch (e) {
                                 error "Push to dockerhub failed: ${e}"
                             }                        
@@ -157,5 +137,26 @@ pipeline {
         always {
             echo "Pipeline completed."
         }
+    }
+}
+
+// define port for services
+def selectPort(serviceName) {
+    switch (serviceName) {
+        case 'frontend':
+            return '3000'
+            break
+        case 'gateway':
+            return '7000'
+            break
+        case 'user':
+            return '7135'
+            break
+        case 'catalog':
+            return '7021'
+            break
+        default:
+            echo 'Select port error!!'
+            break
     }
 }
