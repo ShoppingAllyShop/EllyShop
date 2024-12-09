@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
-        ALLOWED_DEPLOY_SERVICES = ["frontend", "user.api"]
+        ALLOWED_DEPLOY_SERVICES = ['frontend', 'user.api']
     }
     stages {
         stage('Checkout clone or update repo') {
