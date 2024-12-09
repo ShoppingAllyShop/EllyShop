@@ -37,14 +37,8 @@ pipeline {
         stage('Detect Changed Services') {
             steps {
                 script {
-                    // Sử dụng git diff để tìm các thư mục service thay đổi
-                    // Lấy danh sách file thay đổi (ví dụ giả định ở đây)
-                    // sh "git branch"
-                    // sh "git status"
-                    // sh "git fetch origin lp/241118_jenkins_test"
                     def changedFiles = sh(
                         script: "git diff --name-only HEAD~1 HEAD",
-                        //script: "git --no-pager diff origin/lp/241118_jenkins_test --name-only",
                         returnStdout: true
                     ).trim()
 
@@ -72,12 +66,12 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'elly_dockerhub_token', variable: 'DOCKER_HUB_TOKEN')]) {
                     sh '''
-                    echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+                        echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
                     '''
                 }
             }
         }
-        stage('Build') {           
+        stage('Build and push image to registry') {           
             when {
                 expression { env.CHANGED_SERVICES != '' }
             }
@@ -87,40 +81,39 @@ pipeline {
                         echo "Start build"
                         echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
                         env.CHANGED_SERVICES.split(' ').each { service ->
-                        echo "Building and Deploying ${service}"
-                        if (service != "frontend"){
-                            echo "skip service ${service}"
-                            return
+                            echo "Building and Deploying ${service}"
+                            if (service != "frontend"){
+                                echo "skip service ${service}"
+                                return
+                            }
+                            // Create docker tag
+                            def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
+                            
+                            // Build Docker image
+                            sh """
+                                docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
+                                docker tag ${TAG_NAME_IMAGE_FRONTEND} ${dockerImageTag}
+                            """
+
+                            // Push Docker image lên Docker Hub
+                            echo "Push image: ${TAG_NAME_IMAGE_FRONTEND}"
+                            try {
+                                sh "docker push ${dockerImageTag}"
+
+                                echo "Push successful"
+                    
+                                // Remove Docker images after push
+                                sh """
+                                    docker rmi ${TAG_NAME_IMAGE_FRONTEND} || echo "Image ${TAG_NAME_IMAGE_FRONTEND} already removed"
+                                    docker rmi ${dockerImageTag} || echo "Image ${dockerImageTag} already removed"
+                                """
+                            } catch (e) {
+                                error "Push to dockerhub failed: ${e}"
+                            }                        
+                         }
                         }
-                        // Tạo tag với ngày giờ
-                        def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
-                        
-                        // Build Docker image
-                        sh """
-                        docker-compose -f ${DOCKER_COMPOSE_FILE} build ${service}
-                        docker tag ${TAG_NAME_IMAGE_FRONTEND} ${dockerImageTag}
-                        """
-
-                         // Push Docker image lên Docker Hub
-                        echo "Push image: ${TAG_NAME_IMAGE_FRONTEND}"
-                        try {
-                            sh "docker push ${dockerImageTag}"
-                        } catch (e) {
-                            error "Push to dockerhub failed: ${e}"
-                        }
-
-                        //clean image
-                        // echo "Clear image: ${service}"
-                        // sh "docker image rm...."
-
-                        // Deploy (ví dụ: chỉ start container thay đổi)
-                        // sh """
-                        // docker-compose -f ${DOCKER_COMPOSE_FILE} up -d ${service}
-                        // """                        
                     }
                 }
-            }
-        }
         stage('Deploy server'){
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'Elly_SSH_phantanloc', keyFileVariable: 'PRIVATE_KEY')]) {
@@ -152,61 +145,13 @@ pipeline {
                                     docker rm ${imageName} || true &&
                                     docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
                                 '
-                            """
-
-                            // sh  """
-                            // # Kéo Docker image từ Docker Hub
-                            // docker pull ${dockerImageTag}
-
-                            // # Dừng và xóa container cũ nếu có
-                            // docker stop ${imageName} || true
-                            // docker rm ${imageName} || true
-
-                            // # Chạy container mới
-                            // docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
-                            // """                
+                            """          
                         }
                     }
                     sh 'rm -f /tmp/temp_key' // Clean up key            
                 }
             }
         }
-        //  stage('Deploy server'){
-        //     steps{
-        //        script{
-        //         sshagent(['Elly_SSH_phantanloc']) {
-        //             // sh 'chmod -R 600 /var/jenkins_home/workspace/EllyShop@tmp'
-        //             sh 'ssh -o StrictHostKeyChecking=no -l phantanloc 14.225.254.235'
-
-        //             env.CHANGED_SERVICES.split(' ').each { service ->
-        //                 echo "Building and Deploying ${service}"
-        //                 if (service != "frontend"){
-        //                     echo "skip service ${service}"
-        //                     return
-        //                 }
-        //                 // Tạo tag với ngày giờ
-        //                 def dockerImageTag = "tomcorleone/elly-mayo-${service}:latest"
-        //                 def imageName = "elly_${service}"
-        //                 def port = selectPort(service)
-        //                 echo "Start pull and run image"
-        //                 echo "dockerImageTag: ${dockerImageTag}. imageName: ${imageName}. port: ${dockerImageTag}"
-
-        //             sh  """
-        //                 # Kéo Docker image từ Docker Hub
-        //                 docker pull ${dockerImageTag}
-
-        //                 # Dừng và xóa container cũ nếu có
-        //                 docker stop ${imageName} || true
-        //                 docker rm ${imageName} || true
-
-        //                 # Chạy container mới
-        //                 docker run -d --name ${imageName} -p ${port}:80 ${dockerImageTag}
-        //                 """                
-        //             }                   
-        //         }
-        //        } 
-        //     }
-        // }
     }
     post {
         always {
