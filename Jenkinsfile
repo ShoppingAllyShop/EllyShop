@@ -25,7 +25,7 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         DOCKER_HUB_USERNAME = 'tomcorleone'
         TAG_NAME_IMAGE_FRONTEND = 'elly-frontend'
-        CHANGED_SERVICES = ''
+        //CHANGED_SERVICES = ''
     }
     stages {
         stage('Checkout clone or update repo') {
@@ -61,7 +61,7 @@ pipeline {
                         echo "Unique root paths: ${rootPaths}"  
 
                         // Gán vào biến môi trường nếu cần dùng tiếp
-                        CHANGED_SERVICES = rootPaths.join(' ')
+                        env.CHANGED_SERVICES = rootPaths.join(' ')
                     } else {
                         echo "No changes detected."
                         CHANGED_SERVICES = ''
@@ -80,13 +80,13 @@ pipeline {
         }
         stage('Build') {           
             when {
-                expression { CHANGED_SERVICES != '' }
+                expression { env.CHANGED_SERVICES != '' }
             }
             steps {
                 script {                
                         // Lặp qua các service thay đổi và thực hiện build + deploy
                         echo "Start build"
-                        echo "CHANGED_SERVICES: ${CHANGED_SERVICES}"
+                        echo "CHANGED_SERVICES: ${env.CHANGED_SERVICES}"
                         env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
@@ -133,7 +133,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no -i /tmp/temp_key phantanloc@14.225.254.235
                     '''
 
-                    CHANGED_SERVICES.split(' ').each { service ->
+                    env.CHANGED_SERVICES.split(' ').each { service ->
                         echo "Building and Deploying ${service}"
                         if (service != "frontend"){
                             echo "skip service ${service}"
