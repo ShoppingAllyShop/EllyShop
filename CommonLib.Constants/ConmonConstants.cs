@@ -11,5 +11,9 @@ namespace CommonLib.Constants
         //Page type: Admin page, Client page
         public const string AdminPage = "Admin page";
         public const string ClientPage = "Client page";
+
+        //Sort type
+        public const string DescendingShortcut = "desc";
+        public const string AscendingShortcut = "asc";
     }
 }

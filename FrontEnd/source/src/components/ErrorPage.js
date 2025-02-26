@@ -5,7 +5,6 @@ import { Link, useLocation } from "react-router-dom";
 const ErrorPage = () => {
   const location = useLocation();
   const { errorHeader, errorMessage = null } = location.state || {};  // Lấy message từ state
-  console.log('location.state',location.state)
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 py-10 shadow-default dark:border-strokedark dark:bg-boxdark sm:py-20">
       <div className="mx-auto max-w-[410px]">

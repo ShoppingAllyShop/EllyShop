@@ -5,9 +5,10 @@ namespace Comman.Domain.Models
 {
     public partial class News
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Title { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
-        public string? NewsContent { get; set; }
+        public string? Url { get; set; }
+        public string? Image { get; set; }
     }
 }

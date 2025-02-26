@@ -6,7 +6,13 @@ namespace Comman.Domain.Models
     public partial class Branch
     {
         public Guid Id { get; set; }
-        public string? City { get; set; }
+        public string? CityName { get; set; }
         public string? Address { get; set; }
+        public int? CityCode { get; set; }
+        public string? BranchName { get; set; }
+        /// <summary>
+        /// Phân chia theo vùng
+        /// </summary>
+        public string? Region { get; set; }
     }
 }

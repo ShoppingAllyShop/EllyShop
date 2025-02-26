@@ -22,6 +22,11 @@ export const menuSidebarList = [
         name: "Sản phẩm",
         path: "/admin/product",
       },
+      {
+        id: "69ae0a2d-0485-4097-97d9-3dde2e916dee",
+        name: "Bộ Sưu Tập ",
+        path: "/admin/collection",
+      },
     ],
   },
   {
@@ -37,5 +42,20 @@ export const menuSidebarList = [
         path: "/admin/order",
       }
     ],
+  },
+  {
+    id: "0a4aa569-9c35-476d-8ccf-65cdd7ac2c20",
+    name: "Quản lý tài khoản",
+    path: "",
+    icon: "users",
+    children: [
+      {
+        id: "0a4aa569-9c35-476d-8ccf-65cdd7ac2c21",
+        name: "Tài khoản",
+        icon: "user",
+        path: "/admin/user",
+      }
+    ],
   }
 ];
+

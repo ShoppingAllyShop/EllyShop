@@ -4,11 +4,11 @@ const Loading = () => {
   return (
     <div
     tabIndex="{-1}"
-    classname="fixed inset-0 flex items-center justify-center z-[999] bg-opacity-75 bg-gray-300"
+    className="fixed inset-0 flex items-center justify-center z-[999] bg-opacity-75 bg-gray-300"
   >
     <div
       role="status"
-      className=" -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2 fixed inset-0 flex items-center justify-center z-[999] bg-opacity-75 bg-gray-300 w-full h-full"
+      className=" -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2 fixed flex items-center justify-center z-[999] bg-opacity-75 bg-gray-300 w-full h-full"
     >
       <svg
         aria-hidden="true"

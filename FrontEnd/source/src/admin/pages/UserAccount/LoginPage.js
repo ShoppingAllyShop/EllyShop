@@ -8,6 +8,7 @@ import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props
 import { capitalizeFirstLetter } from "../../../utils/stringUtil";
 import {
   FACEBOOK_LOGIN_CONST,
+  PAGE_TYPE,
   RESPONSE_API_STATUS,
   STORAGE_TYPE,
   TEXT_CONSTANTS,
@@ -22,10 +23,11 @@ import * as yup from "yup";
 import InputField from "../../../components/Form/InputField";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../../redux/slices/admin/adminLayoutSlice";
-import { PUPLIC_ENDPOINT } from "../../../constants/endpoint";
+import { ADMIN_ENDPOINT, PUBLIC_ENDPOINT } from "../../../constants/endpoint";
 import Loading from "../../../components/Loading";
+import { LOGIN_FORM_CONST } from "./constants/formConstants";
 
-const LoginPage = ({ handleTest }) => {
+const LoginPage = () => {
   const navigate = useNavigate();
   const axiosBase = useAxiosBase();
   const dispatch = useDispatch();
@@ -36,9 +38,9 @@ const LoginPage = ({ handleTest }) => {
     .object({
       email: yup
         .string()
-        .required("Vui lòng điền email")
-        .email("Email không hợp lệ"),
-      password: yup.string().required("Vui lòng điền password"),
+        .required(LOGIN_FORM_CONST.VALIDATION_ERRORS.REQUIRED)
+        .email(LOGIN_FORM_CONST.VALIDATION_ERRORS.REQUIRED_EMAIL),
+      password: yup.string().required(LOGIN_FORM_CONST.VALIDATION_ERRORS.REQUIRED),
     })
     .required();
 
@@ -53,15 +55,13 @@ const LoginPage = ({ handleTest }) => {
   });
 
   const googleResponseMessage = async (response) => {
-    console.log("response", response);
     const params = {
       token: response.access_token,
-      pageType: checkIsAdminPage() ? "AdminPage" : "ClientPage",
+      pageType: checkIsAdminPage() ? PAGE_TYPE.ADMIN_PAGE : PAGE_TYPE.CLIENT_PAGE,
       provider: AUTH_PROVIDERS.GOOGLE,
     };
 
-    console.log("params", params);
-    const endpoint = PUPLIC_ENDPOINT.SOCIAL_LOGIN;
+    const endpoint = PUBLIC_ENDPOINT.SOCIAL_LOGIN;
     const [loginResponse] = await Promise.all([
       axiosBase.post(endpoint, params),
     ]);
@@ -70,7 +70,7 @@ const LoginPage = ({ handleTest }) => {
   };
 
   const googleErrorMessage = (error) => {
-    console.log(error);
+    return;
   };
 
   const googleLogin = useGoogleLogin({
@@ -90,7 +90,7 @@ const LoginPage = ({ handleTest }) => {
     };
 
     //Call login api
-    const endpoint = PUPLIC_ENDPOINT.SOCIAL_LOGIN;
+    const endpoint = PUBLIC_ENDPOINT.SOCIAL_LOGIN;
     const [loginResponse] = await Promise.all([
       axiosBase.post(endpoint, params),
       setIsLoading(true)
@@ -109,14 +109,14 @@ const LoginPage = ({ handleTest }) => {
 
     //Call login api
     try {
-      const endpoint = PUPLIC_ENDPOINT.LOGIN;
+      const endpoint = PUBLIC_ENDPOINT.LOGIN;
       const [loginResponse] = await Promise.all([
         axiosBase.post(endpoint, params),
         setIsLoading(true)
       ]);
       hanldeLoginResponse(loginResponse);
     } catch (error) {
-       hanldeLoginResponse(error);  
+       hanldeLoginResponse(error.response);  
     }
     setIsLoading(false)   
   };
@@ -142,7 +142,7 @@ const LoginPage = ({ handleTest }) => {
     dispatch(setUser({ email: email, role: role, userName: userName }));
 
     //Redirect to mainboard
-    navigate("/admin/dashboard");
+    navigate(`/${ADMIN_ENDPOINT.DASHBOARD}`);
   };
 
   const renderSocialLogin = (type, provider = null) => {
@@ -163,9 +163,7 @@ const LoginPage = ({ handleTest }) => {
 
     return (
       <button
-        onClick={
-          type !== TEXT_CONSTANTS.FACEBOOK ? loginFunc : provider.onClick
-        }
+        onClick={ type !== TEXT_CONSTANTS.FACEBOOK ? loginFunc : provider.onClick}
         className="flex h-full w-full bg-white border border-gray-300 px-3 items-center
       text-[12px] font-medium text-gray-800 hover:bg-gray-100"
       >
@@ -176,65 +174,40 @@ const LoginPage = ({ handleTest }) => {
   };
 
   const renderLoginForm = () => {
+    const inputStyle = "text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
     return (
       <form onSubmit={handleSubmit(onSubmitLoginForm)}>
         <div className="mt-4">
           <InputField
-            label="Email"
+            label={LOGIN_FORM_CONST.LABELS.EMAIL}
             name="email"
             register={register}
             errors={errors}
-            className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
+            className={inputStyle}
           />
         </div>
         <div className="mt-4 flex flex-col justify-between">
           <InputField
-            label="Password"
+            label={LOGIN_FORM_CONST.LABELS.PASSWORD}
             name="password"
             type="password"
             register={register}
             errors={errors}
-            className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-2 focus:outline-blue-700"
+            className={inputStyle}
           />
-          <Link
-            href="#"
-            className="text-xs text-gray-500 hover:text-gray-900 text-end w-full mt-2"
-          >
-            Forget Password?
+          <Link href="#" className="text-xs text-gray-500 hover:text-gray-900 text-end w-full mt-2">
+            {LOGIN_FORM_CONST.LABELS.FORGET_PASSWORD}
           </Link>
         </div>
         <div className="mt-8">
           <button
             type="submit"
-            className="bg-blue-700 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-600"
+            className="inline-flex items-center justify-center gap-2.5 rounded-md bg-blue-600 px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 w-full"
           >
-            Đăng nhập vkl
+            {LOGIN_FORM_CONST.LABELS.LOGIN}
           </button>
         </div>
       </form>
-    );
-  };
-
-  const Test = () => {
-    const [stateNe, setStateNe] = useState({});
-    const src = "https://images.unsplash.com/photo-1444065381814-865dc9da92c0";
-    const handleMouseMove = (e) => {
-      const { left, top, width, height } = e.target.getBoundingClientRect();
-      const x = ((e.pageX - left) / width) * 100;
-      const y = ((e.pageY - top) / height) * 100;
-      setStateNe({
-        backgroundImage: `url(${src})`,
-        backgroundPosition: `${x}% ${y}%`,
-      });
-    };
-    return (
-      <figure
-        onMouseMove={handleMouseMove}
-        style={stateNe}
-        className="group bg-no-repeat block"
-      >
-        <img src={src} alt="" className="group-hover:opacity-0 opacity-0" />
-      </figure>
     );
   };
 
