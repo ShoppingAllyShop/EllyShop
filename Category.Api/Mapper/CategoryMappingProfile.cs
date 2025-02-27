@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Category.Api.Models.Request;
+using Catalog.Api.Models.CategoryModel.Request;
 using Comman.Domain.Models;
 using CategoryEntity = Comman.Domain.Models.Category;
 

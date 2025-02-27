@@ -66,7 +66,6 @@ const SelectListItem = (props) => {
   };
 
   const handleShowResult = (content, type) => {
-    console.log('handleShowResult')
     dispatch(setAlert({isDisplay:true, content:content, type:type }));
     dispatch(triggerEditModal({isDisplay:false}))
     

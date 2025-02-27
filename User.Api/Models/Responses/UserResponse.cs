@@ -4,6 +4,7 @@ namespace User.Api.Models.Responses
 {
     public class UserResponse
     {
+        public Guid UserId { get; set; }
         public string? AccessToken { get; set; }
         public string? RefreshToken { get; set; }
         public string? UserName { get; set; }

@@ -1,3 +1,4 @@
 export const REGEX_PATTERN = {
-    EMAIL: "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/",
+    email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    passwordWithUpperLowerDigitRegex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]+$/  //chu hoa chu thuong so
   };
