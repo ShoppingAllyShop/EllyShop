@@ -5,8 +5,10 @@ using Ocelot.Middleware;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
+var env = builder.Environment;
+builder.Configuration.SetBasePath(env.ContentRootPath)
         .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"ocelot.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
         .AddEnvironmentVariables();
 
 //Authen config

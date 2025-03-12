@@ -24,11 +24,16 @@ builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 Console.Title = "User service";
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 //Add DB
 builder.Services.AddDbContext<Elly_UserContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("EllyUser"));
+    option.UseSqlServer(builder.Configuration.GetConnectionString("EllyShopDB"));
 });
 
 //Add appsetting json
