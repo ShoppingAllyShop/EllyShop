@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace Comman.Domain.Elly_User
 {
     public partial class Elly_UserContext : DbContext
     {
+        private readonly IConfiguration _configuration;
         public Elly_UserContext()
         {
         }
 
-        public Elly_UserContext(DbContextOptions<Elly_UserContext> options)
+        public Elly_UserContext(DbContextOptions<Elly_UserContext> options, IConfiguration configuration)
             : base(options)
         {
+            _configuration = configuration;
         }
 
         public virtual DbSet<Department> Department { get; set; } = null!;
@@ -29,8 +32,8 @@ namespace Comman.Domain.Elly_User
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=DESKTOP-TIJR1EN;Initial Catalog=Elly_User;Integrated Security=True;Trust Server Certificate=True");
+                var connectionString = _configuration.GetConnectionString("EllyShopDB");
+                optionsBuilder.UseSqlServer(connectionString);
             }
         }
 

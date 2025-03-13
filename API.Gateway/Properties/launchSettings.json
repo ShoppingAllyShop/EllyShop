@@ -10,12 +10,11 @@
   "profiles": {
     "API.Gateway": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "applicationUrl": "https://localhost:7000;http://localhost:5159",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:7000;http://localhost:5000"
     },
     "IIS Express": {
       "commandName": "IISExpress",
